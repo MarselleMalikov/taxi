@@ -74,6 +74,11 @@ button{font-family:inherit}
 #endcard .sect{margin-top:16px;font-size:13px;opacity:.6;text-transform:uppercase}
 .endbtn{display:block;width:100%;margin-top:10px;padding:12px;font-size:16px;border:none;border-radius:10px;color:#fff;background:#4a5163;cursor:pointer}
 .endbtn.main{background:#2fa84f;font-weight:bold}
+
+#recenter{position:absolute;z-index:2;right:10px;top:calc(env(safe-area-inset-top,0px) + 116px);width:44px;height:44px;border:none;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);font-size:22px;color:var(--b);cursor:pointer}
+#map{touch-action:none;cursor:grab}#map.drag{cursor:grabbing}
+.paychip{display:inline-block;margin-top:8px;font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:#f1f2f4;color:#374151}
+.ohint{font-size:13px;color:var(--m)}
 #ff{position:absolute;z-index:2;right:10px;top:calc(env(safe-area-inset-top,0px) + 68px);padding:6px 12px;border:none;border-radius:14px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:14px;font-weight:700;cursor:pointer}
 #ff[hidden]{display:none}
 .dotS{flex:none;width:12px;height:12px;border-radius:50%;margin-top:5px;background:var(--o)}
@@ -90,6 +95,7 @@ button{font-family:inherit}
   </div>
   <div id="osm">© участники OpenStreetMap</div>
   <button id="ff" hidden>⏩ ×1</button>
+  <button id="recenter" hidden title="Вернуться к машине">⌖</button>
   <div id="sheet"><span class="grab"></span><div id="panel"></div><button id="shift" class="off"></button>
     <div id="sheetfoot"><button id="reset">Сбросить прогресс</button></div></div>
 </div>
@@ -215,14 +221,15 @@ function createOrder() {
   const trip = findPath(from, to), pick = findPath(carNode, from);
   if (!trip || !pick) return;
   const st = sumPath(trip), sp = sumPath(pick);
-  orders.push({ id: nextOrderId++, passenger: p, name: p.name, rating: rating.toFixed(2), runner: Math.random() < runnerChance(rating), late: rating > 4.85 || Math.random() >= LATE_SHARE ? 0 : 3 + Math.random() * (LATE_MAX - 3), from, to, place,
+  orders.push({ id: nextOrderId++, passenger: p, name: p.name, rating: rating.toFixed(2), cash: Math.random() < 0.45, runner: false, late: rating > 4.85 || Math.random() >= LATE_SHARE ? 0 : 3 + Math.random() * (LATE_MAX - 3), from, to, place,
     tripKm: st.km, pickupKm: sp.km, pickupMin: Math.max(1, Math.round(sp.sec / 60)),
     price: Math.round((BASE_FARE + st.km * PER_KM) / 10) * 10, tip: 0, mood: 0, ttl: ORDER_TTL });
+  const o = orders[orders.length - 1]; o.runner = o.cash && Math.random() < runnerChance(rating);   // не заплатить может только тот, кто платит наличными
   renderPanel();
 }
 function acceptOrder(id) {
   const o = orders.find(x => x.id === id); if (!o || state !== "idle") return;
-  current = o; current.tip = 0; current.mood = 0; orders = []; previewId = null; lastRide = null;
+  current = o; current.tip = 0; current.mood = 0; orders = []; previewId = null; lastRide = null; freeCam = false;
   startLeg(o.from, "toPickup");
 }
 function declineOrder(id) { orders = orders.filter(x => x.id !== id); if (previewId === id) previewId = null; renderPanel(); }
@@ -306,7 +313,7 @@ function finishRide(reason) {
   money += fare + tip; ridesDone++; shiftMoney += fare + tip; shiftRides++;
   if (fare > 0) floaters.push({ text: "+" + fare + " ₽", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -20 });
   if (tip > 0) floaters.push({ text: "+" + tip + " ₽ чаевые", x: car.x, y: car.y, age: 0, color: "#b8860b", dy: 6 });
-  lastRide = { name: c.name, price: fare, tip, stars, mood: c.mood, note: reason || (mult === 0 ? "Пассажир не заплатил" : ""), wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
+  lastRide = { name: c.name, cash: c.cash, price: fare, tip, stars, mood: c.mood, note: reason || (mult === 0 ? "Пассажир не заплатил" : ""), wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
   let goalNow = false; if (!goalReached && money >= GOAL) { goalReached = true; goalNow = true; }
   current = null; dialogue = null; state = "idle"; route = []; spawnTimer = 2; updateTop(); saveGame(); renderPanel();
   if (goalNow) showEnding();
@@ -330,9 +337,10 @@ function showEnding() {
   let html = '<h2>Цель достигнута!</h2><div class="title">' + title + '</div><div class="line">Накоплено: ' + money.toLocaleString("ru-RU") +
     ' ₽</div><div class="line">Поездок: ' + ridesDone + '</div><div class="line">Рейтинг: ★ ' + r.toFixed(2) + '</div><div class="sect">Истории пассажиров</div>';
   let any = false;
+  let storyNo = 0;
   for (const p of PASSENGERS) if (p.scenes && met[p.name]) {
     const a = getAff(p.name); let mood = a <= REFUSE_AT ? "больше не ездит с тобой" : a < 0 ? "обида" : a >= 2 ? "добрые отношения" : "знакомые";
-    html += '<div class="line">' + p.name + ": глав " + (storyStep[p.name] || 0) + " из " + p.scenes.length + ", " + mood + "</div>"; any = true;
+    html += '<div class="line">История ' + (++storyNo) + ": глав " + (storyStep[p.name] || 0) + " из " + p.scenes.length + ", " + mood + "</div>"; any = true;
   }
   if (!any) html += '<div class="line">Ты ещё не узнал ничьих историй.</div>';
   endCard.innerHTML = html + '<button class="endbtn main" data-end="continue">Играть дальше</button><button class="endbtn" data-end="restart">Начать заново</button>';
@@ -407,11 +415,31 @@ function getFocus() {
   return { x: car.x, y: car.y };
 }
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+let freeCam = false, freeIdle = 0;   // freeCam - игрок сам двигает карту
+const FREE_RETURN = 12;              // через сколько секунд без касаний камера сама вернётся к машине
 function updateCamera(dt, snap) {
+  if (freeCam) {
+    camX = clamp(camX, viewW / 2, W - viewW / 2); camY = clamp(camY, viewH / 2, H - viewH / 2);
+    if (!drag && (freeIdle += dt) > FREE_RETURN) freeCam = false; else return;
+  }
   const f = getFocus(), k = snap ? 1 : Math.min(1, dt * 5);
   camX += (clamp(f.x, viewW / 2, W - viewW / 2) - camX) * k;
   camY += (clamp(f.y + 0.17 * viewH, viewH / 2, H - viewH / 2) - camY) * k;   // машина в верхней трети экрана
 }
+
+// Перетаскивание карты пальцем или мышью
+let drag = null;
+canvas.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY, id: e.pointerId }; canvas.setPointerCapture(e.pointerId); canvas.classList.add("drag"); });
+canvas.addEventListener("pointermove", e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!freeCam && Math.hypot(dx, dy) < 4) return;   // случайное касание не считаем
+  freeCam = true; freeIdle = 0; camX -= dx / scale; camY -= dy / scale; drag.x = e.clientX; drag.y = e.clientY;
+  $("recenter").hidden = false;
+});
+const endDrag = e => { if (drag && e.pointerId === drag.id) { drag = null; canvas.classList.remove("drag"); } };
+canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointercancel", endDrag);
+$("recenter").addEventListener("click", () => { freeCam = false; $("recenter").hidden = true; });
 
 // ====== Верхние плашки, кнопка, панель ======
 function updateTop() {
@@ -439,11 +467,10 @@ function resultHtml() {
   return '<div class="result"><div class="rhead"><b>Поездка завершена</b><button class="x" data-act="closeResult">×</button></div><div class="rbig">+' + (r.price + r.tip) +
     ' ₽' + (r.tip > 0 ? "<small>" + r.price + " ₽ + " + r.tip + " ₽ чаевых</small>" : "") + '</div><div class="rline">' +
     (r.stars > 0 ? 'Оценка: <span class="stars">' + starsStr(r.stars) + "</span>" : "Пассажир не оценил поездку") + '</div><div class="rline">' + mood + "</div>" +
-    (r.wait > 0 ? '<div class="rline">Заезд и ожидание: +' + r.wait + " ₽</div>" : "") + (r.blocked ? '<div class="rline bad">😠 ' + r.name + " больше не будет с вами ездить</div>" : "") + "</div>";
+    (r.wait > 0 ? '<div class="rline">Заезд и ожидание: +' + r.wait + " ₽</div>" : "") + (r.price > 0 ? '<div class="rline">Оплата: ' + (r.cash ? "наличными" : "картой") + "</div>" : "") + (r.blocked ? '<div class="rline bad">😠 Этот пассажир больше не будет с вами ездить</div>' : "") + "</div>";
 }
 function orderCardHtml(o) {
-  return '<div class="ocard' + (o.id === previewId ? " sel" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate">★ ' + o.rating + '</span><span class="oprice">' + o.price +
-    ' ₽</span></div><div class="addr"><i class="dotA"></i><div><b>' + addrOf(o.from) + "</b><small>до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
+  return '<div class="ocard' + (o.id === previewId ? " sel" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate">★ ' + o.rating + '</span><span class="ohint">цена и оплата - при посадке</span></div><div class="addr"><i class="dotA"></i><div><b>' + addrOf(o.from) + "</b><small>до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
     ' мин</small></div></div><div class="ohide">Куда ехать, станет известно после посадки</div><div class="obar"><div class="obarfill" id="bar-' + o.id +
     '"></div></div><div class="obtns"><button class="skip" data-act="decline" data-id="' + o.id + '">Пропустить</button><button class="take" data-act="accept" data-id="' + o.id + '">Принять</button></div></div>';
 }
@@ -452,7 +479,9 @@ function ridePanelHtml() {
   const B = '<div class="addr"><i class="dotB"></i><div><b>' + addrOf(current.to) + "</b><small>" + (current.place ? current.place.n + " · " : "") + current.tripKm.toFixed(1) + " км</small></div></div>";
   const S = current.stopNode === undefined ? "" : '<div class="addr"><i class="dotS"></i><div><b>' + addrOf(current.stopNode) + "</b><small>" + current.stopLabel + "</small></div></div>";
   const chip = state === "toPickup" ? '<span class="chip">Едем к клиенту</span>' : state === "boarding" ? '<span class="chip green">' + (current.late > 0 ? "Пассажир опаздывает…" : "Пассажир садится…") + "</span>" : state === "toStop" ? '<span class="chip">Заезд: ' + current.stopLabel + "</span>" : state === "stopped" ? '<span class="chip">Ждём: ' + current.stopLabel + "</span>" : '<span class="chip green">В пути</span>';
-  return '<div class="ridehead">' + chip + '<span class="rprice">' + current.price + ' ₽</span></div><div class="rname">' + current.name + "<span>★ " + current.rating + "</span></div>" + (state === "toDropoff" ? B + '<button class="kick" data-act="kick">Высадить пассажира</button>' : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : A);
+  const known = state !== "toPickup";   // цену и способ оплаты узнаём, только когда приехали к клиенту
+  const pay = known ? '<span class="paychip">' + (current.cash ? "💵 Наличные" : "💳 Карта") + "</span>" : "";
+  return '<div class="ridehead">' + chip + '<span class="rprice">' + (known ? current.price + " ₽" : "") + '</span></div><div class="rname">Пассажир<span>★ ' + current.rating + "</span></div>" + pay + (state === "toDropoff" ? B + '<button class="kick" data-act="kick">Высадить пассажира</button>' : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : A);
 }
 function renderPanel() {
   let html = "";
@@ -463,7 +492,7 @@ function renderPanel() {
     else { html += '<div class="listhead">Заказы рядом: ' + orders.length + "</div>"; for (const o of orders) html += orderCardHtml(o); }
   } else if (dialogue) {
     const node = dialogue.scene.nodes[dialogue.nodeId];
-    html = '<div class="dialog"><div class="who">' + current.name + " · едем: " + destLabel(current) + '</div><div class="said">' + node.text + "</div>";
+    html = '<div class="dialog"><div class="who">Пассажир · ' + (current.cash ? "наличные" : "карта") + " · едем: " + destLabel(current) + '</div><div class="said">' + node.text + "</div>";
     node.choices.forEach((c, i) => { html += '<button class="choice" data-choice="' + i + '">' + c.text + "</button>"; });
     html += "</div>";
   } else html = ridePanelHtml();
@@ -479,7 +508,7 @@ panel.addEventListener("click", e => {
     if (btn.dataset.act === "accept") acceptOrder(id); else if (btn.dataset.act === "decline") declineOrder(id);
     return;
   }
-  const card = e.target.closest(".ocard"); if (card && card.dataset.id) { previewId = Number(card.dataset.id); renderPanel(); }
+  const card = e.target.closest(".ocard"); if (card && card.dataset.id) { previewId = Number(card.dataset.id); freeCam = false; renderPanel(); }
 });
 
 // ====== Рисование ======
@@ -624,7 +653,7 @@ function draw() {
 }
 
 let lastTime = 0;
-function frame(time) { const dt = Math.min((time - lastTime) / 1000, 0.05); lastTime = time; update(dt); updateCamera(dt, false); draw(); requestAnimationFrame(frame); }
+function frame(time) { const dt = Math.min((time - lastTime) / 1000, 0.05); lastTime = time; update(dt); updateCamera(dt, false); if (!freeCam) $("recenter").hidden = true; draw(); requestAnimationFrame(frame); }
 loadGame(); updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
 </script>
 </body></html>
