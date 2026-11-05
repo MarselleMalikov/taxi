@@ -8,7 +8,7 @@
 html,body{height:100%;margin:0}
 body{background:#0f1218;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
 button{font-family:inherit}
-#app{position:relative;width:100%;max-width:440px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:#e6e9ed}
+#app{position:relative;width:100%;max-width:440px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:#f0f1f4}
 #map{position:absolute;top:0;left:0;width:100%;height:100%;display:block}
 #topbar{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px 0;pointer-events:none}
 .pill{background:rgba(255,255,255,.96);border-radius:14px;padding:7px 11px;box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:13px}
@@ -98,6 +98,7 @@ button{font-family:inherit}
 <script src="dialogues.js"></script>
 <script src="dialogues2.js"></script>
 <script src="mapdata.js"></script>
+<script src="buildings.js"></script>
 <script>
 // ====== Карта: дороги Уфы из mapdata.js (координаты в метрах) ======
 const D = MAPDATA, N = D.nodes, W = D.w, H = D.h, $ = id => document.getElementById(id);
@@ -397,7 +398,7 @@ let scale = PX_PER_M, cw = 400, ch = 800, viewW = 400, viewH = 800, camX = car.x
 const dpr = window.devicePixelRatio || 1;
 function resize() {
   const r = appEl.getBoundingClientRect(); cw = r.width; ch = r.height;
-  canvas.width = Math.round(cw * dpr); canvas.height = Math.round(ch * dpr);
+  canvas.width = Math.round(cw * dpr); canvas.height = Math.round(ch * dpr); if (typeof blayer !== "undefined") blayer.valid = false;
   viewW = cw / scale; viewH = ch / scale; updateCamera(0, true);
 }
 window.addEventListener("resize", resize);
@@ -482,10 +483,66 @@ panel.addEventListener("click", e => {
 });
 
 // ====== Рисование ======
-const MAP_BG = "#e6e9ed";   // фон карты (светло-серый, как в навигаторе)
+const MAP_BG = "#f0f1f4";   // фон карты (светло-серый, как в навигаторе)
 const FILL = ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#fbfbfc"],   // заливка дорог: все белые, как в навигаторе
       EDGE = ["#a9b3c0", "#b1bac6", "#bec5cf", "#c6ccd5", "#cdd2da", "#d6dae0"],   // обводка: у крупных дорог чуть темнее
       WPX = [5.5, 4.5, 3.6, 3, 2.4, 1.6];   // толщина в пикселях: магистраль, главная, средняя, обычная, жилая, двор
+// Дома: раскладываем по сетке 250 м, чтобы рисовать только те, что видны на экране
+const BCELL = 250, BCOLS = Math.ceil(W / BCELL), bcells = new Map();
+const BFILL = ["#d5d9e0", "#dcd8d1", "#d1d6de"], BEDGE = ["#bcc2cc", "#c7c1b7", "#b8bfca"];   // многоэтажки, частный сектор, торговые
+for (const b of (typeof BUILDINGS !== "undefined" ? BUILDINGS : [])) {
+  const [cx, cy, hl, hd, deg, kind] = b, r = deg * Math.PI / 180, ux = Math.cos(r), uy = Math.sin(r);
+  const pts = [cx + ux * hl - uy * hd, cy + uy * hl + ux * hd, cx - ux * hl - uy * hd, cy - uy * hl + ux * hd,
+               cx - ux * hl + uy * hd, cy - uy * hl - ux * hd, cx + ux * hl + uy * hd, cy + uy * hl - ux * hd];
+  const key = Math.floor(cy / BCELL) * BCOLS + Math.floor(cx / BCELL);
+  if (!bcells.has(key)) bcells.set(key, [[], [], []]);
+  bcells.get(key)[kind].push(pts);
+}
+// Слой домов: рисуем дома один раз в отдельную картинку с запасом вокруг экрана
+// и перерисовываем, только когда камера уезжает за этот запас (масштаб карты не меняется)
+const BMARGIN = 700, blayer = { cv: document.createElement("canvas"), x: 0, y: 0, w: 0, h: 0, valid: false };
+function renderBuildingLayer(vx, vy) {
+  const L = blayer, px = scale * dpr;
+  L.x = vx - BMARGIN; L.y = vy - BMARGIN; L.w = viewW + 2 * BMARGIN; L.h = viewH + 2 * BMARGIN;
+  L.cv.width = Math.ceil(L.w * px); L.cv.height = Math.ceil(L.h * px);
+  const g = L.cv.getContext("2d"); g.setTransform(px, 0, 0, px, -L.x * px, -L.y * px); g.lineWidth = 1 / scale; g.lineJoin = "miter";
+  const c0 = Math.floor((L.x - 80) / BCELL), c1 = Math.floor((L.x + L.w + 80) / BCELL), r0 = Math.floor((L.y - 80) / BCELL), r1 = Math.floor((L.y + L.h + 80) / BCELL);
+  for (let kind = 0; kind < 3; kind++) {
+    g.beginPath();
+    for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
+      const cell = bcells.get(r * BCOLS + c); if (!cell) continue;
+      for (const p of cell[kind]) { g.moveTo(p[0], p[1]); g.lineTo(p[2], p[3]); g.lineTo(p[4], p[5]); g.lineTo(p[6], p[7]); g.closePath(); }
+    }
+    g.fillStyle = BFILL[kind]; g.fill(); g.strokeStyle = BEDGE[kind]; g.stroke();
+  }
+  L.valid = true;
+}
+function drawBuildings(vx, vy) {
+  const L = blayer;
+  if (!L.valid || vx < L.x || vy < L.y || vx + viewW > L.x + L.w || vy + viewH > L.y + L.h) renderBuildingLayer(vx, vy);
+  ctx.drawImage(L.cv, L.x, L.y, L.cv.width / (scale * dpr), L.cv.height / (scale * dpr));
+}
+// Значки мест: цвет и символ по категории, как в навигаторе
+const PLACE_STYLE = {
+  hospital:    { col: "#e5484d", text: "#c9363b", sym: "+" },
+  mall:        { col: "#0ea5b7", text: "#0b8796", sym: "🛍" },
+  hotel:       { col: "#8b5cf6", text: "#7041d9", sym: "H" },
+  university:  { col: "#3b6fe0", text: "#2f5bc0", sym: "🎓" },
+  museum:      { col: "#d946a8", text: "#b8328b", sym: "M" },
+  station:     { col: "#5b6b82", text: "#46546a", sym: "🚆" },
+  stadium:     { col: "#22a35a", text: "#1b8549", sym: "⚽" },
+  airport:     { col: "#3b6fe0", text: "#2f5bc0", sym: "✈" },
+  bus_station: { col: "#5b6b82", text: "#46546a", sym: "🚌" },
+  other:       { col: "#6f7f96", text: "#4b5563", sym: "•" }
+};
+function placeIcon(x, y, k) {
+  const st = PLACE_STYLE[k] || PLACE_STYLE.other;
+  ctx.beginPath(); ctx.arc(x, y + 1, 8.5, 0, 7); ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.fill();   // мягкая тень
+  ctx.beginPath(); ctx.arc(x, y, 8.5, 0, 7); ctx.fillStyle = st.col; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = "#fff"; ctx.stroke();
+  const emoji = st.sym.length > 1 || st.sym.charCodeAt(0) > 0x2000;
+  ctx.font = emoji ? "9px sans-serif" : "bold 11px sans-serif"; ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(st.sym, x, y + 0.5);
+}
 function pin(x, y, col, letter) {
   ctx.save(); ctx.translate(x, y); ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(-16, -16, -14, -38, 0, -38); ctx.bezierCurveTo(14, -38, 16, -16, 0, 0);
   ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
@@ -496,6 +553,7 @@ function draw() {
   const k = dpr * scale, vx = camX - viewW / 2, vy = camY - viewH / 2, sx = x => (x - vx) * scale, sy = y => (y - vy) * scale;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = MAP_BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.setTransform(k, 0, 0, k, -vx * k, -vy * k);   // дальше рисуем в метрах города
+  drawBuildings(vx, vy);   // дома рисуем первыми, под дорогами
   const vis = [[], [], [], [], [], []];
   for (const e of D.edges) {   // отбираем только те дороги, что попадают в экран
     const a = N[e[0]], b = N[e[1]];
@@ -521,7 +579,11 @@ function draw() {
   take(sx(car.x), sy(car.y), 70, 50);   // машину подписями не закрываем
   ctx.font = "bold 11px sans-serif";
   const pl = vp.length <= 14 ? vp : [];
-  for (const p of pl) take(sx(p.x), sy(p.y) + 14, ctx.measureText(p.n).width + 8, 14);   // места подписываем в первую очередь
+  for (const p of pl) {   // места подписываем в первую очередь: справа от значка, а если не влезает - слева
+    const w = ctx.measureText(p.n).width, x = sx(p.x), y = sy(p.y);
+    p._side = y < 100 ? 0 : x + 14 + w < cw - 4 ? 1 : x - 14 - w > 4 ? -1 : 0;   // 0 - без подписи
+    if (p._side) take(x + p._side * (8 + w / 2), y, w + 26, 18);
+  }
   ctx.font = "11px sans-serif";
   for (const c of [0, 1, 2, 3, 4]) for (const e of vis[c]) {   // названия улиц, важные дороги первыми
     if (e[4] < 0 || used.size > 70) continue;
@@ -535,10 +597,15 @@ function draw() {
     ctx.save(); ctx.translate(mx, my); ctx.rotate(ang); ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.strokeText(name, 0, 0);
     ctx.fillStyle = "#5b6370"; ctx.fillText(name, 0, 0); ctx.restore();
   }
-  for (const p of vp) { const x = sx(p.x), y = sy(p.y); ctx.beginPath(); ctx.arc(x, y, 5, 0, 7); ctx.fillStyle = "#6f7f96"; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke(); }
-  if (pl.length) for (const p of pl) {
-    ctx.font = "bold 11px sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "#fff"; ctx.strokeText(p.n, sx(p.x), sy(p.y) + 14); ctx.fillStyle = "#333"; ctx.fillText(p.n, sx(p.x), sy(p.y) + 14);
+  for (const p of vp) if (sy(p.y) > 92) placeIcon(sx(p.x), sy(p.y), p.k);
+  ctx.textAlign = "left";
+  for (const p of pl) {   // подпись цветом категории
+    if (!p._side) continue;
+    const st = PLACE_STYLE[p.k] || PLACE_STYLE.other, x = sx(p.x) + p._side * 12, y = sy(p.y);
+    ctx.textAlign = p._side > 0 ? "left" : "right";
+    ctx.font = "600 11px sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.92)"; ctx.strokeText(p.n, x, y); ctx.fillStyle = st.text; ctx.fillText(p.n, x, y);
   }
+  ctx.textAlign = "center";
   let A = null, B = null, S = null;   // метки: A - где забрать клиента, B - куда его везти (видна только в пути)
   if (state === "idle") { const o = orders.find(x => x.id === previewId); if (o) A = o.from; }
   else if (state === "toPickup" || state === "boarding") A = current.from; else if (state === "toDropoff") B = current.to; else if (state === "toStop" || state === "stopped") { B = current.to; S = current.stopNode; }
