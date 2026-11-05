@@ -8,7 +8,7 @@
 html,body{height:100%;margin:0}
 body{background:#0f1218;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
 button{font-family:inherit}
-#app{position:relative;width:100%;max-width:440px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:#f3f0e8}
+#app{position:relative;width:100%;max-width:440px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:#e6e9ed}
 #map{position:absolute;top:0;left:0;width:100%;height:100%;display:block}
 #topbar{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px 0;pointer-events:none}
 .pill{background:rgba(255,255,255,.96);border-radius:14px;padding:7px 11px;box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:13px}
@@ -482,7 +482,10 @@ panel.addEventListener("click", e => {
 });
 
 // ====== Рисование ======
-const FILL = ["#f5b042", "#ffe08a", "#ffffff", "#ffffff", "#ffffff", "#faf8f3"], EDGE = ["#c98a1c", "#d9b64a", "#cfc9bb", "#d9d4c7", "#e0dbcf", "#e6e1d6"], WPX = [7, 6, 4.5, 3.5, 3, 2];   // 6 типов дорог
+const MAP_BG = "#e6e9ed";   // фон карты (светло-серый, как в навигаторе)
+const FILL = ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#fbfbfc"],   // заливка дорог: все белые, как в навигаторе
+      EDGE = ["#a9b3c0", "#b1bac6", "#bec5cf", "#c6ccd5", "#cdd2da", "#d6dae0"],   // обводка: у крупных дорог чуть темнее
+      WPX = [5.5, 4.5, 3.6, 3, 2.4, 1.6];   // толщина в пикселях: магистраль, главная, средняя, обычная, жилая, двор
 function pin(x, y, col, letter) {
   ctx.save(); ctx.translate(x, y); ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(-16, -16, -14, -38, 0, -38); ctx.bezierCurveTo(14, -38, 16, -16, 0, 0);
   ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
@@ -491,7 +494,7 @@ function pin(x, y, col, letter) {
 }
 function draw() {
   const k = dpr * scale, vx = camX - viewW / 2, vy = camY - viewH / 2, sx = x => (x - vx) * scale, sy = y => (y - vy) * scale;
-  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = "#f3f0e8"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = MAP_BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.setTransform(k, 0, 0, k, -vx * k, -vy * k);   // дальше рисуем в метрах города
   const vis = [[], [], [], [], [], []];
   for (const e of D.edges) {   // отбираем только те дороги, что попадают в экран
@@ -502,7 +505,7 @@ function draw() {
   ctx.lineCap = "round"; ctx.lineJoin = "round";
   for (const pass of [0, 1]) for (const c of [5, 4, 3, 2, 1, 0]) {   // сначала обводка, потом заливка дорог
     ctx.beginPath(); for (const e of vis[c]) { const a = N[e[0]], b = N[e[1]]; ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }
-    ctx.lineWidth = (WPX[c] + (pass ? 0 : 2)) / scale; ctx.strokeStyle = pass ? FILL[c] : EDGE[c]; ctx.stroke();
+    ctx.lineWidth = (WPX[c] + (pass ? 0 : 1.5)) / scale; ctx.strokeStyle = pass ? FILL[c] : EDGE[c]; ctx.stroke();
   }
   if (route.length && (state === "toPickup" || state === "toDropoff" || state === "toStop")) {
     ctx.beginPath(); ctx.moveTo(car.x, car.y); for (const s of route) ctx.lineTo(N[s.n][0], N[s.n][1]);
@@ -530,7 +533,7 @@ function draw() {
     if (!free(mx, my, bw, bh)) continue;
     take(mx, my, bw, bh); used.add(name + ":" + Math.round(mx / 260) + ":" + Math.round(my / 260));
     ctx.save(); ctx.translate(mx, my); ctx.rotate(ang); ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.strokeText(name, 0, 0);
-    ctx.fillStyle = "#555"; ctx.fillText(name, 0, 0); ctx.restore();
+    ctx.fillStyle = "#5b6370"; ctx.fillText(name, 0, 0); ctx.restore();
   }
   for (const p of vp) { const x = sx(p.x), y = sy(p.y); ctx.beginPath(); ctx.arc(x, y, 5, 0, 7); ctx.fillStyle = "#6f7f96"; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke(); }
   if (pl.length) for (const p of pl) {
