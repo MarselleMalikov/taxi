@@ -121,8 +121,29 @@ for el in load("places.json"):
     if k in pseen: continue
     pseen.add(k); pois.append([round(x), round(y), cat, name])
 
+# ---------- адреса (настоящие номера домов) ----------
+# Вес - насколько часто отсюда (и сюда) вызывают такси: в многоэтажке живёт больше людей, чем в частном доме
+SKIP = {"garage", "garages", "shed", "industrial", "warehouse", "construction", "roof", "service", "hut", "greenhouse",
+        "transformer_tower", "barn", "farm_auxiliary", "kiosk", "toilets", "bunker", "ruins", "container", "carport"}
+WEIGHT = {"apartments": 4, "residential": 3, "dormitory": 3, "yes": 1.5, "house": 0.7, "detached": 0.7, "semidetached_house": 0.7,
+          "terrace": 1, "retail": 1.5, "commercial": 1.5, "office": 1.5, "school": 0.6, "university": 2, "hospital": 2, "hotel": 1.5}
+streets, sidx, addrs, aseen = [], {}, [], set()
+for f in sorted(glob.glob(os.path.join(OSM, "addresses*.json"))):
+    for el in json.load(open(f, encoding="utf-8"))["elements"]:
+        t = el.get("tags", {}); st, num = t.get("addr:street"), t.get("addr:housenumber")
+        b = t.get("building")
+        if not st or not num or b in SKIP: continue
+        c = el if el["type"] == "node" else el.get("center")
+        if not c: continue
+        x, y = xy(c)
+        if not (0 <= x <= W and 0 <= y <= H) or (st, num) in aseen: continue
+        aseen.add((st, num))
+        if st not in sidx: sidx[st] = len(streets); streets.append(st)
+        addrs.append([round(x), round(y), sidx[st], num, WEIGHT.get(b, 1)])
+
 out = {"water": nature["water"], "wood": nature["wood"], "park": nature["park"], "grass": nature["grass"],
-       "cemetery": nature["cemetery"], "rivers": rivers, "buildings": buildings, "pois": pois}
+       "cemetery": nature["cemetery"], "rivers": rivers, "buildings": buildings, "pois": pois,
+       "streets": streets, "addrs": addrs}   # адрес: [x, y, номер улицы в streets, номер дома, вес]
 js = ("// Реальная карта Уфы из OpenStreetMap (© участники OpenStreetMap, лицензия ODbL).\n"
       "// Сгенерировано скриптом tools/build_osm.py из файлов в папке osm/. Вручную не править.\n"
       "// Контур: [x0, y0, dx1, dy1, ...] в метрах; контур с дырами (двор, остров) - массив таких контуров.\n"

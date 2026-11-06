@@ -12,12 +12,15 @@ button{font-family:inherit}
 #map{position:absolute;top:0;left:0;width:100%;height:100%;display:block}
 #topbar{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px 0;pointer-events:none}
 .pill{background:rgba(255,255,255,.96);border-radius:14px;padding:7px 11px;box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:13px}
-#earn{flex:1;min-width:0}
-.money{font-size:20px;font-weight:700;color:#16883f;line-height:1.1}
+#menubtn{position:relative;pointer-events:auto;width:46px;flex:none;padding:0;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.burger{display:flex;flex-direction:column;gap:4px}.burger i{display:block;width:18px;height:2px;border-radius:1px;background:#2b313b}
+#menubtn .dot{position:absolute;top:7px;right:7px;width:10px;height:10px;border:2px solid #fff;box-sizing:content-box}
+#earn{min-width:96px;padding:7px 12px}
+.money{font-size:17px;font-weight:700;color:#16883f;line-height:1.15}
+#ratingpill{margin-left:auto}
 .sub{font-size:11px;color:var(--m);margin-top:1px}
 .gbar{height:4px;background:#e1e4ea;border-radius:2px;margin-top:5px;overflow:hidden}
 .gbar i{display:block;height:100%;width:0;background:var(--g);transition:width .4s}
-#statuspill{display:flex;align-items:center;gap:6px;font-weight:600;white-space:nowrap}
 .dot{width:9px;height:9px;border-radius:50%;background:#9aa3b2}
 .status.on .dot{background:var(--g)}.status.ride .dot{background:var(--b)}
 #ratingpill{text-align:center;white-space:nowrap}
@@ -25,11 +28,17 @@ button{font-family:inherit}
 #osm{position:absolute;z-index:2;left:10px;top:calc(env(safe-area-inset-top,0px) + 68px);font-size:10px;color:#555;background:rgba(255,255,255,.7);padding:1px 5px;border-radius:6px}
 #sheet{position:absolute;left:0;right:0;bottom:0;z-index:3;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.25);padding:18px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:60%;overflow-y:auto}
 .grab{display:block;width:40px;height:4px;border-radius:2px;background:#d5d8df;margin:-8px auto 12px}
-#shift{display:block;width:100%;margin-top:6px;padding:14px;border:none;border-radius:14px;font-size:20px;font-weight:700;color:#fff;cursor:pointer;transition:background .25s}
-#shift small{display:block;margin-top:2px;font-size:12px;font-weight:400;opacity:.92}
-#shift.off{background:var(--o)}#shift.on{background:var(--g)}
-#sheetfoot{text-align:center;margin-top:8px}
-#reset{background:none;border:none;color:#9aa1af;font-size:12px;text-decoration:underline;cursor:pointer}
+#menu{position:absolute;inset:0;z-index:5}#menu[hidden]{display:none}
+.mback{position:absolute;inset:0;background:rgba(15,18,24,.35)}
+.mpanel{position:absolute;top:0;left:0;bottom:0;width:min(300px,82%);background:#fff;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 16px;display:flex;flex-direction:column;gap:14px;box-shadow:4px 0 24px rgba(0,0,0,.2)}
+.mhead{display:flex;align-items:center;justify-content:space-between}.mhead b{font-size:20px}
+.mhead .x{width:36px;height:36px;border:none;border-radius:50%;background:#f1f2f4;font-size:22px;line-height:1;color:#4b5563;cursor:pointer}
+.mstatus{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+#shift{display:block;width:100%;padding:13px;border:none;border-radius:12px;font-size:17px;font-weight:700;color:#fff;cursor:pointer}
+#shift.off{background:var(--g)}#shift.on{background:#eceef1;color:#2b313b}#shift:disabled{opacity:.5;cursor:default}
+.mstats{display:flex;flex-direction:column;border-top:1px solid #eceef1}
+.mstats div{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eceef1;font-size:15px}.mstats span{color:var(--m)}
+#reset{margin-top:auto;align-self:flex-start;border:none;background:none;padding:6px 0;color:var(--m);font-size:14px;text-decoration:underline;cursor:pointer}
 .offmsg{padding:6px 2px 8px}.offmsg b{display:block;font-size:18px}.offmsg small{color:var(--m);font-size:14px}
 .search{display:flex;align-items:center;gap:14px;padding:8px 2px 10px}
 .search b{display:block;font-size:17px}.search small{color:var(--m);font-size:13px}
@@ -92,16 +101,30 @@ button{font-family:inherit}
 <div id="app">
   <canvas id="map"></canvas>
   <div id="topbar">
-    <div class="pill" id="earn"><div class="money" id="money">0 ₽</div><div class="sub" id="goaltext"></div><div class="gbar"><i id="goalfill"></i></div></div>
-    <div class="pill status off" id="statuspill"><span class="dot"></span><span><span id="statustext">Не на линии</span><div class="sub" id="clock"></div></span></div>
-    <div class="pill" id="ratingpill"><div id="rating">★ 5.00</div><div class="sub" id="rides">поездок 0</div></div>
+    <button class="pill status off" id="menubtn" aria-label="Меню"><span class="burger"><i></i><i></i><i></i></span><span class="dot"></span></button>
+    <div class="pill" id="earn"><div class="money" id="money">0 ₽</div><div class="gbar"><i id="goalfill"></i></div></div>
+    <div class="pill" id="ratingpill"><div id="rating">★ 5.00</div><div class="sub" id="clock"></div></div>
   </div>
   <div id="osm">© участники OpenStreetMap</div>
   <button id="ff" hidden>⏩ ×1</button>
   <div id="zoom"><button id="zin" aria-label="Приблизить">+</button><button id="zout" aria-label="Отдалить">&minus;</button></div>
   <button id="recenter" hidden title="Вернуться к машине" aria-label="Вернуться к машине"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
-  <div id="sheet"><span class="grab"></span><div id="panel"></div><button id="shift" class="off"></button>
-    <div id="sheetfoot"><button id="reset">Сбросить прогресс</button></div></div>
+  <div id="sheet"><span class="grab"></span><div id="panel"></div></div>
+  <div id="menu" hidden>
+    <div class="mback" data-close="1"></div>
+    <aside class="mpanel">
+      <div class="mhead"><b>Меню</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
+      <div class="mstatus status off" id="mstatus"><span class="dot"></span><span id="statustext">Не на линии</span></div>
+      <button id="shift" class="off"></button>
+      <div class="mstats">
+        <div><span>Накоплено</span><b id="mmoney">0 ₽</b></div>
+        <div><span>Цель</span><b id="goaltext"></b></div>
+        <div><span>За смену</span><b id="mshift">0 ₽</b></div>
+        <div><span>Поездок</span><b id="rides">0</b></div>
+      </div>
+      <button id="reset">Сбросить прогресс</button>
+    </aside>
+  </div>
 </div>
 <div id="ending" hidden><div id="endcard"></div></div>
 
@@ -113,8 +136,8 @@ button{font-family:inherit}
 // ====== Карта: дороги Уфы из mapdata.js (координаты в метрах) ======
 const D = MAPDATA, N = D.nodes, W = D.w, H = D.h, $ = id => document.getElementById(id);
 const appEl = $("app"), canvas = $("map"), ctx = canvas.getContext("2d"), panel = $("panel");
-const moneyEl = $("money"), ridesEl = $("rides"), ratingEl = $("rating"), shiftBtn = $("shift"), footEl = $("sheetfoot");
-const goalFill = $("goalfill"), goalText = $("goaltext"), statusPill = $("statuspill"), statusText = $("statustext");
+const moneyEl = $("money"), ridesEl = $("rides"), ratingEl = $("rating"), shiftBtn = $("shift"), menuEl = $("menu");
+const goalFill = $("goalfill"), goalText = $("goaltext"), statusPill = $("menubtn"), statusText = $("statustext");
 const endingEl = $("ending"), endCard = $("endcard"), resetBtn = $("reset");
 
 // ====== Настройки игры (можно менять!) ======
@@ -124,7 +147,7 @@ const KMH = [70, 50, 40, 30, 25, 15]; // скорость по типам дор
 const BASE_FARE = 100, PER_KM = 20;     // цена: посадка + рубли за километр
 const PICK_MIN = 800, PICK_MAX = 4500;  // как далеко от машины появляется клиент (метры)
 const TRIP_MIN = 2000, TRIP_MAX = 16000; // длина поездки (метры по прямой)
-const ORDER_TTL = 25, MAX_ORDERS = 3;
+const ORDER_TTL = 25, MAX_ORDERS = 1;   // заказ предлагается один: пока не примешь или не пропустишь, следующего нет
 const SOFT_PICK = 20, SOFT_TRIP = 40, SOFT_KEEP = 0.3;   // длинные поездки сжимаются: всё, что дольше этих секунд, идёт в 3 раза быстрее
 const SHIFT_LEN = 12 * 3600, DAY_START = 8 * 60;      // смена 12 игровых часов, начинается в 08:00
 const LATE_SHARE = 0.10, LATE_MAX = 10;                // 10% пассажиров (с рейтингом ниже 4.85) опаздывают, но не больше чем на 10 с
@@ -198,6 +221,21 @@ if (typeof OSM !== "undefined") for (const b of OSM.buildings) {
   for (let i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
   if ((x1 - x0) * (y1 - y0) >= 150) HOMES.push([(x0 + x1) / 2, (y0 + y1) / 2]);
 }
+// Настоящие адреса из OpenStreetMap: улица и номер дома. Вес - сколько людей там живёт или бывает
+const ADDRS = typeof OSM !== "undefined" && OSM.addrs ? OSM.addrs : [], ADDR_CUM = [];
+for (const a of ADDRS) ADDR_CUM.push((ADDR_CUM.length ? ADDR_CUM[ADDR_CUM.length - 1] : 0) + a[4]);
+const addrText = a => OSM.streets[a[2]] + ", " + a[3];
+const ACELL = 200, ACOLS = Math.ceil(W / ACELL), addrGrid = new Map();
+ADDRS.forEach((a, i) => { const k = Math.floor(a[1] / ACELL) * ACOLS + Math.floor(a[0] / ACELL); if (!addrGrid.has(k)) addrGrid.set(k, []); addrGrid.get(k).push(i); });
+function addrNear(x, y) {   // ближайший настоящий адрес (до ~600 м), иначе null
+  const cx = Math.floor(x / ACELL), cy = Math.floor(y / ACELL); let b = -1, bd = 1e18;
+  for (let r = 0; r <= 3 && b < 0; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+    const list = addrGrid.get((cy + dy) * ACOLS + cx + dx); if (!list) continue;
+    for (const i of list) { const d = (ADDRS[i][0] - x) ** 2 + (ADDRS[i][1] - y) ** 2; if (d < bd) { bd = d; b = i; } }
+  }
+  return b >= 0 ? addrText(ADDRS[b]) : null;
+}
+function pickWeightedAddr() { const r = Math.random() * ADDR_CUM[ADDR_CUM.length - 1]; let lo = 0, hi = ADDR_CUM.length - 1; while (lo < hi) { const m = (lo + hi) >> 1; if (ADDR_CUM[m] < r) lo = m + 1; else hi = m; } return ADDRS[lo]; }
 // Куда чаще ездят: вес категории места
 const TRIP_WEIGHT = { airport: 5, station: 5, bus_station: 4, mall: 6, hospital: 3, university: 3, culture: 2, museum: 1.5, stadium: 2, sport: 1.5, park: 1.5,
   hotel: 2, food: 2, cafe: 1.5, shop: 1.5, school: 0.8, bank: 0.5, pharmacy: 0.5, fuel: 0.2 };
@@ -211,11 +249,16 @@ function pickWeightedPlace() { const r = Math.random() * TRIP_CUM[TRIP_CUM.lengt
 function randSpot(cx, cy, dmin, dmax, placeShare) {
   for (let t = 0; t < 300; t++) {
     const place = Math.random() < placeShare && TRIP_PLACES.length ? pickWeightedPlace() : null;
-    const pt = place ? [place.x, place.y] : HOMES.length ? HOMES[Math.floor(Math.random() * HOMES.length)] : N[Math.floor(Math.random() * N.length)];
+    const ad = !place && ADDRS.length ? pickWeightedAddr() : null;
+    const pt = place ? [place.x, place.y] : ad ? ad : HOMES.length ? HOMES[Math.floor(Math.random() * HOMES.length)] : N[Math.floor(Math.random() * N.length)];
     const d = Math.hypot(pt[0] - cx, pt[1] - cy);
-    if (d >= dmin && d <= dmax) return { node: nodeNear(pt[0], pt[1]), place: place ? { n: place.n, k: place.k } : null };
+    if (d >= dmin && d <= dmax) {
+      const node = nodeNear(pt[0], pt[1]);
+      return { node, place: place ? { n: place.n, k: place.k } : null, addr: ad ? addrText(ad) : addrNear(pt[0], pt[1]) || addrOf(node) };
+    }
   }
-  return { node: nodeNear(cx + (Math.random() - 0.5) * dmax, cy + (Math.random() - 0.5) * dmax), place: null };   // не нашли - любая улица рядом
+  const node = nodeNear(cx + (Math.random() - 0.5) * dmax, cy + (Math.random() - 0.5) * dmax);
+  return { node, place: null, addr: addrNear(N[node][0], N[node][1]) || addrOf(node) };   // не нашли - любая улица рядом
 }
 // Ближайшее подходящее место для заезда по просьбе пассажира
 const STOP_KIND = { "аптека": ["pharmacy"], "банкомат": ["bank"], "магазин": ["shop"], "цветочный магазин": ["shop", "mall"], "пункт выдачи": ["shop", "mall"] };
@@ -232,13 +275,17 @@ function stopSpot(label) {
 function nearest(x, y) { let b = 0, bd = 1e18; for (let i = 0; i < N.length; i++) { const d = (N[i][0] - x) ** 2 + (N[i][1] - y) ** 2; if (d < bd) { bd = d; b = i; } } return b; }
 // Адрес: настоящее название улицы, номер дома придуман (но у одной точки он всегда один и тот же)
 function addrOf(n) { return (nameOf[n] >= 0 ? D.names[nameOf[n]] : "Проезд") + ", " + ((n * 37) % 120 + 1); }
-function destLabel(o) { return o.place ? o.place.n : addrOf(o.to); }
+function destLabel(o) { return o.place ? o.place.n : o.toAddr || addrOf(o.to); }
 
 // ====== Состояние игры ======
 let state = "idle", online = false, money = 0, ridesDone = 0, ratingSum = 25, ratingCount = 5;
 const affection = {}, storyStep = {}, met = {}, seen = {};
 let goalReached = false, endingShown = false, orders = [], nextOrderId = 1, previewId = null, current = null;
 let lastRide = null, spawnTimer = 1.5, boardTimer = 0, dialogue = null, stopT = 0, stopDur = 0, legScale = TIME_SCALE;
+let boardT = 0;   // сколько ждём клиента на месте подачи
+const PICK_FREE = 6;   // бесплатное ожидание клиента на подаче (секунды игры), дальше WAIT_RATE ₽ в секунду
+const liveFare = () => current.price + (current.waitFee || 0) + (current.extraFare || 0) +   // текущая стоимость с ожиданием и заездами
+  (state === "stopped" ? Math.max(0, Math.floor(stopT - FREE_WAIT)) * WAIT_RATE : state === "boarding" ? Math.max(0, Math.floor(boardT - PICK_FREE)) * WAIT_RATE : 0);
 let clock = 0, day = 1, shiftMoney = 0, shiftRides = 0, shiftOver = false, ff = 1, lastClk = "";   // clock - игровое время смены (секунды)
 const floaters = [];
 const xs = D.places.map(p => p.x).sort((a, b) => a - b), ys = D.places.map(p => p.y).sort((a, b) => a - b);
@@ -267,12 +314,12 @@ function createOrder() {
   const rating = STORY_RATING[p.name] || rollRating();
   const A = randSpot(car.x, car.y, PICK_MIN, PICK_MAX, 0.2);                 // забирают чаще из дома, иногда из ТЦ, вокзала, кафе
   const B = randSpot(N[A.node][0], N[A.node][1], TRIP_MIN, TRIP_MAX, A.place ? 0.25 : 0.45);   // везут чаще в место, но и домой тоже
-  const from = A.node, to = B.node, place = B.place, fromPlace = A.place;
+  const from = A.node, to = B.node, place = B.place, fromPlace = A.place, fromAddr = A.addr, toAddr = B.addr;
   if (to === from) return;
   const trip = findPath(from, to), pick = findPath(carNode, from);
   if (!trip || !pick) return;
   const st = sumPath(trip), sp = sumPath(pick);
-  orders.push({ id: nextOrderId++, passenger: p, name: p.name, fromPlace, rating: rating.toFixed(2), cash: Math.random() < 0.45, runner: false, late: rating > 4.85 || Math.random() >= LATE_SHARE ? 0 : 3 + Math.random() * (LATE_MAX - 3), from, to, place,
+  orders.push({ id: nextOrderId++, passenger: p, name: p.name, fromPlace, fromAddr, toAddr, rating: rating.toFixed(2), cash: Math.random() < 0.45, runner: false, late: rating > 4.85 || Math.random() >= LATE_SHARE ? 0 : 3 + Math.random() * (LATE_MAX - 3), from, to, place,
     tripKm: st.km, pickupKm: sp.km, pickupMin: Math.max(1, Math.round(sp.sec / 60)),
     price: Math.round((BASE_FARE + st.km * PER_KM) / 10) * 10, tip: 0, mood: 0, ttl: ORDER_TTL });
   const o = orders[orders.length - 1]; o.runner = o.cash && Math.random() < runnerChance(rating);   // не заплатить может только тот, кто платит наличными
@@ -327,7 +374,7 @@ function chooseAnswer(i) {
   renderPanel();
 }
 function arrive() {
-  if (state === "toPickup") { state = "boarding"; boardTimer = 1.2 + current.late; renderPanel(); }
+  if (state === "toPickup") { state = "boarding"; boardTimer = 1.2 + current.late; boardT = 0; renderPanel(); }
   else if (state === "toStop") { state = "stopped"; stopT = 0; stopDur = 14 + Math.random() * 16; renderPanel(); }
   else if (state === "toDropoff") {
     if (current.runner && !current.arrived) {   // пассажир, который не платит: сцена в конце поездки
@@ -342,14 +389,15 @@ function startDetour(label) {   // пассажир попросил заеха�
   if (!there || !back) return renderPanel();   // не нашли, куда заехать: едем дальше
   const extra = Math.max(0, sumPath(there).km + sumPath(back).km - remainingLen() / 1000);   // крюк оплачивается по километражу
   current.extraFare = (current.extraFare || 0) + Math.round(extra * PER_KM / 10) * 10;
-  current.stopNode = sn; current.stopLabel = spot ? spot.n : typeof label === "string" ? label : "остановка"; startLeg(sn, "toStop");
+  current.stopAddr = spot ? addrNear(spot.x, spot.y) : addrNear(N[sn][0], N[sn][1]); current.stopNode = sn; current.stopLabel = spot ? spot.n : typeof label === "string" ? label : "остановка"; startLeg(sn, "toStop");
 }
 function remainingLen() {
   let r = route.length ? Math.hypot(N[route[0].n][0] - car.x, N[route[0].n][1] - car.y) : 0;
   for (let i = 1; i < route.length; i++) r += route[i].len; return r;
 }
-function endRide(reason) {   // высадка посреди пути: оплата только за проеханное расстояние
+function endRide(reason) {   // высадка посреди пути: по карте спишется за проеханное расстояние, наличными пассажир не заплатит
   current.partial = current.rideLen ? Math.min(1, Math.max(0, 1 - remainingLen() / current.rideLen)) : 0;
+  if (current.cash) current.payMult = 0;
   route = []; car.x = N[carNode][0]; car.y = N[carNode][1]; finishRide(reason);
 }
 function kickOut() {
@@ -358,13 +406,16 @@ function kickOut() {
 }
 function finishRide(reason) {
   const c = current, mult = c.payMult === undefined ? 1 : c.payMult, part = c.partial === undefined ? 1 : c.partial;
-  const fare = Math.round((c.price * part + (c.waitFee || 0) + (c.extraFare || 0)) * mult / 10) * 10, tip = mult > 0 ? c.tip : 0;
+  const fare = Math.round((c.price * part + (c.waitFee || 0) + (c.extraFare || 0)) * mult / 10) * 10;
+  // Чаевые оставляют редко, примерно в каждой десятой поездке; довольные пассажиры чуть чаще
+  const tipChance = clamp(0.04 + 0.04 * Math.max(0, c.mood) + (c.tip > 0 ? 0.03 : 0), 0.02, 0.3);
+  const tip = mult > 0 && c.partial === undefined && Math.random() < tipChance ? (c.tip > 0 ? c.tip : 30 + 10 * Math.floor(Math.random() * 8)) : 0;
   const stars = c.stars !== undefined ? c.stars : Math.max(1, 5 + Math.min(0, c.mood));
   if (stars > 0) { ratingSum += stars; ratingCount++; }
   money += fare + tip; ridesDone++; shiftMoney += fare + tip; shiftRides++;
   if (fare > 0) floaters.push({ text: "+" + fare + " ₽", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -20 });
   if (tip > 0) floaters.push({ text: "+" + tip + " ₽ чаевые", x: car.x, y: car.y, age: 0, color: "#b8860b", dy: 6 });
-  lastRide = { name: c.name, cash: c.cash, price: fare, tip, stars, mood: c.mood, note: reason || (mult === 0 ? "Пассажир не заплатил" : ""), wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
+  lastRide = { name: c.name, cash: c.cash, price: fare, tip, stars, mood: c.mood, note: reason ? reason + (mult === 0 ? ", оплаты нет" : c.partial !== undefined ? ", оплата за проеханное" : "") : mult === 0 ? "Пассажир не заплатил" : "", wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
   let goalNow = false; if (!goalReached && money >= GOAL) { goalReached = true; goalNow = true; }
   current = null; dialogue = null; state = "idle"; route = []; spawnTimer = 2; updateTop(); saveGame(); renderPanel();
   if (goalNow) showEnding();
@@ -402,6 +453,8 @@ endCard.addEventListener("click", e => {
   if (b.dataset.end === "continue") { endingEl.hidden = true; endingShown = false; updateTop(); } else if (b.dataset.end === "restart") resetGame();
   else if (b.dataset.end === "newshift") { clock = 0; day++; shiftOver = false; shiftMoney = 0; shiftRides = 0; endingShown = false; endingEl.hidden = true; saveGame(); updateTop(); renderPanel(); }
 });
+statusPill.addEventListener("click", () => { updateTop(); updateStatus(); menuEl.hidden = false; });
+menuEl.addEventListener("click", e => { if (e.target.closest("[data-close]")) menuEl.hidden = true; });
 resetBtn.addEventListener("click", () => { if (confirm("Точно сбросить весь прогресс? Это нельзя отменить.")) resetGame(); });
 
 // ====== Обновление игры (каждый кадр) ======
@@ -424,8 +477,12 @@ function update(dt) {
     if (changed) renderPanel();
     for (const o of orders) { const bar = $("bar-" + o.id); if (bar) bar.style.width = (o.ttl / ORDER_TTL * 100) + "%"; }
   } else if (state === "boarding") {
-    boardTimer -= dt; clock += dt * TIME_SCALE;
+    boardTimer -= dt; boardT += dt; clock += dt * TIME_SCALE;
+    const bf = Math.max(0, Math.floor(boardT - PICK_FREE)) * WAIT_RATE, rp = $("rprice"), bw = $("bwait");
+    if (rp) rp.textContent = liveFare() + " ₽";
+    if (bw) bw.textContent = boardT < PICK_FREE ? "Бесплатное ожидание: ещё " + Math.ceil(PICK_FREE - boardT) + " с" : "Платное ожидание: +" + bf + " ₽";
     if (boardTimer <= 0) {
+      current.waitFee = (current.waitFee || 0) + bf;   // платное ожидание на подаче идёт в стоимость поездки
       startLeg(current.to, "toDropoff"); current.rideLen = remainingLen();
       const r = +current.rating, g = route.reduce((a, s) => a + s.t, 0) / legScale;   // длительность поездки в секундах игры
       const n = r > 4.85 ? 1 : Math.max(2, Math.min(4, Math.round(g / 14)));         // спокойные молчат, остальные говорят минимум дважды
@@ -434,6 +491,7 @@ function update(dt) {
   } else if (state === "stopped") {   // остановка по просьбе пассажира
     stopT += dt; clock += dt * TIME_SCALE;
     const fee = Math.max(0, Math.floor(stopT - FREE_WAIT)) * WAIT_RATE, w = $("wait");
+    const rp = $("rprice"); if (rp) rp.textContent = liveFare() + " ₽";
     if (w) w.textContent = stopT < FREE_WAIT ? "Бесплатное ожидание: ещё " + Math.ceil(FREE_WAIT - stopT) + " с" : "Платное ожидание: +" + fee + " ₽";
     if (stopT >= stopDur) { current.waitFee = (current.waitFee || 0) + fee; startLeg(current.to, "toDropoff"); current.rideLen = remainingLen(); }
   } else {
@@ -524,22 +582,23 @@ $("recenter").addEventListener("click", () => { freeCam = false; $("recenter").h
 
 // ====== Верхние плашки, кнопка, панель ======
 function updateTop() {
-  moneyEl.textContent = money.toLocaleString("ru-RU") + " ₽"; ridesEl.textContent = "поездок " + ridesDone; ratingEl.textContent = "★ " + getRating().toFixed(2);
+  moneyEl.textContent = money.toLocaleString("ru-RU") + " ₽"; ridesEl.textContent = ridesDone; ratingEl.textContent = "★ " + getRating().toFixed(2);
   goalFill.style.width = Math.min(100, money / GOAL * 100) + "%";
-  goalText.textContent = goalReached ? "цель достигнута ✓" : "цель " + GOAL.toLocaleString("ru-RU") + " ₽";
+  goalText.textContent = goalReached ? "достигнута" : GOAL.toLocaleString("ru-RU") + " ₽";
+  $("mmoney").textContent = moneyEl.textContent; $("mshift").textContent = shiftMoney.toLocaleString("ru-RU") + " ₽";
 }
 function updateStatus() {
   const idle = state === "idle", cls = !idle ? "ride" : online ? "on" : "off";
-  statusPill.className = "pill status " + cls; statusText.textContent = !idle ? "В заказе" : online ? "На линии" : "Не на линии";
+  statusPill.className = "pill status " + cls; $("mstatus").className = "mstatus status " + cls; statusText.textContent = !idle ? "В заказе" : online ? "На линии" : "Не на линии";
   $("ff").hidden = !(state === "toPickup" || state === "toDropoff" || state === "toStop"); $("ff").textContent = "⏩ ×" + ff;
-  shiftBtn.style.display = idle ? "block" : "none"; footEl.style.display = idle && !online ? "block" : "none"; shiftBtn.className = online ? "on" : "off";
-  shiftBtn.innerHTML = online ? "На линии<small>нажмите, чтобы закончить смену</small>" : "Катать<small>нажмите, чтобы выйти на линию</small>";
+  shiftBtn.className = online ? "on" : "off"; shiftBtn.disabled = !idle;   // во время заказа с линии не уйти
+  shiftBtn.textContent = !idle ? "Идёт заказ" : online ? "Уйти с линии" : "Выйти на линию";
 }
 $("ff").addEventListener("click", () => { ff = ff === 1 ? 2 : ff === 2 ? 4 : 1; updateStatus(); });
 shiftBtn.addEventListener("click", () => {
   if (state !== "idle") return;
   online = !online; if (online) spawnTimer = 1.5; else { orders = []; previewId = null; }
-  renderPanel();
+  menuEl.hidden = true; renderPanel();
 });
 const starsStr = n => "★".repeat(n) + "☆".repeat(5 - n);
 function resultHtml() {
@@ -551,26 +610,26 @@ function resultHtml() {
     (r.wait > 0 ? '<div class="rline">Заезд и ожидание: +' + r.wait + " ₽</div>" : "") + (r.price > 0 ? '<div class="rline">Оплата: ' + (r.cash ? "наличными" : "картой") + "</div>" : "") + (r.blocked ? '<div class="rline bad">😠 Этот пассажир больше не будет с вами ездить</div>' : "") + "</div>";
 }
 function orderCardHtml(o) {
-  return '<div class="ocard' + (o.id === previewId ? " sel" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate">★ ' + o.rating + '</span><span class="ohint">цена и оплата - при посадке</span></div><div class="addr"><i class="dotA"></i><div><b>' + addrOf(o.from) + "</b><small>" + (o.fromPlace ? o.fromPlace.n + " · " : "") + "до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
+  return '<div class="ocard' + (o.id === previewId ? " sel" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate">★ ' + o.rating + '</span></div><div class="addr"><i class="dotA"></i><div><b>' + (o.fromAddr || addrOf(o.from)) + "</b><small>" + (o.fromPlace ? o.fromPlace.n + " · " : "") + "до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
     ' мин</small></div></div><div class="ohide">Куда ехать, станет известно после посадки</div><div class="obar"><div class="obarfill" id="bar-' + o.id +
     '"></div></div><div class="obtns"><button class="skip" data-act="decline" data-id="' + o.id + '">Пропустить</button><button class="take" data-act="accept" data-id="' + o.id + '">Принять</button></div></div>';
 }
 function ridePanelHtml() {
-  const A = '<div class="addr"><i class="dotA"></i><div><b>' + addrOf(current.from) + "</b><small>" + (current.fromPlace ? current.fromPlace.n + " · " : "") + "Клиент ждёт здесь</small></div></div>";
-  const B = '<div class="addr"><i class="dotB"></i><div><b>' + addrOf(current.to) + "</b><small>" + (current.place ? current.place.n + " · " : "") + current.tripKm.toFixed(1) + " км</small></div></div>";
-  const S = current.stopNode === undefined ? "" : '<div class="addr"><i class="dotS"></i><div><b>' + addrOf(current.stopNode) + "</b><small>" + current.stopLabel + "</small></div></div>";
+  const A = '<div class="addr"><i class="dotA"></i><div><b>' + (current.fromAddr || addrOf(current.from)) + "</b><small>" + (current.fromPlace ? current.fromPlace.n + " · " : "") + "Клиент ждёт здесь</small></div></div>";
+  const B = '<div class="addr"><i class="dotB"></i><div><b>' + (current.toAddr || addrOf(current.to)) + "</b><small>" + (current.place ? current.place.n + " · " : "") + current.tripKm.toFixed(1) + " км</small></div></div>";
+  const S = current.stopNode === undefined ? "" : '<div class="addr"><i class="dotS"></i><div><b>' + (current.stopAddr || addrOf(current.stopNode)) + "</b><small>" + current.stopLabel + "</small></div></div>";
   const chip = state === "toPickup" ? '<span class="chip">Едем к клиенту</span>' : state === "boarding" ? '<span class="chip green">' + (current.late > 0 ? "Пассажир опаздывает…" : "Пассажир садится…") + "</span>" : state === "toStop" ? '<span class="chip">Заезд: ' + current.stopLabel + "</span>" : state === "stopped" ? '<span class="chip">Ждём: ' + current.stopLabel + "</span>" : '<span class="chip green">В пути</span>';
   const known = state !== "toPickup";   // цену и способ оплаты узнаём, только когда приехали к клиенту
   const pay = known ? '<span class="paychip">' + (current.cash ? "Наличные" : "Карта") + "</span>" : "";
-  return '<div class="ridehead">' + chip + '<span class="rprice">' + (known ? current.price + " ₽" : "") + '</span></div><div class="rname">Пассажир<span>★ ' + current.rating + "</span></div>" + pay + (state === "toDropoff" ? B + '<button class="kick" data-act="kick">Высадить пассажира</button>' : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : A);
+  return '<div class="ridehead">' + chip + '<span class="rprice" id="rprice">' + (known ? liveFare() + " ₽" : "") + '</span></div><div class="rname">Пассажир<span>★ ' + current.rating + "</span></div>" + pay + (state === "toDropoff" ? B + '<button class="kick" data-act="kick">Высадить пассажира</button>' : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : state === "boarding" ? A + '<div class="stopinfo" id="bwait">Бесплатное ожидание: ещё ' + PICK_FREE + " с</div>" : A);
 }
 function renderPanel() {
   let html = "";
   if (state === "idle") {
     html = resultHtml();
-    if (!online) html += '<div class="offmsg"><b>Вы не на линии</b><small>Нажмите «Катать», чтобы получать заказы</small></div>';
+    if (!online) html += '<div class="offmsg"><b>Вы не на линии</b><small>Откройте меню и нажмите «Выйти на линию»</small></div>';
     else if (!orders.length) html += '<div class="search"><span class="pulse"></span><div><b>Ищем заказы рядом</b><small>Чем выше рейтинг, тем чаще заказы</small></div></div>';
-    else { html += '<div class="listhead">Заказы рядом: ' + orders.length + "</div>"; for (const o of orders) html += orderCardHtml(o); }
+    else { html += '<div class="listhead">Новый заказ</div>'; for (const o of orders) html += orderCardHtml(o); }
   } else if (dialogue) {
     const node = dialogue.scene.nodes[dialogue.nodeId];
     html = '<div class="dialog"><div class="who">Пассажир · ' + (current.cash ? "наличные" : "карта") + " · едем: " + destLabel(current) + '</div><div class="said">' + node.text + "</div>";
