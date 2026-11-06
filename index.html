@@ -16,7 +16,7 @@ button{font-family:inherit}
 .burger{display:flex;flex-direction:column;gap:4px}.burger i{display:block;width:18px;height:2px;border-radius:1px;background:#2b313b}
 #menubtn .dot{position:absolute;top:7px;right:7px;width:10px;height:10px;border:2px solid #fff;box-sizing:content-box}
 #earn{min-width:96px;padding:7px 12px}
-.money{font-size:17px;font-weight:700;color:#16883f;line-height:1.15}
+.money{font-size:17px;font-weight:700;color:#16883f;line-height:1.15;white-space:nowrap}
 #ratingpill{margin-left:auto}
 #earn{pointer-events:auto;cursor:pointer}
 #fuelpill{pointer-events:auto;border:none;display:flex;align-items:center;gap:6px;padding:7px 10px;color:#4b5563;cursor:pointer;font-family:inherit}
@@ -36,7 +36,7 @@ button{font-family:inherit}
 #ledger{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#ledger[hidden]{display:none}
 .lrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eceef1;font-size:15px}.lrow span{color:var(--m)}
 .lrow.minus b{color:#c9363b}.lrow.total{border-bottom:none;font-size:17px;padding-top:12px}.lrow.total span{color:var(--ink);font-weight:600}.lsub{font-size:13px;color:var(--m);margin-top:6px}
-#modes{position:fixed;inset:0;z-index:19;display:flex;align-items:flex-end;justify-content:center;padding:16px}#modes[hidden]{display:none}
+#modes{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#modes[hidden]{display:none}
 .mode{display:block;width:100%;text-align:left;margin-top:10px;padding:12px 14px;border:2px solid #eceef1;border-radius:14px;background:#fff;font-family:inherit;cursor:pointer}
 .mode b{display:flex;justify-content:space-between;font-size:16px;color:var(--ink)}.mode b i{font-style:normal;font-weight:600;font-size:13px;color:var(--m)}
 .mode small{display:block;margin-top:4px;color:var(--m);font-size:13px;line-height:1.35}
@@ -51,8 +51,9 @@ button{font-family:inherit}
 #pickbar button{border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer}
 .msect{display:flex;flex-direction:column;gap:6px}.msect b{font-size:16px}.msect small{color:var(--m);font-size:14px;line-height:1.3}
 .mbtn{padding:11px;border:none;border-radius:12px;background:#ece8fb;color:#4a32b8;font-size:15px;font-weight:600;cursor:pointer}.mbtn:disabled{opacity:.5;cursor:default}
-.bizchip{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding:9px 12px;border-radius:12px;background:#ece8fb;color:#4a32b8;font-size:14px;font-weight:600}
-.bizchip button{border:none;background:#fff;color:#4a32b8;border-radius:10px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer;margin-left:4px}
+.bizchip{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;padding:10px 12px;border-radius:14px;background:#ece8fb;color:#4a32b8;font-size:14px;font-weight:600;line-height:1.35}
+.bizbtns{display:flex;flex-direction:column;gap:6px;flex:none;width:138px}
+.bizchip button{width:100%;border:none;background:#fff;color:#4a32b8;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:600;cursor:pointer}
 #menu{position:absolute;inset:0;z-index:5}#menu[hidden]{display:none}
 .mback{position:absolute;inset:0;background:rgba(15,18,24,.35)}
 .mpanel{position:absolute;top:0;left:0;bottom:0;width:min(300px,82%);background:#fff;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 16px;display:flex;flex-direction:column;gap:14px;box-shadow:4px 0 24px rgba(0,0,0,.2)}
@@ -96,7 +97,7 @@ button{font-family:inherit}
 .dotA{background:var(--g)}.dotB{background:var(--r)}
 .ridehead{display:flex;justify-content:space-between;align-items:center}
 .chip{font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;background:#e6efff;color:var(--b)}
-.chip.green{background:#e3f6ea;color:#16883f}
+.chip.green{background:#e3f6ea;color:#16883f}.chip.red{background:#fde8e8;color:#b3261e}
 .rprice{font-size:22px;font-weight:700;color:#16883f}
 .rname{margin-top:10px;font-size:18px;font-weight:600}.rname span{font-size:14px;font-weight:400;color:var(--m);margin-left:6px}
 .dialog{background:var(--c);border-radius:14px;padding:14px}
@@ -136,9 +137,9 @@ button{font-family:inherit}
   <canvas id="map"></canvas>
   <div id="topbar">
     <button class="pill status off" id="menubtn" aria-label="Меню"><span class="burger"><i></i><i></i><i></i></span><span class="dot"></span></button>
-    <div class="pill" id="earn"><div class="money" id="money">0 ₽</div><div class="gbar"><i id="goalfill"></i></div></div>
+    <div class="pill" id="earn"><div class="money" id="money">0 ₽</div><div class="sub" id="clock"></div><i id="goalfill" hidden></i></div>
     <button class="pill" id="fuelpill" aria-label="Топливо"><svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="1" y="1.5" width="7.5" height="13" rx="1.2"/><path d="M2.8 5h4M8.5 6.5l2.6 1.6v5a1.2 1.2 0 0 0 2.4 0V5.5L11 3"/></svg><span><b id="fuelL">50 л</b><span class="fbar"><i id="fuelfill"></i></span></span></button>
-    <button class="pill" id="ratingpill" aria-label="Режим работы"><div id="rating">★ 5.00</div><div class="sub" id="clock"></div></button>
+    <button class="pill" id="ratingpill" aria-label="Режим работы"><div id="rating">★ 5.00</div><div class="sub" id="modename"></div></button>
   </div>
   <div id="pickbar" hidden><span>Нажмите на карте, куда вам нужно</span><button id="pickcancel">Отмена</button></div>
   <div id="osm">© участники OpenStreetMap</div>
@@ -601,7 +602,8 @@ function chooseAnswer(i) {
   if (ch.stop) current.stopNow = ch.stop;                     // stop: после разговора машина остановится
   if (ch.gift) current.gift = (current.gift || 0) + ch.gift;   // gift: точная доплата или благодарность сверх цены
   if (ch.fine) { spend("fines", ch.fine, "штраф"); (current.fineList = current.fineList || []).push((ch.why || "штраф") + ": −" + ch.fine + " ₽"); }
-  if (ch.fast && state === "toDropoff") { legScale *= ch.fast; current.fast = true; }   // fast: едем быстрее
+  if (ch.fast && state === "toDropoff") { legScale *= ch.fast; current.fast = true; current.jam = false; }   // fast: едем быстрее
+  if (ch.slow && state === "toDropoff") { legScale /= ch.slow; current.jam = true; }                         // slow: пробка, едем медленнее
   if (ch.offApp) { current.offApp = current.noFee = current.cash = true; current.stars = 0; }   // мимо приложения: без комиссии и без оценки
   if (ch.fuel) { fuel = Math.min(TANK, fuel + ch.fuel); updateFuel(); }
   let next = ch.next;
@@ -684,8 +686,8 @@ function endShift() {
   endingEl.hidden = false; saveGame(); renderPanel();
 }
 function tickClock() {
-  const m = Math.floor(clock / 60) + DAY_START, txt = String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0") + " · " + MODE_NAME[modeNow()];
-  if (txt !== lastClk) { lastClk = txt; $("clock").textContent = txt; }
+  const m = Math.floor(clock / 60) + DAY_START, txt = String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0") + " · смена " + day, mode = MODE_NAME[modeNow()];
+  if (txt + mode !== lastClk) { lastClk = txt + mode; $("clock").textContent = txt; $("modename").textContent = mode; }
 }
 function showEnding() {
   endingShown = true;
@@ -975,7 +977,7 @@ function ridePanelHtml() {
   const A = '<div class="addr"><i class="dotA"></i><div><b>' + (current.fromAddr || addrOf(current.from)) + "</b><small>" + (current.fromPlace ? current.fromPlace.n + " · " : "") + "Клиент ждёт здесь</small></div></div>";
   const B = '<div class="addr"><i class="dotB"></i><div><b>' + (current.toAddr || addrOf(current.to)) + "</b><small>" + (current.place ? current.place.n + " · " : "") + current.tripKm.toFixed(1) + " км</small></div></div>";
   const S = current.stopNode === undefined ? "" : '<div class="addr"><i class="dotS"></i><div><b>' + (current.stopAddr || addrOf(current.stopNode)) + "</b><small>" + current.stopLabel + "</small></div></div>";
-  const chip = state === "toPickup" ? '<span class="chip">Едем к клиенту</span>' : state === "boarding" ? '<span class="chip green">' + (current.late > 0 ? "Пассажир опаздывает…" : "Пассажир садится…") + "</span>" : state === "toStop" ? '<span class="chip">Заезд: ' + current.stopLabel + "</span>" : state === "stopped" ? '<span class="chip">Ждём: ' + current.stopLabel + "</span>" : '<span class="chip green">В пути</span>';
+  const chip = state === "toPickup" ? '<span class="chip">Едем к клиенту</span>' : state === "boarding" ? '<span class="chip green">' + (current.late > 0 ? "Пассажир опаздывает…" : "Пассажир садится…") + "</span>" : state === "toStop" ? '<span class="chip">Заезд: ' + current.stopLabel + "</span>" : state === "stopped" ? '<span class="chip">Ждём: ' + current.stopLabel + "</span>" : current.jam ? '<span class="chip red">Пробка</span>' : current.fast ? '<span class="chip green">Объезд</span>' : '<span class="chip green">В пути</span>';
   const known = state !== "toPickup";   // цену и способ оплаты узнаём, только когда приехали к клиенту
   const pay = (known ? '<span class="paychip">' + (current.cash ? "Наличные" : "Карта") + "</span>" : "") + (current.surgeAdd > 0 ? '<span class="paychip blue">Повышенный спрос +' + current.surgeAdd + " ₽</span>" : "");
   return '<div class="ridehead">' + chip + '<span class="rprice" id="rprice">' + (known ? liveFare() + " ₽" : "") + '</span></div><div class="rname">Пассажир<span>★ ' + current.rating + "</span></div>" + pay + (state === "toDropoff" ? B + '<button class="kick" data-act="kick">Высадить пассажира</button>' : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : state === "boarding" ? A + '<div class="stopinfo" id="bwait">Бесплатное ожидание: ещё ' + PICK_FREE + " с</div>" : A);
@@ -991,7 +993,7 @@ function chainHtml() {
 }
 function renderPanel() {
   let html = "";
-  const biz = business ? '<div class="bizchip"><span>По делам: ' + business.addr + " · " + (distTo(car.x, car.y, business) / 1000).toFixed(1) + " км</span><span>" +
+  const biz = business ? '<div class="bizchip"><span>По делам: ' + business.addr + " · " + (distTo(car.x, car.y, business) / 1000).toFixed(1) + " км</span><span class='bizbtns'>" +
     (state === "idle" ? '<button data-act="selfdrive">Поехать самому</button>' : "") + '<button data-act="bizoff">Выключить</button></span></div>' : "";
   if (state === "selfDrive") {
     html = biz + (orders.length ? '<div class="listhead">Заказ по пути</div>' + orders.map(orderCardHtml).join("") : '<div class="search"><span class="pulse"></span><div><b>' + (business ? "Едем по делам" : "Едем: " + (selfTarget ? selfTarget.addr : "")) + "</b><small>" + (online ? "Если появится заказ - предложим" : "Вы не на линии") + '</small></div></div><button class="fuelgo" data-act="stopself">Остановиться</button>');
@@ -1253,7 +1255,7 @@ function draw() {
   }
   if (route.length && (state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel" || state === "selfDrive")) {
     ctx.beginPath(); ctx.moveTo(car.x, car.y); for (const s of route) ctx.lineTo(N[s.n][0], N[s.n][1]);
-    ctx.strokeStyle = "rgba(47,111,237,.85)"; ctx.lineWidth = 6 / scale; ctx.stroke();
+    ctx.strokeStyle = current && current.jam && state === "toDropoff" ? "rgba(214,60,60,.85)" : "rgba(47,111,237,.85)"; ctx.lineWidth = 6 / scale; ctx.stroke();
   }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);   // дальше рисуем в пикселях экрана: подписи, метки, машина
   ctx.font = "11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
