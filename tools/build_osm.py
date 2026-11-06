@@ -1,5 +1,8 @@
 # Конвертер выгрузок OpenStreetMap (overpass-turbo) в компактный файл для игры.
 # Запуск:  python3 tools/build_osm.py      (нужны пакеты shapely и numpy)
+# Сырые выгрузки лежат не в main, а в отдельной ветке osm-data (чтобы сайт на GitHub Pages был лёгким).
+# Достать их в папку osm/:  git fetch origin osm-data && git checkout origin/osm-data -- osm
+# После сборки папку osm/ в main не коммитить.
 # Читает:  osm/nature.json, osm/places.json, osm/buildings_*.json
 # Пишет:   osmmap.js
 #
