@@ -1094,7 +1094,6 @@ function updateStatus() {
 $("ff").addEventListener("click", () => { ff = ff === 1 ? 2 : ff === 2 ? 4 : 1; updateStatus(); });
 shiftBtn.addEventListener("click", () => {
   if (state !== "idle") return;
-  if (!online && !carChosen) { showGarage(); return; }   // первый выход на линию - сначала выбрать машину
   online = !online; if (online) spawnTimer = 1.5; else { orders = []; previewId = null; }
   if (online && !ledger.rent) spend("rent", myCar().rent, "аренда");   // аренда машины - один раз за смену
   menuEl.hidden = true; renderPanel();
