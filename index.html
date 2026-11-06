@@ -42,6 +42,12 @@ button{font-family:inherit}
 .askcard b{font-size:18px}.askcard p{margin:8px 0 16px;color:var(--m);font-size:15px;line-height:1.35}
 .askbtns{display:flex;gap:8px}.askbtns button{flex:1;padding:12px;border:none;border-radius:12px;font-size:16px;cursor:pointer}
 #askno{background:#eceef1;color:var(--ink)}#askok{background:var(--r);color:#fff;font-weight:700}
+#pickbar{position:absolute;z-index:4;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 66px);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#5b3fd0;color:#fff;border-radius:14px;padding:10px 12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.25)}#pickbar[hidden]{display:none}
+#pickbar button{border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer}
+.msect{display:flex;flex-direction:column;gap:6px}.msect b{font-size:16px}.msect small{color:var(--m);font-size:14px;line-height:1.3}
+.mbtn{padding:11px;border:none;border-radius:12px;background:#ece8fb;color:#4a32b8;font-size:15px;font-weight:600;cursor:pointer}.mbtn:disabled{opacity:.5;cursor:default}
+.bizchip{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding:9px 12px;border-radius:12px;background:#ece8fb;color:#4a32b8;font-size:14px;font-weight:600}
+.bizchip button{border:none;background:#fff;color:#4a32b8;border-radius:10px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer;margin-left:4px}
 #menu{position:absolute;inset:0;z-index:5}#menu[hidden]{display:none}
 .mback{position:absolute;inset:0;background:rgba(15,18,24,.35)}
 .mpanel{position:absolute;top:0;left:0;bottom:0;width:min(300px,82%);background:#fff;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 16px;display:flex;flex-direction:column;gap:14px;box-shadow:4px 0 24px rgba(0,0,0,.2)}
@@ -69,7 +75,7 @@ button{font-family:inherit}
 .sbadge{font-size:13px;font-weight:700;color:#2456c9;background:#dfe8ff;padding:4px 9px;border-radius:999px}
 .paychip.blue{background:#dfe8ff;color:#2456c9;margin-left:6px}
 .otop{display:flex;justify-content:space-between;align-items:baseline}
-.orate{font-size:14px;color:var(--m)}.oprice{font-size:24px;font-weight:700}
+.orate{font-size:14px;color:var(--m)}.orate.low{color:#c9363b;font-weight:700}.oprice{font-size:24px;font-weight:700}
 .ohide{margin-top:8px;font-size:12px;color:var(--m)}
 .obar{height:4px;background:#dfe2e8;border-radius:2px;margin-top:8px;overflow:hidden}
 .obarfill{height:100%;width:100%;background:var(--g)}
@@ -126,6 +132,7 @@ button{font-family:inherit}
     <button class="pill" id="fuelpill" aria-label="Топливо"><svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="1" y="1.5" width="7.5" height="13" rx="1.2"/><path d="M2.8 5h4M8.5 6.5l2.6 1.6v5a1.2 1.2 0 0 0 2.4 0V5.5L11 3"/></svg><span><b id="fuelL">50 л</b><span class="fbar"><i id="fuelfill"></i></span></span></button>
     <div class="pill" id="ratingpill"><div id="rating">★ 5.00</div><div class="sub" id="clock"></div></div>
   </div>
+  <div id="pickbar" hidden><span>Нажмите на карте, куда вам нужно</span><button id="pickcancel">Отмена</button></div>
   <div id="osm">© участники OpenStreetMap</div>
   <button id="ff" hidden>⏩ ×1</button>
   <div id="zoom"><button id="zin" aria-label="Приблизить">+</button><button id="zout" aria-label="Отдалить">&minus;</button></div>
@@ -142,6 +149,7 @@ button{font-family:inherit}
         <div><span>За смену</span><b id="mshift">0 ₽</b></div>
         <div><span>Поездок</span><b id="rides">0</b></div>
       </div>
+      <div class="msect"><b>По делам</b><small id="bizinfo"></small><button id="bizbtn" class="mbtn"></button></div>
       <button id="reset">Сбросить прогресс</button>
     </aside>
   </div>
@@ -300,7 +308,7 @@ const HEX_BASE = new Map();   // постоянная «склонность» �
 const hourNow = () => DAY_START / 60 + clock / 3600;   // игровой час, например 8.5 = 08:30
 function rushFactor(h) {   // сила часа пик: утром около 8:30, вечером около 18:30, днём почти ноль
   const g = (c, w) => Math.exp(-(((h - c) / w) ** 2));
-  return Math.max(g(8.6, 1.1), 0.95 * g(18.4, 1.4), 0.22);   // днём изредка бывает слабый спрос в центре
+  return Math.max(g(8.6, 1.1), 0.95 * g(18.4, 1.4), 0.48 * g(13.5, 2.6), 0.22);   // днём иногда бывает слабый спрос (x1.1-1.2)
 }
 function hexLevel(h) {   // уровень спроса 0..1 сейчас
   const t = clock / 3600;   // игровые часы с начала смены; зоны меняются за 20-40 игровых минут
@@ -379,7 +387,7 @@ function addrOf(n) { return (nameOf[n] >= 0 ? D.names[nameOf[n]] : "Проезд
 function destLabel(o) { return o.place ? o.place.n : o.toAddr || addrOf(o.to); }
 
 // ====== Состояние игры ======
-let state = "idle", online = false, money = 0, ridesDone = 0, ratingSum = 25, ratingCount = 5;
+let state = "idle", online = false, money = 0, ridesDone = 0, rates = Array(150).fill(5);   // рейтинг водителя - среднее последних 150 оценок, как в сервисе
 const affection = {}, storyStep = {}, met = {}, seen = {};
 let goalReached = false, endingShown = false, orders = [], nextOrderId = 1, previewId = null, current = null;
 let lastRide = null, spawnTimer = 1.5, boardTimer = 0, dialogue = null, stopT = 0, stopDur = 0, legScale = TIME_SCALE;
@@ -394,7 +402,7 @@ let carNode = nearest(xs[xs.length >> 1], ys[ys.length >> 1]);
 const car = { x: N[carNode][0], y: N[carNode][1], angle: 0 };
 let route = [];
 
-function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, ratingSum, ratingCount, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger })); } catch (e) {} }
+function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses })); } catch (e) {} }
 // Детализация смены: всё, что пришло и ушло
 const newLedger = () => ({ fares: 0, tips: 0, fee: 0, rent: 0, fuel: 0, fuelL: 0, fines: 0, km: 0 });
 let fuel = TANK, ledger = newLedger();
@@ -406,24 +414,58 @@ function spend(kind, amount, label) {   // расход: аренда, топл�
 function loadGame() {
   try {
     const d = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); if (!d) return;
-    money = d.money || 0; ridesDone = d.ridesDone || 0; ratingSum = d.ratingSum || 25; ratingCount = d.ratingCount || 5;
+    money = d.money || 0; ridesDone = d.ridesDone || 0; if (Array.isArray(d.rates)) rates = d.rates; else if (d.ratingCount) rates = Array(150).fill(Math.min(5, Math.max(4.5, d.ratingSum / d.ratingCount)));   // старое сохранение
     Object.assign(affection, d.affection); Object.assign(storyStep, d.storyStep); Object.assign(met, d.met); Object.assign(seen, d.seen); goalReached = !!d.goalReached;
     clock = d.clock || 0; day = d.day || 1; shiftMoney = d.shiftMoney || 0; shiftRides = d.shiftRides || 0; shiftOver = !!d.shiftOver;
-    fuel = d.fuel === undefined ? TANK : d.fuel; ledger = Object.assign(newLedger(), d.ledger || {});
+    fuel = d.fuel === undefined ? TANK : d.fuel; businessUses = d.businessUses || 0; ledger = Object.assign(newLedger(), d.ledger || {});
   } catch (e) {}
 }
 function resetGame() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); }
-const getRating = () => ratingSum / ratingCount, getAff = n => affection[n] || 0;
+const getRating = () => rates.reduce((a, b) => a + b, 0) / rates.length, getAff = n => affection[n] || 0;
 function changeAff(n, d) { affection[n] = Math.max(AFF_MIN, Math.min(AFF_MAX, getAff(n) + d)); }
 function ratingFactor() { const r = getRating(); return r >= 4.8 ? 0.7 : r < 4.3 ? 1.6 : 1; }
 
 // ====== Заказы ======
+// ====== Режим «По делам» ======
+// Водитель отмечает на карте, куда ему надо. Пока режим включён, приходят только заказы в ту сторону (их меньше обычного).
+// Доехал - режим выключается. Не больше двух раз за смену, как в сервисе.
+const BUSINESS_PER_SHIFT = 2;
+let business = null, businessUses = 0, picking = false;
+const distTo = (x, y, b) => Math.hypot(b.x - x, b.y - y);
+function setBusiness(x, y) {
+  const node = nodeNear(x, y);
+  business = { node, x: N[node][0], y: N[node][1], addr: addrNear(N[node][0], N[node][1]) || addrOf(node) };
+  businessUses++; orders = []; previewId = null; spawnTimer = 2; saveGame(); renderPanel();
+}
+function stopBusiness(msg) {
+  if (state === "selfDrive") { state = "idle"; route = []; }
+  business = null; if (msg) floaters.push({ text: msg, x: car.x, y: car.y, age: 0, color: "#5b3fd0", dy: -20 });
+  renderPanel();
+}
+function checkBusinessDone() { if (business && distTo(car.x, car.y, business) < 1000) stopBusiness("Вы на месте"); }
+function driveSelf() {   // ехать к своей точке самому, без заказа; заказы по пути всё равно приходят
+  if (!business || state !== "idle") return;
+  route = findPath(carNode, business.node) || []; legScale = legSpeed(route, SOFT_TRIP); state = "selfDrive"; freeCam = false; renderPanel();
+}
+function businessFits(A, B) {   // заказ «по пути»: клиент недалеко, а везти ближе к своей точке
+  const dCar = distTo(car.x, car.y, business), dA = distTo(N[A][0], N[A][1], business), dB = distTo(N[B][0], N[B][1], business);
+  return dA < dCar + 800 && dB < dCar * 0.7;
+}
 function createOrder() {
   const story = PASSENGERS.filter(p => p.scenes && getAff(p.name) > REFUSE_AT && !orders.some(o => o.name === p.name));
   const p = story.length && Math.random() < 0.2 ? story[Math.floor(Math.random() * story.length)] : { name: NAMES[Math.floor(Math.random() * NAMES.length)] };
   const rating = STORY_RATING[p.name] || rollRating();
-  const A = randSpot(car.x, car.y, PICK_MIN, PICK_MAX, 0.2);                 // забирают чаще из дома, иногда из ТЦ, вокзала, кафе
-  const B = randSpot(N[A.node][0], N[A.node][1], TRIP_MIN, TRIP_MAX, A.place ? 0.25 : 0.45);   // везут чаще в место, но и домой тоже
+  let A = randSpot(car.x, car.y, PICK_MIN, PICK_MAX, 0.2);                 // забирают чаще из дома, иногда из ТЦ, вокзала, кафе
+  let B = randSpot(N[A.node][0], N[A.node][1], TRIP_MIN, TRIP_MAX, A.place ? 0.25 : 0.45);   // везут чаще в место, но и домой тоже
+  if (business) {   // «по делам»: подбираем заказ в сторону своей точки, а не нашли - заказа пока нет
+    let ok = false;
+    for (let t = 0; t < 14 && !ok; t++) {
+      A = randSpot(car.x, car.y, 300, 3000, 0.2);
+      B = randSpot(business.x, business.y, 0, Math.max(1500, distTo(car.x, car.y, business) * 0.45), 0.3);
+      ok = businessFits(A.node, B.node) && Math.hypot(N[A.node][0] - N[B.node][0], N[A.node][1] - N[B.node][1]) > TRIP_MIN;
+    }
+    if (!ok) return;
+  }
   const from = A.node, to = B.node, place = B.place, fromPlace = A.place, fromAddr = A.addr, toAddr = B.addr;
   if (to === from) return;
   const trip = findPath(from, to), pick = findPath(carNode, from);
@@ -438,8 +480,24 @@ function createOrder() {
   o.runner = o.cash && Math.random() < runnerChance(rating);   // не заплатить может только тот, кто платит наличными
   renderPanel();
 }
+function tickOrders(dt) {   // предложения заказов: появляются, пока водитель свободен или едет по своим делам
+  let changed = false;
+  for (let i = orders.length - 1; i >= 0; i--) {
+    orders[i].ttl -= dt;
+    if (orders[i].ttl <= 0) { if (orders[i].id === previewId) previewId = null; orders.splice(i, 1); changed = true; }
+  }
+  spawnTimer -= dt;
+  if (spawnTimer <= 0) {
+    if (orders.length < MAX_ORDERS && fuel >= LOW_FUEL) createOrder();
+    spawnTimer = (6 + Math.random() * 6) * ratingFactor() / (1 + 1.5 * (surgeAt(car.x, car.y) - 1)) * (business ? 1.6 : 1);   // при спросе чаще, «по делам» - реже
+    const hx = HEX_BASE.get(hexKey(...hexAt(car.x, car.y)));
+    if ((!hx || hx.base < 0.3) && Math.random() < 0.6) spawnTimer += 5 + Math.random() * 5;       // в пригороде и на окраинах заказов меньше
+  }
+  if (changed) renderPanel();
+  for (const o of orders) { const bar = $("bar-" + o.id); if (bar) bar.style.width = (o.ttl / ORDER_TTL * 100) + "%"; }
+}
 function acceptOrder(id) {
-  const o = orders.find(x => x.id === id); if (!o || state !== "idle") return;
+  const o = orders.find(x => x.id === id); if (!o || (state !== "idle" && state !== "selfDrive")) return;
   current = o; current.tip = 0; current.mood = 0; orders = []; previewId = null; lastRide = null; freeCam = false;
   startLeg(o.from, "toPickup");
 }
@@ -462,7 +520,7 @@ function pickScene(o, later) {
     }
     if (aff < 0) return COLD[0];
   }
-  const r = +o.rating, conflict = r < 4.6 && Math.random() < 0.4;   // чем ниже рейтинг пассажира, тем сложнее поездка
+  const r = +o.rating, conflict = r < 4.6 && Math.random() < 0.65;   // у пассажира с рейтингом ниже 4.6 часто бывают проблемы
   if (conflict) { o.conflict = true; return fresh(CONFLICTS); }
   const x = Math.random();
   return fresh(x < 0.22 ? STOPS : x < 0.65 ? DILEMMAS : FUN);
@@ -472,7 +530,15 @@ function fresh(pool) {   // диалог, который ещё не встре�
   if (!left.length) { pool.forEach(id => delete seen[id]); left = pool; }
   const id = left[Math.floor(Math.random() * left.length)]; seen[id] = 1; return id;
 }
-function startDialogue(o, later) { const sc = SCENES[pickScene(o, later)]; if (!sc) return; if (o.passenger.scenes) met[o.name] = true; dialogue = { scene: sc, nodeId: sc.start }; }
+// Реплики-прощания и события «после поездки» нельзя показывать посреди пути: их откладываем до прибытия
+const ARRIVAL_RE = /(приехали|доехали|довез|довёз|мне пора|у подъезда|у приёмного|хорошего (дня|вечера)|удачи вам|до свидания|всего доброго|вечером|через пару дней|позже|после поездки)/i;
+for (const id in SCENES) for (const k in SCENES[id].nodes) if (ARRIVAL_RE.test(SCENES[id].nodes[k].text)) SCENES[id].nodes[k].atEnd = true;
+const arrivedYet = () => !(state === "toDropoff" || state === "toStop" || state === "stopped" || state === "boarding");
+function startDialogue(o, later) {
+  const sc = SCENES[pickScene(o, later)]; if (!sc) return; if (o.passenger.scenes) met[o.name] = true;
+  if ((sc.atEnd || sc.nodes[sc.start].atEnd) && !arrivedYet()) { current.epilogue = { scene: sc, nodeId: sc.start }; return; }   // сцена целиком - по прибытии
+  dialogue = { scene: sc, nodeId: sc.start };
+}
 function chooseAnswer(i) {
   if (!dialogue) return;
   const ch = dialogue.scene.nodes[dialogue.nodeId].choices[i]; if (!ch) return;
@@ -488,15 +554,22 @@ function chooseAnswer(i) {
   let next = ch.next;
   if (ch.roll) next = Math.random() < ch.roll[0] ? ch.roll[1] : ch.roll[2];   // roll: [шанс, если повезло, если нет]
   if (ch.end) { dialogue = null; return endRide(ch.end); }                    // end: высадить пассажира
+  if (next && dialogue.scene.nodes[next] && dialogue.scene.nodes[next].atEnd && !current.arrived && !arrivedYet()) {   // продолжение - уже у подъезда
+    current.epilogue = { scene: dialogue.scene, nodeId: next }; next = null;
+  }
   if (!next || !dialogue.scene.nodes[next]) { dialogue = null; if (current.arrived) return finishRide(); if (current.stopNow) return startDetour(current.stopNow); }
   else dialogue.nodeId = next;
   renderPanel();
 }
 function arrive() {
+  if (state === "selfDrive") { state = "idle"; checkBusinessDone(); renderPanel(); return; }
   if (state === "toPickup") { state = "boarding"; boardTimer = 1.2 + current.late; boardT = 0; renderPanel(); }
   else if (state === "toFuel") refuel();
   else if (state === "toStop") { state = "stopped"; stopT = 0; stopDur = 14 + Math.random() * 16; renderPanel(); }
   else if (state === "toDropoff") {
+    if (current.epilogue && !current.arrived) {   // отложенный конец разговора - теперь, у места назначения
+      current.arrived = true; dialogue = current.epilogue; current.epilogue = null; renderPanel(); return;
+    }
     if (current.runner && !current.arrived) {   // пассажир, который не платит: сцена в конце поездки
       current.arrived = true; const sc = SCENES[fresh(RUNNERS)]; dialogue = { scene: sc, nodeId: sc.start }; renderPanel();
     } else finishRide();
@@ -533,8 +606,9 @@ function finishRide(reason) {
   // Чаевые оставляют редко, примерно в каждой десятой поездке; довольные пассажиры чуть чаще
   const tipChance = clamp(0.04 + 0.04 * Math.max(0, c.mood) + (c.tip > 0 ? 0.03 : 0), 0.02, 0.3);
   const tip = (mult > 0 && c.partial === undefined && Math.random() < tipChance ? (c.tip > 0 ? c.tip : 30 + 10 * Math.floor(Math.random() * 8)) : 0) + (mult > 0 ? c.gift || 0 : 0);
-  const stars = c.stars !== undefined ? c.stars : Math.max(1, 5 + Math.min(0, c.mood));
-  if (stars > 0) { ratingSum += stars; ratingCount++; }
+  // Оценку ставят не все: довольные - примерно каждый третий, недовольные - чаще. Явная оценка из диалога ставится всегда
+  const stars = c.stars !== undefined ? c.stars : Math.random() < (c.mood < 0 ? 0.7 : 0.35) ? Math.max(1, 5 + Math.min(0, c.mood)) : 0;
+  if (stars > 0) { rates.push(stars); if (rates.length > 150) rates.shift(); }
   const fee = c.noFee ? 0 : Math.round(fare * FEE);   // комиссия с заказа; поездка «мимо приложения» - без комиссии
   ledger.fares += fare; ledger.tips += tip; ledger.fee += fee;
   money += fare - fee + tip; ridesDone++; shiftMoney = shiftNet(); shiftRides++;
@@ -542,7 +616,7 @@ function finishRide(reason) {
   if (tip > 0) floaters.push({ text: "+" + tip + " ₽ чаевые", x: car.x, y: car.y, age: 0, color: "#b8860b", dy: 6 });
   lastRide = { name: c.name, cash: c.cash, offApp: c.offApp, fines: c.fineList || [], price: fare, fee, tip, stars, mood: c.mood, note: reason ? reason + (mult === 0 ? ", оплаты нет" : c.partial !== undefined ? ", оплата за проеханное" : "") : mult === 0 ? "Пассажир не заплатил" : "", wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
   let goalNow = false; if (!goalReached && money >= GOAL) { goalReached = true; goalNow = true; }
-  current = null; dialogue = null; state = "idle"; route = []; spawnTimer = 2; updateTop(); saveGame(); renderPanel();
+  current = null; dialogue = null; state = "idle"; route = []; spawnTimer = 2; checkBusinessDone(); updateTop(); saveGame(); renderPanel();
   if (goalNow) showEnding();
 }
 
@@ -576,7 +650,7 @@ function showEnding() {
 endCard.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.end === "continue") { endingEl.hidden = true; endingShown = false; updateTop(); } else if (b.dataset.end === "restart") resetGame();
-  else if (b.dataset.end === "newshift") { ledger = newLedger(); clock = 0; day++; shiftOver = false; shiftMoney = 0; shiftRides = 0; endingShown = false; endingEl.hidden = true; saveGame(); updateTop(); renderPanel(); }
+  else if (b.dataset.end === "newshift") { ledger = newLedger(); businessUses = 0; business = null; clock = 0; day++; shiftOver = false; shiftMoney = 0; shiftRides = 0; endingShown = false; endingEl.hidden = true; saveGame(); updateTop(); renderPanel(); }
 });
 function showLedger() {
   const L = ledger, f = v => v.toLocaleString("ru-RU") + " ₽", row = (t, v, minus) => '<div class="lrow' + (minus && v ? " minus" : "") + '"><span>' + t + "</span><b>" + (minus && v ? "−" : "") + f(v) + "</b></div>";
@@ -590,7 +664,19 @@ function showLedger() {
 $("earn").addEventListener("click", showLedger);
 $("ledger").addEventListener("click", e => { if (e.target.closest("[data-close]")) $("ledger").hidden = true; });
 $("fuelpill").addEventListener("click", () => { if (state === "idle") goRefuel(); });
-statusPill.addEventListener("click", () => { updateTop(); updateStatus(); menuEl.hidden = false; });
+function updateBizMenu() {
+  const left = BUSINESS_PER_SHIFT - businessUses, btn = $("bizbtn");
+  $("bizinfo").textContent = business ? "Едете к точке: " + business.addr + ". Заказы приходят только в ту сторону." :
+    "Отметьте на карте, куда вам нужно, - будут приходить заказы по пути. Осталось " + Math.max(0, left) + " из " + BUSINESS_PER_SHIFT + " за смену.";
+  btn.textContent = business ? "Выключить режим" : "Выбрать точку на карте"; btn.disabled = !business && left <= 0;
+}
+$("bizbtn").addEventListener("click", () => {
+  if (business) { stopBusiness(); updateBizMenu(); return; }
+  if (businessUses >= BUSINESS_PER_SHIFT) return;
+  menuEl.hidden = true; picking = true; $("pickbar").hidden = false;
+});
+$("pickcancel").addEventListener("click", () => { picking = false; $("pickbar").hidden = true; });
+statusPill.addEventListener("click", () => { updateTop(); updateStatus(); updateBizMenu(); menuEl.hidden = false; });
 menuEl.addEventListener("click", e => { if (e.target.closest("[data-close]")) menuEl.hidden = true; });
 resetBtn.addEventListener("click", () => askConfirm("Сбросить весь прогресс?", "Деньги, рейтинг, поездки и истории пассажиров начнутся заново. Это нельзя отменить.", "Сбросить", resetGame));
 // Своё окно подтверждения: стандартное окно браузера (confirm) на некоторых страницах запрещено и молча отвечает «нет»
@@ -615,15 +701,7 @@ function update(dt) {
     if (shiftOver) return endShift();
     if (!online) return;
     clock += dt * TIME_SCALE;
-    let changed = false;
-    for (let i = orders.length - 1; i >= 0; i--) {
-      orders[i].ttl -= dt;
-      if (orders[i].ttl <= 0) { if (orders[i].id === previewId) previewId = null; orders.splice(i, 1); changed = true; }
-    }
-    spawnTimer -= dt;
-    if (spawnTimer <= 0) { if (orders.length < MAX_ORDERS && fuel >= LOW_FUEL) createOrder(); spawnTimer = (6 + Math.random() * 6) * ratingFactor() / (1 + 1.5 * (surgeAt(car.x, car.y) - 1)); }   // при спросе заказы приходят чаще
-    if (changed) renderPanel();
-    for (const o of orders) { const bar = $("bar-" + o.id); if (bar) bar.style.width = (o.ttl / ORDER_TTL * 100) + "%"; }
+    tickOrders(dt);
   } else if (state === "boarding") {
     boardTimer -= dt; boardT += dt; clock += dt * TIME_SCALE;
     const bf = Math.max(0, Math.floor(boardT - PICK_FREE)) * WAIT_RATE, rp = $("rprice"), bw = $("bwait");
@@ -636,7 +714,7 @@ function update(dt) {
       const r = +current.rating, g = route.reduce((a, s) => a + s.t, 0) / 60;   // длительность поездки в игровых минутах
       const story = current.passenger.scenes && (storyStep[current.name] || 0) < current.passenger.scenes.length;
       current.talkAt = []; current.talkIdx = 0;
-      if (story || Math.random() < (r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
+      if (story || Math.random() < (r < 4.6 ? 0.85 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
       if (g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
       renderPanel();
     }
@@ -650,6 +728,7 @@ function update(dt) {
     if (state === "toDropoff" && current.talkIdx < current.talkAt.length && 1 - remainingLen() / current.rideLen >= current.talkAt[current.talkIdx]) {
       startDialogue(current, current.talkIdx > 0); current.talkIdx++; renderPanel(); if (dialogue) return;   // разговор по ходу поездки
     }
+    if (state === "selfDrive") tickOrders(dt);
     let t = dt * ff; clock += t * legScale;   // перемотка (ff) ускоряет и машину, и игровые часы, так что время смены тратится честно
     // едем по шагам маршрута; скорость зависит от типа дороги и ускорения времени
     while (t > 0 && route.length) {
@@ -706,7 +785,9 @@ $("zout").addEventListener("click", () => setZoom(scale / 1.6));
 // Перетаскивание карты одним пальцем или мышью, масштаб - двумя пальцами
 const ptrs = new Map(); let drag = null, pinch = null;
 const midDist = () => { const [a, b] = [...ptrs.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) }; };
+let tapStart = null;
 canvas.addEventListener("pointerdown", e => {
+  tapStart = ptrs.size ? null : { x: e.clientX, y: e.clientY, t: performance.now() };
   canvas.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); canvas.classList.add("drag");
   if (ptrs.size === 2) { pinch = midDist(); drag = null; } else if (ptrs.size === 1) drag = { x: e.clientX, y: e.clientY };
 });
@@ -727,6 +808,12 @@ canvas.addEventListener("pointermove", e => {
   $("recenter").hidden = false;
 });
 const endDrag = e => {
+  if (picking && tapStart && e.type === "pointerup" && Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) < 8 && performance.now() - tapStart.t < 500) {
+    const rect = canvas.getBoundingClientRect();
+    const wx = camX - viewW / 2 + (e.clientX - rect.left) / scale, wy = camY - viewH / 2 + (e.clientY - rect.top) / scale;
+    picking = false; $("pickbar").hidden = true; setBusiness(wx, wy);
+  }
+  tapStart = null;
   ptrs.delete(e.pointerId); pinch = null;
   if (ptrs.size === 1) { const [q] = ptrs.values(); drag = { x: q.x, y: q.y }; } else { drag = null; canvas.classList.remove("drag"); }
 };
@@ -769,7 +856,7 @@ function updateTop() {
 function updateStatus() {
   const idle = state === "idle", cls = !idle ? "ride" : online ? "on" : "off";
   statusPill.className = "pill status " + cls; $("mstatus").className = "mstatus status " + cls; statusText.textContent = !idle ? "В заказе" : online ? "На линии" : "Не на линии";
-  $("ff").hidden = !(state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel"); $("ff").textContent = "⏩ ×" + ff;
+  $("ff").hidden = !(state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel" || state === "selfDrive"); $("ff").textContent = "⏩ ×" + ff;
   shiftBtn.style.display = idle ? "block" : "none"; shiftBtn.className = online ? "on" : "off";
   shiftBtn.innerHTML = online ? "На линии<small>нажмите, чтобы закончить смену</small>" : "Катать<small>нажмите, чтобы выйти на линию</small>";
 }
@@ -792,7 +879,7 @@ function resultHtml() {
 }
 function orderCardHtml(o) {
   const sg = o.surgeAdd > 0 ? '<span class="sbadge">Повышенный спрос · +' + o.surgeAdd + " ₽</span>" : "";   // полную цену не показываем, только надбавку
-  return '<div class="ocard' + (o.id === previewId ? " sel" : "") + (o.surgeAdd > 0 ? " surge" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate">★ ' + o.rating + "</span>" + sg + '</div><div class="addr"><i class="dotA"></i><div><b>' + (o.fromAddr || addrOf(o.from)) + "</b><small>" + (o.fromPlace ? o.fromPlace.n + " · " : "") + "до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
+  return '<div class="ocard' + (o.id === previewId ? " sel" : "") + (o.surgeAdd > 0 ? " surge" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate' + (+o.rating < 4.6 ? " low" : "") + '">★ ' + o.rating + "</span>" + sg + '</div><div class="addr"><i class="dotA"></i><div><b>' + (o.fromAddr || addrOf(o.from)) + "</b><small>" + (o.fromPlace ? o.fromPlace.n + " · " : "") + "до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
     ' мин</small></div></div><div class="ohide">Куда ехать, станет известно после посадки</div><div class="obar"><div class="obarfill" id="bar-' + o.id +
     '"></div></div><div class="obtns"><button class="skip" data-act="decline" data-id="' + o.id + '">Пропустить</button><button class="take" data-act="accept" data-id="' + o.id + '">Принять</button></div></div>';
 }
@@ -807,8 +894,12 @@ function ridePanelHtml() {
 }
 function renderPanel() {
   let html = "";
-  if (state === "idle") {
-    html = resultHtml();
+  const biz = business ? '<div class="bizchip"><span>По делам: ' + business.addr + " · " + (distTo(car.x, car.y, business) / 1000).toFixed(1) + " км</span><span>" +
+    (state === "idle" ? '<button data-act="selfdrive">Поехать самому</button>' : "") + '<button data-act="bizoff">Выключить</button></span></div>' : "";
+  if (state === "selfDrive") {
+    html = biz + (orders.length ? '<div class="listhead">Заказ по пути</div>' + orders.map(orderCardHtml).join("") : '<div class="search"><span class="pulse"></span><div><b>Едем по делам</b><small>Если появится заказ по пути - предложим</small></div></div>');
+  } else if (state === "idle") {
+    html = biz + resultHtml();
     if (!online) html += '<div class="offmsg"><b>Вы не на линии</b><small>Нажмите «Катать», чтобы получать заказы</small></div>';
     else if (fuel < LOW_FUEL) html += '<div class="offmsg"><b>Мало топлива</b><small>Заказы не приходят, пока не заправитесь</small><button class="fuelgo" data-act="refuel">Поехать на заправку</button></div>';
     else if (!orders.length) html += '<div class="search"><span class="pulse"></span><div><b>Ищем заказы рядом</b><small>Чем выше рейтинг, тем чаще заказы</small></div></div>';
@@ -830,6 +921,8 @@ panel.addEventListener("click", e => {
     if (btn.dataset.act === "closeResult") { lastRide = null; return renderPanel(); }
     if (btn.dataset.act === "kick") return kickOut();
     if (btn.dataset.act === "refuel") return goRefuel();
+    if (btn.dataset.act === "selfdrive") return driveSelf();
+    if (btn.dataset.act === "bizoff") return stopBusiness();
     const id = Number(btn.dataset.id);
     if (btn.dataset.act === "accept") acceptOrder(id); else if (btn.dataset.act === "decline") declineOrder(id);
     return;
@@ -978,33 +1071,11 @@ function pin(x, y, col, letter) {
   ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(0, -25, 8, 0, 7); ctx.fill();
   ctx.fillStyle = col; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(letter, 0, -25); ctx.restore();
 }
-function draw() {
-  const k = dpr * scale, vx = camX - viewW / 2, vy = camY - viewH / 2, sx = x => (x - vx) * scale, sy = y => (y - vy) * scale;
-  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = MAP_BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.setTransform(k, 0, 0, k, -vx * k, -vy * k);   // дальше рисуем в метрах города
-  drawBaseLayer(vx, vy);   // вода, зелень и дома - первыми, под дорогами
-  const surgeLabels = drawSurge(vx, vy);   // зоны повышенного спроса - поверх домов, под дорогами
-  const vis = [[], [], [], [], [], []];
-  for (const e of D.edges) {   // отбираем только те дороги, что попадают в экран
-    const a = N[e[0]], b = N[e[1]];
-    if (Math.max(a[0], b[0]) < vx || Math.min(a[0], b[0]) > vx + viewW || Math.max(a[1], b[1]) < vy || Math.min(a[1], b[1]) > vy + viewH) continue;
-    vis[e[5]].push(e);   // e[5] - как рисовать дорогу (e[2] - её настоящий тип для скорости)
-  }
-  ctx.lineCap = "round"; ctx.lineJoin = "round";
-  const zf = clamp(Math.pow(scale / PX_PER_M, 0.6), 0.45, 2.6);   // ближе - дороги шире, дальше - тоньше
-  const minClass = scale < 0.07 ? 3 : scale < 0.13 ? 4 : 5;        // издалека дворы и мелкие улицы не рисуем
-  for (const pass of [0, 1]) for (const c of [5, 4, 3, 2, 1, 0]) {   // сначала обводка, потом заливка дорог
-    if (c > minClass) continue;
-    ctx.beginPath(); for (const e of vis[c]) { const a = N[e[0]], b = N[e[1]]; ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }
-    ctx.lineWidth = (WPX[c] * zf + (pass ? 0 : 1.5)) / scale; ctx.strokeStyle = pass ? FILL[c] : EDGE[c]; ctx.stroke();
-  }
-  if (route.length && (state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel")) {
-    ctx.beginPath(); ctx.moveTo(car.x, car.y); for (const s of route) ctx.lineTo(N[s.n][0], N[s.n][1]);
-    ctx.strokeStyle = "rgba(47,111,237,.85)"; ctx.lineWidth = 6 / scale; ctx.stroke();
-  }
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);   // дальше рисуем в пикселях экрана: подписи, метки, машина
-  ctx.font = "11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
-  // Подписи без наложений: каждая занимает прямоугольник, и новая не ставится, если пересекает уже занятое
+// Раскладка подписей (улицы, места, коэффициенты спроса). Считаем её не каждый кадр, а когда карта заметно сдвинулась:
+// подписи запоминаются в метрах карты и едут вместе с ней, поэтому при ускорении не мелькают
+let labelCache = null;
+function layoutLabels(vx, vy, sx, sy, surgeLabels) {
+  const streetsOut = [], surgeOut = [];
   const placed = [], used = new Set();
   const free = (x, y, w, h) => { if (x - w / 2 < 6 || x + w / 2 > cw - 6 || y - h / 2 < 92) return false;   // не у краёв и не под верхними плашками
     return !placed.some(r => x - w / 2 < r[0] + r[2] && x + w / 2 > r[0] && y - h / 2 < r[1] + r[3] && y + h / 2 > r[1]); };
@@ -1025,7 +1096,7 @@ function draw() {
       let side = labels < 14 && free(x + 12 + w / 2, y, w + 6, 16) ? 1 : labels < 14 && free(x - 12 - w / 2, y, w + 6, 16) ? -1 : 0;
       if (!side && (!major || far)) continue;
       take(x, y, r, r); if (side) { take(x + side * (12 + w / 2), y, w + 6, 16); labels++; }
-      shown.push([p, x, y, side]);
+      shown.push([p, side]);
     }
   };
   placePois(true);
@@ -1050,16 +1121,54 @@ function draw() {
       const bw = Math.abs(w * Math.cos(ang)) + 14 * Math.abs(Math.sin(ang)), bh = Math.abs(w * Math.sin(ang)) + 14 * Math.abs(Math.cos(ang));
       if (!free(mx, my, bw, bh)) continue;
       take(mx, my, bw, bh); used.add(key); streetLabels++;
-      ctx.save(); ctx.translate(mx, my); ctx.rotate(ang); ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.strokeText(st.name, 0, 0);
-      ctx.fillStyle = "#5b6370"; ctx.fillText(st.name, 0, 0); ctx.restore();
+      streetsOut.push([st.name, (P[i][0] + P[j][0]) / 2, (P[i][1] + P[j][1]) / 2, ang]);   // запоминаем в метрах карты
       i = j;   // следующий кусок этой же улицы - дальше по линии
     }
   }
   if (scale >= 0.16) placePois(false);   // мелкие места - только вблизи
   if (HEX_R * scale > 38) {   // коэффициент спроса в центре шестиугольника, если он достаточно крупный на экране
-    ctx.font = "700 12px sans-serif"; ctx.textAlign = "center"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.fillStyle = "#2456c9";
-    for (const [h, m] of surgeLabels) { const x = sx(h.x), y = sy(h.y), t = "×" + m.toFixed(1); if (!free(x, y, 34, 16)) continue; take(x, y, 34, 16); ctx.strokeText(t, x, y); ctx.fillText(t, x, y); }
+    for (const [h, m] of surgeLabels) { const x = sx(h.x), y = sy(h.y); if (!free(x, y, 34, 16)) continue; take(x, y, 34, 16); surgeOut.push([h, m]); }
   }
+  return { vx, vy, scale, t: performance.now(), shown, streets: streetsOut, surge: surgeOut };
+}
+function draw() {
+  const k = dpr * scale, vx = camX - viewW / 2, vy = camY - viewH / 2, sx = x => (x - vx) * scale, sy = y => (y - vy) * scale;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = MAP_BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.setTransform(k, 0, 0, k, -vx * k, -vy * k);   // дальше рисуем в метрах города
+  drawBaseLayer(vx, vy);   // вода, зелень и дома - первыми, под дорогами
+  const surgeLabels = drawSurge(vx, vy);   // зоны повышенного спроса - поверх домов, под дорогами
+  const vis = [[], [], [], [], [], []];
+  for (const e of D.edges) {   // отбираем только те дороги, что попадают в экран
+    const a = N[e[0]], b = N[e[1]];
+    if (Math.max(a[0], b[0]) < vx || Math.min(a[0], b[0]) > vx + viewW || Math.max(a[1], b[1]) < vy || Math.min(a[1], b[1]) > vy + viewH) continue;
+    vis[e[5]].push(e);   // e[5] - как рисовать дорогу (e[2] - её настоящий тип для скорости)
+  }
+  ctx.lineCap = "round"; ctx.lineJoin = "round";
+  const zf = clamp(Math.pow(scale / PX_PER_M, 0.6), 0.45, 2.6);   // ближе - дороги шире, дальше - тоньше
+  const minClass = scale < 0.07 ? 3 : scale < 0.13 ? 4 : 5;        // издалека дворы и мелкие улицы не рисуем
+  for (const pass of [0, 1]) for (const c of [5, 4, 3, 2, 1, 0]) {   // сначала обводка, потом заливка дорог
+    if (c > minClass) continue;
+    ctx.beginPath(); for (const e of vis[c]) { const a = N[e[0]], b = N[e[1]]; ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }
+    ctx.lineWidth = (WPX[c] * zf + (pass ? 0 : 1.5)) / scale; ctx.strokeStyle = pass ? FILL[c] : EDGE[c]; ctx.stroke();
+  }
+  if (route.length && (state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel" || state === "selfDrive")) {
+    ctx.beginPath(); ctx.moveTo(car.x, car.y); for (const s of route) ctx.lineTo(N[s.n][0], N[s.n][1]);
+    ctx.strokeStyle = "rgba(47,111,237,.85)"; ctx.lineWidth = 6 / scale; ctx.stroke();
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);   // дальше рисуем в пикселях экрана: подписи, метки, машина
+  ctx.font = "11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+  // Подписи без наложений: каждая занимает прямоугольник, и новая не ставится, если пересекает уже занятое
+  const LC = labelCache;
+  if (!LC || LC.scale !== scale || Math.abs(LC.vx - vx) * scale > 140 || Math.abs(LC.vy - vy) * scale > 140 || performance.now() - LC.t > 4000)
+    labelCache = layoutLabels(vx, vy, sx, sy, surgeLabels);
+  ctx.font = "11px sans-serif"; ctx.textAlign = "center"; ctx.lineWidth = 3;
+  for (const [name, wx, wy, ang] of labelCache.streets) {
+    ctx.save(); ctx.translate(sx(wx), sy(wy)); ctx.rotate(ang); ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.strokeText(name, 0, 0);
+    ctx.fillStyle = "#5b6370"; ctx.fillText(name, 0, 0); ctx.restore();
+  }
+  ctx.font = "700 12px sans-serif"; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.fillStyle = "#2456c9";
+  for (const [h] of labelCache.surge) { const hh = HEX_BASE.get(hexKey(h.q, h.r)), m = hh ? surgeMult(hexLevel(hh)) : 1; if (m <= 1) continue; const t = "×" + m.toFixed(1); ctx.strokeText(t, sx(h.x), sy(h.y)); ctx.fillText(t, sx(h.x), sy(h.y)); }
+  const shown = labelCache.shown.filter(([p]) => sy(p.y) > 92).map(([p, side]) => [p, sx(p.x), sy(p.y), side]);
   for (const [p, x, y] of shown) placeIcon(x, y, p.k, p.major);
   ctx.font = "600 11px sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.92)";
   for (const [p, x, y, side] of shown) {   // подпись цветом категории, чуть темнее значка
@@ -1071,6 +1180,7 @@ function draw() {
   let A = null, B = null, S = null;   // метки: A - где забрать клиента, B - куда его везти (видна только в пути)
   if (state === "idle") { const o = orders.find(x => x.id === previewId); if (o) A = o.from; }
   else if (state === "toPickup" || state === "boarding") A = current.from; else if (state === "toDropoff") B = current.to; else if (state === "toStop" || state === "stopped") { B = current.to; S = current.stopNode; }
+  if (business) pin(sx(business.x), sy(business.y), "#5b3fd0", "Д");
   if (state === "toFuel" && fuelStop) pin(sx(N[fuelStop.node][0]), sy(N[fuelStop.node][1]), "#56657a", "З");
   if (A !== null) pin(sx(N[A][0]), sy(N[A][1]), "#2fa84f", "A");
   if (B !== null) pin(sx(N[B][0]), sy(N[B][1]), "#e5484d", "B");
