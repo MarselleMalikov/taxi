@@ -28,7 +28,7 @@ button{font-family:inherit}
 .gbar i{display:block;height:100%;width:0;background:var(--g);transition:width .4s}
 .dot{width:9px;height:9px;border-radius:50%;background:#9aa3b2}
 .status.on .dot{background:var(--g)}.status.ride .dot{background:var(--b)}
-#ratingpill{text-align:center;white-space:nowrap}
+#ratingpill{text-align:center;white-space:nowrap;pointer-events:auto;border:none;cursor:pointer;font-family:inherit}
 #rating{font-size:16px;font-weight:700;color:#d98f00}
 #osm{position:absolute;z-index:2;left:10px;top:calc(env(safe-area-inset-top,0px) + 68px);font-size:10px;color:#555;background:rgba(255,255,255,.7);padding:1px 5px;border-radius:6px}
 #sheet{position:absolute;left:0;right:0;bottom:0;z-index:3;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.25);padding:18px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:60%;overflow-y:auto}
@@ -36,6 +36,11 @@ button{font-family:inherit}
 #ledger{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#ledger[hidden]{display:none}
 .lrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eceef1;font-size:15px}.lrow span{color:var(--m)}
 .lrow.minus b{color:#c9363b}.lrow.total{border-bottom:none;font-size:17px;padding-top:12px}.lrow.total span{color:var(--ink);font-weight:600}.lsub{font-size:13px;color:var(--m);margin-top:6px}
+#modes{position:fixed;inset:0;z-index:19;display:flex;align-items:flex-end;justify-content:center;padding:16px}#modes[hidden]{display:none}
+.mode{display:block;width:100%;text-align:left;margin-top:10px;padding:12px 14px;border:2px solid #eceef1;border-radius:14px;background:#fff;font-family:inherit;cursor:pointer}
+.mode b{display:flex;justify-content:space-between;font-size:16px;color:var(--ink)}.mode b i{font-style:normal;font-weight:600;font-size:13px;color:var(--m)}
+.mode small{display:block;margin-top:4px;color:var(--m);font-size:13px;line-height:1.35}
+.mode.on{border-color:var(--g);background:#f1fbf4}.mode.biz.on{border-color:#5b3fd0;background:#f4f1fd}.mode:disabled{opacity:.5;cursor:default}
 #ask{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px}#ask[hidden]{display:none}
 .askback{position:absolute;inset:0;background:rgba(15,18,24,.45)}
 .askcard{position:relative;width:100%;max-width:340px;background:#fff;border-radius:18px;padding:18px 16px 14px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
@@ -72,11 +77,14 @@ button{font-family:inherit}
 .ocard.sel{border-color:var(--g);background:#fff}
 .ocard.surge{background:#eef3ff}.ocard.surge.sel{border-color:#2f6fed;background:#fff}
 .ocard.surge .obarfill{background:#2f6fed}.ocard.surge .obtns .take{background:#2f6fed}
+.chain{margin-top:14px;background:var(--c);border-radius:14px;padding:12px;border:2px solid #d5dbe5}.chain.surge{background:#eef3ff;border-color:#b9cbf7}
+.chain .obtns .take{background:var(--g)}.chain.surge .obtns .take,.chain.surge .obarfill{background:#2f6fed}
+.chainok{margin-top:12px;padding:10px 12px;border-radius:12px;background:#e3f6ea;color:#16883f;font-weight:600;font-size:14px}
 .sbadge{font-size:13px;font-weight:700;color:#2456c9;background:#dfe8ff;padding:4px 9px;border-radius:999px}
 .paychip.blue{background:#dfe8ff;color:#2456c9;margin-left:6px}
 .otop{display:flex;justify-content:space-between;align-items:baseline}
 .orate{font-size:14px;color:var(--m)}.orate.low{color:#c9363b;font-weight:700}.oprice{font-size:24px;font-weight:700}
-.ohide{margin-top:8px;font-size:12px;color:var(--m)}
+.ohide{margin-top:8px}
 .obar{height:4px;background:#dfe2e8;border-radius:2px;margin-top:8px;overflow:hidden}
 .obarfill{height:100%;width:100%;background:var(--g)}
 .obtns{display:flex;gap:8px;margin-top:10px}
@@ -130,7 +138,7 @@ button{font-family:inherit}
     <button class="pill status off" id="menubtn" aria-label="Меню"><span class="burger"><i></i><i></i><i></i></span><span class="dot"></span></button>
     <div class="pill" id="earn"><div class="money" id="money">0 ₽</div><div class="gbar"><i id="goalfill"></i></div></div>
     <button class="pill" id="fuelpill" aria-label="Топливо"><svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="1" y="1.5" width="7.5" height="13" rx="1.2"/><path d="M2.8 5h4M8.5 6.5l2.6 1.6v5a1.2 1.2 0 0 0 2.4 0V5.5L11 3"/></svg><span><b id="fuelL">50 л</b><span class="fbar"><i id="fuelfill"></i></span></span></button>
-    <div class="pill" id="ratingpill"><div id="rating">★ 5.00</div><div class="sub" id="clock"></div></div>
+    <button class="pill" id="ratingpill" aria-label="Режим работы"><div id="rating">★ 5.00</div><div class="sub" id="clock"></div></button>
   </div>
   <div id="pickbar" hidden><span>Нажмите на карте, куда вам нужно</span><button id="pickcancel">Отмена</button></div>
   <div id="osm">© участники OpenStreetMap</div>
@@ -149,12 +157,13 @@ button{font-family:inherit}
         <div><span>За смену</span><b id="mshift">0 ₽</b></div>
         <div><span>Поездок</span><b id="rides">0</b></div>
       </div>
-      <div class="msect"><b>По делам</b><small id="bizinfo"></small><button id="bizbtn" class="mbtn"></button></div>
+      <div class="mstats"><div><span>Смена</span><b id="mday">1</b></div></div>
       <button id="reset">Сбросить прогресс</button>
     </aside>
   </div>
 </div>
 <div id="ledger" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Смена <span id="lday"></span></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="lrows"></div></div></div>
+<div id="modes" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Режим работы</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="modelist"></div></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard"><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -402,7 +411,7 @@ let carNode = nearest(xs[xs.length >> 1], ys[ys.length >> 1]);
 const car = { x: N[carNode][0], y: N[carNode][1], angle: 0 };
 let route = [];
 
-function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses })); } catch (e) {} }
+function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode })); } catch (e) {} }
 // Детализация смены: всё, что пришло и ушло
 const newLedger = () => ({ fares: 0, tips: 0, fee: 0, rent: 0, fuel: 0, fuelL: 0, fines: 0, km: 0 });
 let fuel = TANK, ledger = newLedger();
@@ -417,7 +426,7 @@ function loadGame() {
     money = d.money || 0; ridesDone = d.ridesDone || 0; if (Array.isArray(d.rates)) rates = d.rates; else if (d.ratingCount) rates = Array(150).fill(Math.min(5, Math.max(4.5, d.ratingSum / d.ratingCount)));   // старое сохранение
     Object.assign(affection, d.affection); Object.assign(storyStep, d.storyStep); Object.assign(met, d.met); Object.assign(seen, d.seen); goalReached = !!d.goalReached;
     clock = d.clock || 0; day = d.day || 1; shiftMoney = d.shiftMoney || 0; shiftRides = d.shiftRides || 0; shiftOver = !!d.shiftOver;
-    fuel = d.fuel === undefined ? TANK : d.fuel; businessUses = d.businessUses || 0; ledger = Object.assign(newLedger(), d.ledger || {});
+    fuel = d.fuel === undefined ? TANK : d.fuel; businessUses = d.businessUses || 0; workMode = d.workMode === "flex" ? "flex" : "classic"; ledger = Object.assign(newLedger(), d.ledger || {});
   } catch (e) {}
 }
 function resetGame() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); }
@@ -430,65 +439,90 @@ function ratingFactor() { const r = getRating(); return r >= 4.8 ? 0.7 : r < 4.3
 // Водитель отмечает на карте, куда ему надо. Пока режим включён, приходят только заказы в ту сторону (их меньше обычного).
 // Доехал - режим выключается. Не больше двух раз за смену, как в сервисе.
 const BUSINESS_PER_SHIFT = 2;
+// Режимы работы. Классический - конечная точка видна только после посадки. Гибкий - видна сразу, комиссия +5%.
+// По делам - заказы в сторону своей точки, комиссия +9%. Мой район - позже
+let workMode = "classic";
+const MODE_NAME = { classic: "Классический", flex: "Гибкий", business: "По делам" };
+const feeRate = () => FEE + (business ? 0.09 : workMode === "flex" ? 0.05 : 0);
+const modeNow = () => business ? "business" : workMode;
 let business = null, businessUses = 0, picking = false;
 const distTo = (x, y, b) => Math.hypot(b.x - x, b.y - y);
 function setBusiness(x, y) {
   const node = nodeNear(x, y);
   business = { node, x: N[node][0], y: N[node][1], addr: addrNear(N[node][0], N[node][1]) || addrOf(node) };
-  businessUses++; orders = []; previewId = null; spawnTimer = 2; saveGame(); renderPanel();
+  businessUses++; orders = []; previewId = null; spawnTimer = 2; lastClk = ""; saveGame(); renderPanel();
 }
 function stopBusiness(msg) {
-  if (state === "selfDrive") { state = "idle"; route = []; }
+  lastClk = "";
+  if (state === "selfDrive" && selfTarget === business) { state = "idle"; route = []; selfTarget = null; }
   business = null; if (msg) floaters.push({ text: msg, x: car.x, y: car.y, age: 0, color: "#5b3fd0", dy: -20 });
   renderPanel();
 }
+function tapDrive(wx, wy) {   // короткое нажатие на карту: предложить поехать туда
+  const node = nodeNear(wx, wy), x = N[node][0], y = N[node][1], km = (Math.hypot(x - car.x, y - car.y) / 1000).toFixed(1);
+  if (km < 0.3) return;
+  const addr = addrNear(x, y) || addrOf(node), left = BUSINESS_PER_SHIFT - businessUses, canBiz = online && !business && left > 0;
+  askConfirm("Поехать сюда?", addr + ", " + km + " км. " + (business ? "Режим «По делам» уже включён - поедете к новой точке без него." : canBiz ?
+    "Включится режим «По делам»: заказы будут приходить по пути, комиссия +9%. Осталось " + left + " из " + BUSINESS_PER_SHIFT + " за смену." :
+    online ? "Режим «По делам» на эту смену закончился - поедете сами, заказы будут приходить как обычно." : "Вы не на линии - заказов по пути не будет."), "Поехать", () => {
+    if (state !== "idle" && state !== "selfDrive") return;
+    if (canBiz) { setBusiness(x, y); driveSelf(business); }
+    else { if (business) stopBusiness(); driveSelf({ node, x, y, addr }); }
+  });
+  $("askok").style.background = "#5b3fd0";
+}
 function checkBusinessDone() { if (business && distTo(car.x, car.y, business) < 1000) stopBusiness("Вы на месте"); }
-function driveSelf() {   // ехать к своей точке самому, без заказа; заказы по пути всё равно приходят
-  if (!business || state !== "idle") return;
-  route = findPath(carNode, business.node) || []; legScale = legSpeed(route, SOFT_TRIP); state = "selfDrive"; freeCam = false; renderPanel();
+let selfTarget = null;   // куда едем сами (точка «По делам» или просто выбранное место)
+function driveSelf(target) {   // ехать к точке самому, без заказа; заказы по пути всё равно приходят
+  target = target || business; if (!target || (state !== "idle" && state !== "selfDrive")) return;
+  selfTarget = target; lastRide = null;
+  route = findPath(carNode, target.node) || []; legScale = legSpeed(route, SOFT_TRIP); state = "selfDrive"; freeCam = false; renderPanel();
 }
 function businessFits(A, B) {   // заказ «по пути»: клиент недалеко, а везти ближе к своей точке
   const dCar = distTo(car.x, car.y, business), dA = distTo(N[A][0], N[A][1], business), dB = distTo(N[B][0], N[B][1], business);
   return dA < dCar + 800 && dB < dCar * 0.7;
 }
-function createOrder() {
-  const story = PASSENGERS.filter(p => p.scenes && getAff(p.name) > REFUSE_AT && !orders.some(o => o.name === p.name));
-  const p = story.length && Math.random() < 0.2 ? story[Math.floor(Math.random() * story.length)] : { name: NAMES[Math.floor(Math.random() * NAMES.length)] };
+function createOrder() { const o = buildOrder(car.x, car.y, carNode, PICK_MIN, PICK_MAX); if (o) { orders.push(o); renderPanel(); } }
+// Заказ рядом с точкой (cx, cy): для обычного предложения - от машины, для цепочки - от места высадки текущего пассажира
+function buildOrder(cx, cy, cnode, pmin, pmax) {
+  // постоянные пассажиры со своей историей попадаются редко и только пока история не закончилась
+  const story = PASSENGERS.filter(p => p.scenes && getAff(p.name) > REFUSE_AT && (storyStep[p.name] || 0) < p.scenes.length && !orders.some(o => o.name === p.name) && !(current && current.name === p.name));
+  const p = story.length && Math.random() < 0.07 ? story[Math.floor(Math.random() * story.length)] : { name: NAMES[Math.floor(Math.random() * NAMES.length)] };
   const rating = STORY_RATING[p.name] || rollRating();
-  let A = randSpot(car.x, car.y, PICK_MIN, PICK_MAX, 0.2);                 // забирают чаще из дома, иногда из ТЦ, вокзала, кафе
+  let A = randSpot(cx, cy, pmin, pmax, 0.2);                 // забирают чаще из дома, иногда из ТЦ, вокзала, кафе
   let B = randSpot(N[A.node][0], N[A.node][1], TRIP_MIN, TRIP_MAX, A.place ? 0.25 : 0.45);   // везут чаще в место, но и домой тоже
   if (business) {   // «по делам»: подбираем заказ в сторону своей точки, а не нашли - заказа пока нет
     let ok = false;
     for (let t = 0; t < 14 && !ok; t++) {
-      A = randSpot(car.x, car.y, 300, 3000, 0.2);
+      A = randSpot(cx, cy, 300, 3000, 0.2);
       B = randSpot(business.x, business.y, 0, Math.max(1500, distTo(car.x, car.y, business) * 0.45), 0.3);
       ok = businessFits(A.node, B.node) && Math.hypot(N[A.node][0] - N[B.node][0], N[A.node][1] - N[B.node][1]) > TRIP_MIN;
     }
-    if (!ok) return;
+    if (!ok) return null;
   }
   const from = A.node, to = B.node, place = B.place, fromPlace = A.place, fromAddr = A.addr, toAddr = B.addr;
-  if (to === from) return;
-  const trip = findPath(from, to), pick = findPath(carNode, from);
-  if (!trip || !pick) return;
+  if (to === from) return null;
+  const trip = findPath(from, to), pick = findPath(cnode, from);
+  if (!trip || !pick) return null;
   const st = sumPath(trip), sp = sumPath(pick);
-  orders.push({ id: nextOrderId++, passenger: p, name: p.name, fromPlace, fromAddr, toAddr, rating: rating.toFixed(2), cash: Math.random() < 0.45, runner: false, late: rating > 4.85 || Math.random() >= LATE_SHARE ? 0 : 3 + Math.random() * (LATE_MAX - 3), from, to, place,
+  const o = ({ id: nextOrderId++, passenger: p, name: p.name, fromPlace, fromAddr, toAddr, rating: rating.toFixed(2), cash: Math.random() < 0.45, runner: false, late: rating > 4.85 || Math.random() >= LATE_SHARE ? 0 : 3 + Math.random() * (LATE_MAX - 3), from, to, place,
     tripKm: st.km, pickupKm: sp.km, pickupMin: Math.max(1, Math.round(sp.sec / 60)),
-    price: 0, tip: 0, mood: 0, ttl: ORDER_TTL });
-  const o = orders[orders.length - 1], basePrice = Math.round((BASE_FARE + st.km * PER_KM) / 10) * 10;
+    price: 0, tip: 0, mood: 0, ttl: ORDER_TTL, feeRate: feeRate() });
+  const basePrice = Math.round((BASE_FARE + st.km * PER_KM) / 10) * 10;
   o.surge = orderSurge(N[from][0], N[from][1], st.km);            // повышенный спрос в точке подачи
   o.price = Math.round(basePrice * o.surge / 10) * 10; o.surgeAdd = o.price - basePrice;   // надбавка к обычной цене
   o.runner = o.cash && Math.random() < runnerChance(rating);   // не заплатить может только тот, кто платит наличными
-  renderPanel();
+  return o;
 }
 function tickOrders(dt) {   // предложения заказов: появляются, пока водитель свободен или едет по своим делам
   let changed = false;
   for (let i = orders.length - 1; i >= 0; i--) {
     orders[i].ttl -= dt;
-    if (orders[i].ttl <= 0) { if (orders[i].id === previewId) previewId = null; orders.splice(i, 1); changed = true; }
+    if (orders[i].ttl <= 0) { if (orders[i].id === previewId) previewId = null; orders.splice(i, 1); changed = true; spawnTimer = nextOfferWait(); }
   }
   spawnTimer -= dt;
   if (spawnTimer <= 0) {
-    if (orders.length < MAX_ORDERS && fuel >= LOW_FUEL) createOrder();
+    if (online && orders.length < MAX_ORDERS && fuel >= LOW_FUEL) createOrder();
     spawnTimer = (6 + Math.random() * 6) * ratingFactor() / (1 + 1.5 * (surgeAt(car.x, car.y) - 1)) * (business ? 1.6 : 1);   // при спросе чаще, «по делам» - реже
     const hx = HEX_BASE.get(hexKey(...hexAt(car.x, car.y)));
     if ((!hx || hx.base < 0.3) && Math.random() < 0.6) spawnTimer += 5 + Math.random() * 5;       // в пригороде и на окраинах заказов меньше
@@ -501,7 +535,26 @@ function acceptOrder(id) {
   current = o; current.tip = 0; current.mood = 0; orders = []; previewId = null; lastRide = null; freeCam = false;
   startLeg(o.from, "toPickup");
 }
-function declineOrder(id) { orders = orders.filter(x => x.id !== id); if (previewId === id) previewId = null; renderPanel(); }
+// Цепочка: ближе к концу поездки может прийти следующий заказ рядом с местом высадки. Чаще - в центре и при спросе
+function tickChain(dt) {
+  const c = current;
+  if (c.nextOffer) { c.nextOffer.ttl -= dt; const bar = $("bar-" + c.nextOffer.id); if (bar) bar.style.width = (c.nextOffer.ttl / ORDER_TTL * 100) + "%";
+    if (c.nextOffer.ttl <= 0) { c.nextOffer = null; renderPanel(); } return; }
+  if (c.chainChecked || c.next || !online || shiftOver || !c.rideLen || 1 - remainingLen() / c.rideLen < 0.65 || fuel < LOW_FUEL + 3) return;
+  c.chainChecked = true;
+  const bx = N[c.to][0], by = N[c.to][1], hx = HEX_BASE.get(hexKey(...hexAt(bx, by)));
+  if (Math.random() > 0.15 + 0.35 * (hx ? hx.base : 0) + 0.5 * (surgeAt(bx, by) - 1)) return;
+  const o = buildOrder(bx, by, c.to, 200, 2500); if (!o) return;
+  o.chain = true; c.nextOffer = o; renderPanel();
+}
+// Сколько ждать следующего предложения после отказа: в центре и при спросе - недолго, на окраине - дольше.
+// Иногда заказы идут друг за другом
+function nextOfferWait() {
+  if (Math.random() < 0.22) return 1 + Math.random() * 1.5;
+  const hx = HEX_BASE.get(hexKey(...hexAt(car.x, car.y))), dens = hx ? hx.base : 0, sg = surgeAt(car.x, car.y);
+  return (3 + (1 - dens) * 11) * (0.7 + Math.random() * 0.6) / (1 + 1.5 * (sg - 1)) * ratingFactor();
+}
+function declineOrder(id) { orders = orders.filter(x => x.id !== id); if (previewId === id) previewId = null; spawnTimer = nextOfferWait(); renderPanel(); }
 function legSpeed(steps, soft) {   // во сколько раз ускорить время на этом отрезке, чтобы он не тянулся слишком долго
   let sec = 0; for (const s of steps) sec += s.t;
   const g = sec / TIME_SCALE, eff = g > soft ? soft + (g - soft) * SOFT_KEEP : g;
@@ -518,7 +571,7 @@ function pickScene(o, later) {
       const id = p.scenes[step], need = SCENES[id].minLike === undefined ? -99 : SCENES[id].minLike;
       if (aff >= need) { storyStep[p.name] = step + 1; return id; }
     }
-    if (aff < 0) return COLD[0];
+    if (aff < 0) return Math.random() < 0.3 ? COLD[0] : null;   // обиженный пассажир чаще просто молчит
   }
   const r = +o.rating, conflict = r < 4.6 && Math.random() < 0.65;   // у пассажира с рейтингом ниже 4.6 часто бывают проблемы
   if (conflict) { o.conflict = true; return fresh(CONFLICTS); }
@@ -535,7 +588,7 @@ const ARRIVAL_RE = /(приехали|доехали|довез|довёз|мн�
 for (const id in SCENES) for (const k in SCENES[id].nodes) if (ARRIVAL_RE.test(SCENES[id].nodes[k].text)) SCENES[id].nodes[k].atEnd = true;
 const arrivedYet = () => !(state === "toDropoff" || state === "toStop" || state === "stopped" || state === "boarding");
 function startDialogue(o, later) {
-  const sc = SCENES[pickScene(o, later)]; if (!sc) return; if (o.passenger.scenes) met[o.name] = true;
+  const id = pickScene(o, later), sc = id && SCENES[id]; if (!sc) return; if (o.passenger.scenes) met[o.name] = true;
   if ((sc.atEnd || sc.nodes[sc.start].atEnd) && !arrivedYet()) { current.epilogue = { scene: sc, nodeId: sc.start }; return; }   // сцена целиком - по прибытии
   dialogue = { scene: sc, nodeId: sc.start };
 }
@@ -562,7 +615,7 @@ function chooseAnswer(i) {
   renderPanel();
 }
 function arrive() {
-  if (state === "selfDrive") { state = "idle"; checkBusinessDone(); renderPanel(); return; }
+  if (state === "selfDrive") { state = "idle"; selfTarget = null; checkBusinessDone(); renderPanel(); return; }
   if (state === "toPickup") { state = "boarding"; boardTimer = 1.2 + current.late; boardT = 0; renderPanel(); }
   else if (state === "toFuel") refuel();
   else if (state === "toStop") { state = "stopped"; stopT = 0; stopDur = 14 + Math.random() * 16; renderPanel(); }
@@ -609,14 +662,16 @@ function finishRide(reason) {
   // Оценку ставят не все: довольные - примерно каждый третий, недовольные - чаще. Явная оценка из диалога ставится всегда
   const stars = c.stars !== undefined ? c.stars : Math.random() < (c.mood < 0 ? 0.7 : 0.35) ? Math.max(1, 5 + Math.min(0, c.mood)) : 0;
   if (stars > 0) { rates.push(stars); if (rates.length > 150) rates.shift(); }
-  const fee = c.noFee ? 0 : Math.round(fare * FEE);   // комиссия с заказа; поездка «мимо приложения» - без комиссии
+  const fee = c.noFee ? 0 : Math.round(fare * (c.feeRate || FEE));   // комиссия с заказа; поездка «мимо приложения» - без комиссии
   ledger.fares += fare; ledger.tips += tip; ledger.fee += fee;
   money += fare - fee + tip; ridesDone++; shiftMoney = shiftNet(); shiftRides++;
   if (fare > 0) floaters.push({ text: "+" + (fare - fee) + " ₽", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -20 });
   if (tip > 0) floaters.push({ text: "+" + tip + " ₽ чаевые", x: car.x, y: car.y, age: 0, color: "#b8860b", dy: 6 });
   lastRide = { name: c.name, cash: c.cash, offApp: c.offApp, fines: c.fineList || [], price: fare, fee, tip, stars, mood: c.mood, note: reason ? reason + (mult === 0 ? ", оплаты нет" : c.partial !== undefined ? ", оплата за проеханное" : "") : mult === 0 ? "Пассажир не заплатил" : "", wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
   let goalNow = false; if (!goalReached && money >= GOAL) { goalReached = true; goalNow = true; }
-  current = null; dialogue = null; state = "idle"; route = []; spawnTimer = 2; checkBusinessDone(); updateTop(); saveGame(); renderPanel();
+  const chained = c.next; current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); checkBusinessDone(); updateTop(); saveGame();
+  if (chained) { chained.ttl = ORDER_TTL; orders = [chained]; acceptOrder(chained.id); return renderPanel(); }   // сразу едем к следующему клиенту
+  renderPanel();
   if (goalNow) showEnding();
 }
 
@@ -629,7 +684,7 @@ function endShift() {
   endingEl.hidden = false; saveGame(); renderPanel();
 }
 function tickClock() {
-  const m = Math.floor(clock / 60) + DAY_START, txt = String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0") + " · смена " + day;
+  const m = Math.floor(clock / 60) + DAY_START, txt = String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0") + " · " + MODE_NAME[modeNow()];
   if (txt !== lastClk) { lastClk = txt; $("clock").textContent = txt; }
 }
 function showEnding() {
@@ -655,7 +710,7 @@ endCard.addEventListener("click", e => {
 function showLedger() {
   const L = ledger, f = v => v.toLocaleString("ru-RU") + " ₽", row = (t, v, minus) => '<div class="lrow' + (minus && v ? " minus" : "") + '"><span>' + t + "</span><b>" + (minus && v ? "−" : "") + f(v) + "</b></div>";
   $("lday").textContent = day;
-  $("lrows").innerHTML = row("Заказы (" + shiftRides + ")", L.fares) + row("Чаевые и доплаты", L.tips) + row("Комиссия " + Math.round(FEE * 100) + "%", L.fee, true) +
+  $("lrows").innerHTML = row("Заказы (" + shiftRides + ")", L.fares) + row("Чаевые и доплаты", L.tips) + row("Комиссия", L.fee, true) +
     row("Аренда машины", L.rent, true) + row("Топливо" + (L.fuelL ? " (" + Math.round(L.fuelL) + " л)" : ""), L.fuel, true) + (L.fines ? row("Штрафы и расходы", L.fines, true) : "") +
     '<div class="lrow total"><span>Итого за смену</span><b>' + (shiftNet() < 0 ? "−" : "") + f(Math.abs(shiftNet())) + "</b></div>" +
     '<div class="lsub">Пробег ' + Math.round(L.km) + " км · в баке " + Math.round(fuel) + " л · на счету " + f(money) + "</div>";
@@ -664,25 +719,33 @@ function showLedger() {
 $("earn").addEventListener("click", showLedger);
 $("ledger").addEventListener("click", e => { if (e.target.closest("[data-close]")) $("ledger").hidden = true; });
 $("fuelpill").addEventListener("click", () => { if (state === "idle") goRefuel(); });
-function updateBizMenu() {
-  const left = BUSINESS_PER_SHIFT - businessUses, btn = $("bizbtn");
-  $("bizinfo").textContent = business ? "Едете к точке: " + business.addr + ". Заказы приходят только в ту сторону." :
-    "Отметьте на карте, куда вам нужно, - будут приходить заказы по пути. Осталось " + Math.max(0, left) + " из " + BUSINESS_PER_SHIFT + " за смену.";
-  btn.textContent = business ? "Выключить режим" : "Выбрать точку на карте"; btn.disabled = !business && left <= 0;
+function showModes() {
+  const m = modeNow(), left = Math.max(0, BUSINESS_PER_SHIFT - businessUses);
+  const card = (id, title, extra, text, dis) => '<button class="mode' + (id === "business" ? " biz" : "") + (m === id ? " on" : "") + '" data-mode="' + id + '"' + (dis ? " disabled" : "") + "><b>" + title + "<i>" + extra + "</i></b><small>" + text + "</small></button>";
+  $("modelist").innerHTML =
+    card("classic", "Классический", "комиссия 25%", "Куда ехать, станет известно после посадки.") +
+    card("flex", "Гибкий", "+5% комиссии", "Конечная точка видна сразу в предложении заказа, карта показывает весь маршрут.") +
+    card("business", "По делам", "+9% комиссии", business ? "Едете к точке: " + business.addr + ". Нажмите, чтобы выключить." : "Отметьте на карте, куда вам нужно, - будут приходить заказы по пути. Осталось " + left + " из " + BUSINESS_PER_SHIFT + " за смену.", !business && left <= 0) +
+    card("district", "Мой район", "скоро", "Режим появится позже.", true);
+  $("modes").hidden = false;
 }
-$("bizbtn").addEventListener("click", () => {
-  if (business) { stopBusiness(); updateBizMenu(); return; }
-  if (businessUses >= BUSINESS_PER_SHIFT) return;
-  menuEl.hidden = true; picking = true; $("pickbar").hidden = false;
+$("modes").addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { $("modes").hidden = true; return; }
+  const b = e.target.closest("[data-mode]"); if (!b || b.disabled) return;
+  const id = b.dataset.mode; $("modes").hidden = true;
+  if (id === "business") { if (business) stopBusiness(); else if (businessUses < BUSINESS_PER_SHIFT) { picking = true; $("pickbar").hidden = false; } }
+  else { if (business) stopBusiness(); workMode = id; orders = []; previewId = null; spawnTimer = 1.5; saveGame(); renderPanel(); }
+  lastClk = "";
 });
+$("ratingpill").addEventListener("click", showModes);
 $("pickcancel").addEventListener("click", () => { picking = false; $("pickbar").hidden = true; });
-statusPill.addEventListener("click", () => { updateTop(); updateStatus(); updateBizMenu(); menuEl.hidden = false; });
+statusPill.addEventListener("click", () => { updateTop(); updateStatus(); $("mday").textContent = day; menuEl.hidden = false; });
 menuEl.addEventListener("click", e => { if (e.target.closest("[data-close]")) menuEl.hidden = true; });
 resetBtn.addEventListener("click", () => askConfirm("Сбросить весь прогресс?", "Деньги, рейтинг, поездки и истории пассажиров начнутся заново. Это нельзя отменить.", "Сбросить", resetGame));
 // Своё окно подтверждения: стандартное окно браузера (confirm) на некоторых страницах запрещено и молча отвечает «нет»
 function askConfirm(title, text, okText, onOk) {
   const el = $("ask"); $("asktitle").textContent = title; $("asktext").textContent = text; $("askok").textContent = okText;
-  el.hidden = false; askCb = onOk;
+  el.hidden = false; askCb = onOk; $("askok").style.background = "";
 }
 let askCb = null;
 $("ask").addEventListener("click", e => {
@@ -728,7 +791,8 @@ function update(dt) {
     if (state === "toDropoff" && current.talkIdx < current.talkAt.length && 1 - remainingLen() / current.rideLen >= current.talkAt[current.talkIdx]) {
       startDialogue(current, current.talkIdx > 0); current.talkIdx++; renderPanel(); if (dialogue) return;   // разговор по ходу поездки
     }
-    if (state === "selfDrive") tickOrders(dt);
+    if (state === "toDropoff" && current) tickChain(dt);
+    if (state === "selfDrive") { if (shiftOver) { state = "idle"; route = []; return; } tickOrders(dt); }
     let t = dt * ff; clock += t * legScale;   // перемотка (ff) ускоряет и машину, и игровые часы, так что время смены тратится честно
     // едем по шагам маршрута; скорость зависит от типа дороги и ускорения времени
     while (t > 0 && route.length) {
@@ -758,7 +822,28 @@ function getFocus() {
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 let freeCam = false, freeIdle = 0;   // freeCam - игрок сам двигает карту
 const FREE_RETURN = 12;              // через сколько секунд без касаний камера сама вернётся к машине
+let savedScale = null;   // масштаб игрока, пока камера показывает весь маршрут предложенного заказа
+function orderFit() {
+  if (!(state === "idle" || state === "selfDrive") || !orders.length || modeNow() === "classic") return null;
+  const o = orders[0], xs = [car.x, N[o.from][0], N[o.to][0]], ys = [car.y, N[o.from][1], N[o.to][1]];
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const sc = clamp(Math.min((cw - 70) / Math.max(1, x1 - x0), (ch * 0.42) / Math.max(1, y1 - y0)), zoomMin(), PX_PER_M);
+  return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, scale: sc };
+}
+function easeScale(target, k) {   // плавно меняем масштаб; слой карты на время пересчитывать не нужно
+  const ns = Math.abs(target - scale) < 0.0005 ? target : scale + (target - scale) * k;
+  if (ns !== scale) { scale = ns; viewW = cw / scale; viewH = ch / scale; zoomUntil = performance.now() + 180; }
+}
 function updateCamera(dt, snap) {
+  const fit = freeCam ? null : orderFit();
+  if (fit) {
+    if (savedScale === null) savedScale = scale;
+    const k = snap ? 1 : Math.min(1, dt * 4); easeScale(fit.scale, k);
+    camX += (clamp(fit.x, viewW / 2, W - viewW / 2) - camX) * k;
+    camY += (clamp(fit.y + 0.2 * viewH, viewH / 2, H - viewH / 2) - camY) * k;   // маршрут - в верхней, открытой части экрана
+    return;
+  }
+  if (savedScale !== null && !freeCam) { easeScale(savedScale, snap ? 1 : Math.min(1, dt * 4)); if (scale === savedScale) savedScale = null; }
   if (freeCam) {
     camX = clamp(camX, viewW / 2, W - viewW / 2); camY = clamp(camY, viewH / 2, H - viewH / 2);
     if (!ptrs.size && (freeIdle += dt) > FREE_RETURN) freeCam = false; else return;
@@ -773,7 +858,7 @@ const ZOOM_MAX = 1.6;                                           // пиксел�
 const zoomMin = () => Math.max(0.035, cw / W, ch / H);          // дальше отдалять нельзя: вся карта уже на экране
 let zoomUntil = 0;                                              // пока идёт масштабирование, слой карты не перерисовываем каждый кадр
 function setZoom(ns, ax = cw / 2, ay = ch / 2) {                // ax, ay - точка экрана, которая остаётся на месте
-  ns = clamp(ns, zoomMin(), ZOOM_MAX); if (ns === scale) return;
+  ns = clamp(ns, zoomMin(), ZOOM_MAX); if (ns === scale) return; savedScale = null;
   if (freeCam) { const wx = camX + (ax - cw / 2) / scale, wy = camY + (ay - ch / 2) / scale; camX = wx - (ax - cw / 2) / ns; camY = wy - (ay - ch / 2) / ns; }
   scale = ns; viewW = cw / scale; viewH = ch / scale; zoomUntil = performance.now() + 180;
   if (!freeCam) updateCamera(0, true);
@@ -812,6 +897,9 @@ const endDrag = e => {
     const rect = canvas.getBoundingClientRect();
     const wx = camX - viewW / 2 + (e.clientX - rect.left) / scale, wy = camY - viewH / 2 + (e.clientY - rect.top) / scale;
     picking = false; $("pickbar").hidden = true; setBusiness(wx, wy);
+  } else if (!picking && tapStart && e.type === "pointerup" && (state === "idle" || state === "selfDrive") && Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) < 8 && performance.now() - tapStart.t < 400) {
+    const rect = canvas.getBoundingClientRect();
+    tapDrive(camX - viewW / 2 + (e.clientX - rect.left) / scale, camY - viewH / 2 + (e.clientY - rect.top) / scale);
   }
   tapStart = null;
   ptrs.delete(e.pointerId); pinch = null;
@@ -880,7 +968,7 @@ function resultHtml() {
 function orderCardHtml(o) {
   const sg = o.surgeAdd > 0 ? '<span class="sbadge">Повышенный спрос · +' + o.surgeAdd + " ₽</span>" : "";   // полную цену не показываем, только надбавку
   return '<div class="ocard' + (o.id === previewId ? " sel" : "") + (o.surgeAdd > 0 ? " surge" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate' + (+o.rating < 4.6 ? " low" : "") + '">★ ' + o.rating + "</span>" + sg + '</div><div class="addr"><i class="dotA"></i><div><b>' + (o.fromAddr || addrOf(o.from)) + "</b><small>" + (o.fromPlace ? o.fromPlace.n + " · " : "") + "до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
-    ' мин</small></div></div><div class="ohide">Куда ехать, станет известно после посадки</div><div class="obar"><div class="obarfill" id="bar-' + o.id +
+    ' мин</small></div></div>' + (modeNow() !== "classic" ? '<div class="addr"><i class="dotB"></i><div><b>' + (o.toAddr || addrOf(o.to)) + "</b><small>" + (o.place ? o.place.n + " · " : "") + o.tripKm.toFixed(1) + " км</small></div></div>" : "") + '<div class="ohide"></div><div class="obar"><div class="obarfill" id="bar-' + o.id +
     '"></div></div><div class="obtns"><button class="skip" data-act="decline" data-id="' + o.id + '">Пропустить</button><button class="take" data-act="accept" data-id="' + o.id + '">Принять</button></div></div>';
 }
 function ridePanelHtml() {
@@ -892,15 +980,24 @@ function ridePanelHtml() {
   const pay = (known ? '<span class="paychip">' + (current.cash ? "Наличные" : "Карта") + "</span>" : "") + (current.surgeAdd > 0 ? '<span class="paychip blue">Повышенный спрос +' + current.surgeAdd + " ₽</span>" : "");
   return '<div class="ridehead">' + chip + '<span class="rprice" id="rprice">' + (known ? liveFare() + " ₽" : "") + '</span></div><div class="rname">Пассажир<span>★ ' + current.rating + "</span></div>" + pay + (state === "toDropoff" ? B + '<button class="kick" data-act="kick">Высадить пассажира</button>' : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : state === "boarding" ? A + '<div class="stopinfo" id="bwait">Бесплатное ожидание: ещё ' + PICK_FREE + " с</div>" : A);
 }
+function chainHtml() {
+  const c = current; if (!c) return "";
+  if (c.next) return '<div class="chainok">Следующий заказ принят: ' + (c.next.fromAddr || addrOf(c.next.from)) + "</div>";
+  if (!c.nextOffer) return "";
+  const o = c.nextOffer;
+  return '<div class="chain' + (o.surgeAdd > 0 ? " surge" : "") + '"><div class="otop"><b>Следующий заказ</b>' + (o.surgeAdd > 0 ? '<span class="sbadge">+' + o.surgeAdd + " ₽</span>" : "") + '</div><div class="addr"><i class="dotA"></i><div><b>' + (o.fromAddr || addrOf(o.from)) +
+    "</b><small>" + o.pickupKm.toFixed(1) + " км от места высадки</small></div></div>" + (modeNow() !== "classic" ? '<div class="addr"><i class="dotB"></i><div><b>' + (o.toAddr || addrOf(o.to)) + "</b><small>" + o.tripKm.toFixed(1) + " км</small></div></div>" : "") +
+    '<div class="obar"><div class="obarfill" id="bar-' + o.id + '"></div></div><div class="obtns"><button class="skip" data-act="chainno">Пропустить</button><button class="take" data-act="chainyes">Принять</button></div></div>';
+}
 function renderPanel() {
   let html = "";
   const biz = business ? '<div class="bizchip"><span>По делам: ' + business.addr + " · " + (distTo(car.x, car.y, business) / 1000).toFixed(1) + " км</span><span>" +
     (state === "idle" ? '<button data-act="selfdrive">Поехать самому</button>' : "") + '<button data-act="bizoff">Выключить</button></span></div>' : "";
   if (state === "selfDrive") {
-    html = biz + (orders.length ? '<div class="listhead">Заказ по пути</div>' + orders.map(orderCardHtml).join("") : '<div class="search"><span class="pulse"></span><div><b>Едем по делам</b><small>Если появится заказ по пути - предложим</small></div></div>');
+    html = biz + (orders.length ? '<div class="listhead">Заказ по пути</div>' + orders.map(orderCardHtml).join("") : '<div class="search"><span class="pulse"></span><div><b>' + (business ? "Едем по делам" : "Едем: " + (selfTarget ? selfTarget.addr : "")) + "</b><small>" + (online ? "Если появится заказ - предложим" : "Вы не на линии") + '</small></div></div><button class="fuelgo" data-act="stopself">Остановиться</button>');
   } else if (state === "idle") {
     html = biz + resultHtml();
-    if (!online) html += '<div class="offmsg"><b>Вы не на линии</b><small>Нажмите «Катать», чтобы получать заказы</small></div>';
+    if (!online) {}
     else if (fuel < LOW_FUEL) html += '<div class="offmsg"><b>Мало топлива</b><small>Заказы не приходят, пока не заправитесь</small><button class="fuelgo" data-act="refuel">Поехать на заправку</button></div>';
     else if (!orders.length) html += '<div class="search"><span class="pulse"></span><div><b>Ищем заказы рядом</b><small>Чем выше рейтинг, тем чаще заказы</small></div></div>';
     else { html += '<div class="listhead">Новый заказ</div>'; for (const o of orders) html += orderCardHtml(o); }
@@ -911,7 +1008,7 @@ function renderPanel() {
     html = '<div class="dialog"><div class="who">Пассажир · ' + (current.cash ? "наличные" : "карта") + " · едем: " + destLabel(current) + '</div><div class="said">' + node.text + "</div>";
     node.choices.forEach((c, i) => { html += '<button class="choice" data-choice="' + i + '">' + c.text + "</button>"; });
     html += "</div>";
-  } else html = ridePanelHtml();
+  } else html = ridePanelHtml() + (state === "toDropoff" ? chainHtml() : "");
   panel.innerHTML = html; updateStatus();
 }
 panel.addEventListener("click", e => {
@@ -920,8 +1017,11 @@ panel.addEventListener("click", e => {
     if (btn.dataset.choice !== undefined) return chooseAnswer(Number(btn.dataset.choice));
     if (btn.dataset.act === "closeResult") { lastRide = null; return renderPanel(); }
     if (btn.dataset.act === "kick") return kickOut();
+    if (btn.dataset.act === "chainyes" && current && current.nextOffer) { current.next = current.nextOffer; current.nextOffer = null; return renderPanel(); }
+    if (btn.dataset.act === "chainno" && current) { current.nextOffer = null; return renderPanel(); }
     if (btn.dataset.act === "refuel") return goRefuel();
     if (btn.dataset.act === "selfdrive") return driveSelf();
+    if (btn.dataset.act === "stopself") { state = "idle"; route = []; selfTarget = null; return renderPanel(); }
     if (btn.dataset.act === "bizoff") return stopBusiness();
     const id = Number(btn.dataset.id);
     if (btn.dataset.act === "accept") acceptOrder(id); else if (btn.dataset.act === "decline") declineOrder(id);
@@ -1126,7 +1226,7 @@ function layoutLabels(vx, vy, sx, sy, surgeLabels) {
     }
   }
   if (scale >= 0.16) placePois(false);   // мелкие места - только вблизи
-  if (HEX_R * scale > 38) {   // коэффициент спроса в центре шестиугольника, если он достаточно крупный на экране
+  if (HEX_R * scale > 70) {   // коэффициент спроса в центре шестиугольника, если он достаточно крупный на экране
     for (const [h, m] of surgeLabels) { const x = sx(h.x), y = sy(h.y); if (!free(x, y, 34, 16)) continue; take(x, y, 34, 16); surgeOut.push([h, m]); }
   }
   return { vx, vy, scale, t: performance.now(), shown, streets: streetsOut, surge: surgeOut };
@@ -1178,9 +1278,13 @@ function draw() {
   }
   ctx.textAlign = "center";
   let A = null, B = null, S = null;   // метки: A - где забрать клиента, B - куда его везти (видна только в пути)
-  if (state === "idle") { const o = orders.find(x => x.id === previewId); if (o) A = o.from; }
+  if (state === "idle" || state === "selfDrive") {
+    const o = orders.find(x => x.id === previewId) || (modeNow() !== "classic" ? orders[0] : null);
+    if (o) { A = o.from; if (modeNow() !== "classic") B = o.to; }   // в гибком режиме и «по делам» видно и конечную точку
+  }
   else if (state === "toPickup" || state === "boarding") A = current.from; else if (state === "toDropoff") B = current.to; else if (state === "toStop" || state === "stopped") { B = current.to; S = current.stopNode; }
   if (business) pin(sx(business.x), sy(business.y), "#5b3fd0", "Д");
+  else if (state === "selfDrive" && selfTarget) pin(sx(selfTarget.x), sy(selfTarget.y), "#5b3fd0", "•");
   if (state === "toFuel" && fuelStop) pin(sx(N[fuelStop.node][0]), sy(N[fuelStop.node][1]), "#56657a", "З");
   if (A !== null) pin(sx(N[A][0]), sy(N[A][1]), "#2fa84f", "A");
   if (B !== null) pin(sx(N[B][0]), sy(N[B][1]), "#e5484d", "B");
