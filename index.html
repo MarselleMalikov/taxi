@@ -75,7 +75,8 @@ button{font-family:inherit}
 .endbtn{display:block;width:100%;margin-top:10px;padding:12px;font-size:16px;border:none;border-radius:10px;color:#fff;background:#4a5163;cursor:pointer}
 .endbtn.main{background:#2fa84f;font-weight:bold}
 
-#recenter{position:absolute;z-index:2;right:10px;top:calc(env(safe-area-inset-top,0px) + 116px);width:44px;height:44px;border:none;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);font-size:22px;color:var(--b);cursor:pointer}
+#recenter{position:absolute;z-index:2;right:10px;top:calc(env(safe-area-inset-top,0px) + 116px);width:44px;height:44px;border:none;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:#3a4250;cursor:pointer}
+#recenter[hidden]{display:none}
 #map{touch-action:none;cursor:grab}#map.drag{cursor:grabbing}
 .paychip{display:inline-block;margin-top:8px;font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:#f1f2f4;color:#374151}
 .ohint{font-size:13px;color:var(--m)}
@@ -95,7 +96,7 @@ button{font-family:inherit}
   </div>
   <div id="osm">© участники OpenStreetMap</div>
   <button id="ff" hidden>⏩ ×1</button>
-  <button id="recenter" hidden title="Вернуться к машине">⌖</button>
+  <button id="recenter" hidden title="Вернуться к машине" aria-label="Вернуться к машине"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
   <div id="sheet"><span class="grab"></span><div id="panel"></div><button id="shift" class="off"></button>
     <div id="sheetfoot"><button id="reset">Сбросить прогресс</button></div></div>
 </div>
@@ -104,7 +105,7 @@ button{font-family:inherit}
 <script src="dialogues.js"></script>
 <script src="dialogues2.js"></script>
 <script src="mapdata.js"></script>
-<script src="buildings.js"></script>
+<script src="osmmap.js"></script>
 <script>
 // ====== Карта: дороги Уфы из mapdata.js (координаты в метрах) ======
 const D = MAPDATA, N = D.nodes, W = D.w, H = D.h, $ = id => document.getElementById(id);
@@ -480,7 +481,7 @@ function ridePanelHtml() {
   const S = current.stopNode === undefined ? "" : '<div class="addr"><i class="dotS"></i><div><b>' + addrOf(current.stopNode) + "</b><small>" + current.stopLabel + "</small></div></div>";
   const chip = state === "toPickup" ? '<span class="chip">Едем к клиенту</span>' : state === "boarding" ? '<span class="chip green">' + (current.late > 0 ? "Пассажир опаздывает…" : "Пассажир садится…") + "</span>" : state === "toStop" ? '<span class="chip">Заезд: ' + current.stopLabel + "</span>" : state === "stopped" ? '<span class="chip">Ждём: ' + current.stopLabel + "</span>" : '<span class="chip green">В пути</span>';
   const known = state !== "toPickup";   // цену и способ оплаты узнаём, только когда приехали к клиенту
-  const pay = known ? '<span class="paychip">' + (current.cash ? "💵 Наличные" : "💳 Карта") + "</span>" : "";
+  const pay = known ? '<span class="paychip">' + (current.cash ? "Наличные" : "Карта") + "</span>" : "";
   return '<div class="ridehead">' + chip + '<span class="rprice">' + (known ? current.price + " ₽" : "") + '</span></div><div class="rname">Пассажир<span>★ ' + current.rating + "</span></div>" + pay + (state === "toDropoff" ? B + '<button class="kick" data-act="kick">Высадить пассажира</button>' : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : A);
 }
 function renderPanel() {
@@ -516,61 +517,132 @@ const MAP_BG = "#f0f1f4";   // фон карты (светло-серый, ка�
 const FILL = ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#fbfbfc"],   // заливка дорог: все белые, как в навигаторе
       EDGE = ["#a9b3c0", "#b1bac6", "#bec5cf", "#c6ccd5", "#cdd2da", "#d6dae0"],   // обводка: у крупных дорог чуть темнее
       WPX = [5.5, 4.5, 3.6, 3, 2.4, 1.6];   // толщина в пикселях: магистраль, главная, средняя, обычная, жилая, двор
-// Дома: раскладываем по сетке 250 м, чтобы рисовать только те, что видны на экране
-const BCELL = 250, BCOLS = Math.ceil(W / BCELL), bcells = new Map();
-const BFILL = ["#d5d9e0", "#dcd8d1", "#d1d6de"], BEDGE = ["#bcc2cc", "#c7c1b7", "#b8bfca"];   // многоэтажки, частный сектор, торговые
-for (const b of (typeof BUILDINGS !== "undefined" ? BUILDINGS : [])) {
-  const [cx, cy, hl, hd, deg, kind] = b, r = deg * Math.PI / 180, ux = Math.cos(r), uy = Math.sin(r);
-  const pts = [cx + ux * hl - uy * hd, cy + uy * hl + ux * hd, cx - ux * hl - uy * hd, cy - uy * hl + ux * hd,
-               cx - ux * hl + uy * hd, cy - uy * hl - ux * hd, cx + ux * hl + uy * hd, cy + uy * hl - ux * hd];
-  const key = Math.floor(cy / BCELL) * BCOLS + Math.floor(cx / BCELL);
-  if (!bcells.has(key)) bcells.set(key, [[], [], []]);
-  bcells.get(key)[kind].push(pts);
+// ====== Реальная карта: вода, зелень, дома (из osmmap.js, данные OpenStreetMap) ======
+// Контур в файле: [x0, y0, dx1, dy1, ...]; переводим в обычные координаты и запоминаем рамку, чтобы быстро отсеивать невидимое
+function decodeRing(r) { const out = new Float32Array(r.length); let x = 0, y = 0; for (let i = 0; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; out[i] = x; out[i + 1] = y; } return out; }
+function decodeLayer(list) {
+  return (list || []).map(p => {
+    const rings = (typeof p[0] === "number" ? [p] : p).map(decodeRing);
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (let i = 0; i < rings[0].length; i += 2) { const x = rings[0][i], y = rings[0][i + 1]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    return { rings, x0, y0, x1, y1 };
+  });
 }
-// Слой домов: рисуем дома один раз в отдельную картинку с запасом вокруг экрана
+const HAS_OSM = typeof OSM !== "undefined";
+const LAYERS = HAS_OSM ? [   // порядок = порядок рисования снизу вверх
+  { items: decodeLayer(OSM.grass),     fill: "#e2efd8" },
+  { items: decodeLayer(OSM.cemetery),  fill: "#dde6d9" },
+  { items: decodeLayer(OSM.wood),      fill: "#cde5c1" },
+  { items: decodeLayer(OSM.park),      fill: "#d2eac6" },
+  { items: decodeLayer(OSM.water),     fill: "#aad3f2" },
+  { items: decodeLayer(OSM.rivers),    line: "#aad3f2", width: 9, open: true },   // небольшие реки линией
+  { items: decodeLayer(OSM.buildings), fill: "#dfe1e6", stroke: "#cdd0d7" }
+] : [];
+// Слой карты рисуем один раз в отдельную картинку с запасом вокруг экрана
 // и перерисовываем, только когда камера уезжает за этот запас (масштаб карты не меняется)
 const BMARGIN = 700, blayer = { cv: document.createElement("canvas"), x: 0, y: 0, w: 0, h: 0, valid: false };
-function renderBuildingLayer(vx, vy) {
+function renderBaseLayer(vx, vy) {
   const L = blayer, px = scale * dpr;
   L.x = vx - BMARGIN; L.y = vy - BMARGIN; L.w = viewW + 2 * BMARGIN; L.h = viewH + 2 * BMARGIN;
   L.cv.width = Math.ceil(L.w * px); L.cv.height = Math.ceil(L.h * px);
-  const g = L.cv.getContext("2d"); g.setTransform(px, 0, 0, px, -L.x * px, -L.y * px); g.lineWidth = 1 / scale; g.lineJoin = "miter";
-  const c0 = Math.floor((L.x - 80) / BCELL), c1 = Math.floor((L.x + L.w + 80) / BCELL), r0 = Math.floor((L.y - 80) / BCELL), r1 = Math.floor((L.y + L.h + 80) / BCELL);
-  for (let kind = 0; kind < 3; kind++) {
+  const g = L.cv.getContext("2d"); g.setTransform(px, 0, 0, px, -L.x * px, -L.y * px); g.lineJoin = "round"; g.lineCap = "round";
+  const X1 = L.x + L.w, Y1 = L.y + L.h;
+  for (const ly of LAYERS) {
     g.beginPath();
-    for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
-      const cell = bcells.get(r * BCOLS + c); if (!cell) continue;
-      for (const p of cell[kind]) { g.moveTo(p[0], p[1]); g.lineTo(p[2], p[3]); g.lineTo(p[4], p[5]); g.lineTo(p[6], p[7]); g.closePath(); }
+    for (const it of ly.items) {
+      if (it.x1 < L.x || it.x0 > X1 || it.y1 < L.y || it.y0 > Y1) continue;
+      for (const r of it.rings) { g.moveTo(r[0], r[1]); for (let i = 2; i < r.length; i += 2) g.lineTo(r[i], r[i + 1]); if (!ly.open) g.closePath(); }
     }
-    g.fillStyle = BFILL[kind]; g.fill(); g.strokeStyle = BEDGE[kind]; g.stroke();
+    if (ly.fill) { g.fillStyle = ly.fill; g.fill("evenodd"); }   // evenodd - внутренние дворы и острова остаются пустыми
+    if (ly.stroke) { g.lineWidth = 1 / scale; g.strokeStyle = ly.stroke; g.stroke(); }
+    if (ly.line) { g.lineWidth = ly.width; g.strokeStyle = ly.line; g.stroke(); }
   }
   L.valid = true;
 }
-function drawBuildings(vx, vy) {
+function drawBaseLayer(vx, vy) {
   const L = blayer;
-  if (!L.valid || vx < L.x || vy < L.y || vx + viewW > L.x + L.w || vy + viewH > L.y + L.h) renderBuildingLayer(vx, vy);
+  if (!L.valid || vx < L.x || vy < L.y || vx + viewW > L.x + L.w || vy + viewH > L.y + L.h) renderBaseLayer(vx, vy);
   ctx.drawImage(L.cv, L.x, L.y, L.cv.width / (scale * dpr), L.cv.height / (scale * dpr));
 }
-// Значки мест: цвет и символ по категории, как в навигаторе
+
+// ====== Названия улиц ======
+// Склеиваем соседние участки одной улицы в длинные линии: на коротком участке название не помещается
+const STREETS = (() => {
+  const by = new Map();   // имя -> узел -> участки
+  D.edges.forEach((e, i) => { if (e[4] < 0 || e[5] > 4) return; let m = by.get(e[4]); if (!m) by.set(e[4], m = new Map());
+    for (const n of [e[0], e[1]]) { if (!m.has(n)) m.set(n, []); m.get(n).push(i); } });
+  const out = [], done = new Set();
+  for (const [nm, m] of by) {
+    const walk = start => {   // идём от узла, пока улица не разветвится
+      for (const ei of m.get(start)) {
+        if (done.has(ei)) continue;
+        const pts = [start]; let cur = start, e = ei, cls = 9;
+        while (e !== undefined && !done.has(e)) {
+          done.add(e); const E = D.edges[e]; cls = Math.min(cls, E[5]); cur = E[0] === cur ? E[1] : E[0]; pts.push(cur);
+          const nx = m.get(cur); e = nx.length === 2 ? nx.find(x => !done.has(x)) : undefined;
+        }
+        if (pts.length > 1) {
+          const xy = pts.map(n => N[n]); let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+          for (const [x, y] of xy) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+          out.push({ name: D.names[nm], cls, xy, x0, y0, x1, y1 });
+        }
+      }
+    };
+    for (const [n, list] of m) if (list.length !== 2) walk(n);   // сначала от концов и перекрёстков
+    for (const n of m.keys()) walk(n);                           // остались только кольца
+  }
+  return out.sort((a, b) => a.cls - b.cls);   // крупные улицы подписываем первыми
+})();
+// ====== Места на карте ======
+// Цвет и простой значок по категории. Значки рисуются линиями, без эмодзи.
 const PLACE_STYLE = {
-  hospital:    { col: "#e5484d", text: "#c9363b", sym: "+" },
-  mall:        { col: "#0ea5b7", text: "#0b8796", sym: "🛍" },
-  hotel:       { col: "#8b5cf6", text: "#7041d9", sym: "H" },
-  university:  { col: "#3b6fe0", text: "#2f5bc0", sym: "🎓" },
-  museum:      { col: "#d946a8", text: "#b8328b", sym: "M" },
-  station:     { col: "#5b6b82", text: "#46546a", sym: "🚆" },
-  stadium:     { col: "#22a35a", text: "#1b8549", sym: "⚽" },
-  airport:     { col: "#3b6fe0", text: "#2f5bc0", sym: "✈" },
-  bus_station: { col: "#5b6b82", text: "#46546a", sym: "🚌" },
-  other:       { col: "#6f7f96", text: "#4b5563", sym: "•" }
+  hospital:   { col: "#e0474c", g: "cross" },  pharmacy: { col: "#2e9e57", g: "cross" },
+  cafe:       { col: "#e8862a", g: "cup" },    food:     { col: "#e8862a", g: "fork" },
+  shop:       { col: "#1497a8", g: "bag" },    mall:     { col: "#1497a8", g: "bag" },
+  bank:       { col: "#3a6bd6", g: "rub" },    fuel:     { col: "#56657a", g: "fuel" },
+  school:     { col: "#7a63d1", g: "book" },   university: { col: "#3a6bd6", g: "book" },
+  culture:    { col: "#c9479b", g: "star" },   museum:   { col: "#c9479b", g: "columns" },
+  hotel:      { col: "#7a63d1", g: "bed" },    sport:    { col: "#2e9e57", g: "ring" },
+  stadium:    { col: "#2e9e57", g: "ring" },   park:     { col: "#2e9e57", g: "tree" },
+  station:    { col: "#56657a", g: "train" },  bus_station: { col: "#56657a", g: "bus" },
+  airport:    { col: "#3a6bd6", g: "plane" },  other:    { col: "#6f7f96", g: "dot" }
 };
-function placeIcon(x, y, k) {
-  const st = PLACE_STYLE[k] || PLACE_STYLE.other;
-  ctx.beginPath(); ctx.arc(x, y + 1, 8.5, 0, 7); ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.fill();   // мягкая тень
-  ctx.beginPath(); ctx.arc(x, y, 8.5, 0, 7); ctx.fillStyle = st.col; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = "#fff"; ctx.stroke();
-  const emoji = st.sym.length > 1 || st.sym.charCodeAt(0) > 0x2000;
-  ctx.font = emoji ? "9px sans-serif" : "bold 11px sans-serif"; ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.fillText(st.sym, x, y + 0.5);
+// Насколько место важно: важные получают значок и подпись первыми
+const PLACE_RANK = { airport: 0, station: 0, bus_station: 0, mall: 1, hospital: 1, university: 1, museum: 1, stadium: 1, park: 2, culture: 2, hotel: 2,
+  sport: 3, school: 4, shop: 4, fuel: 4, bank: 5, pharmacy: 5, cafe: 5, food: 5 };
+const POIS = D.places.map(p => ({ x: p.x, y: p.y, k: p.k, n: p.n, major: true }))
+  .concat(HAS_OSM ? OSM.pois.map(p => ({ x: p[0], y: p[1], k: p[2], n: p[3], major: false })) : [])
+  .sort((a, b) => (b.major - a.major) || ((PLACE_RANK[a.k] ?? 6) - (PLACE_RANK[b.k] ?? 6)) || (a.n < b.n ? -1 : 1));
+function glyph(name, x, y) {   // белый значок размером около 10 px в центре кружка
+  const c = ctx; c.save(); c.translate(x, y); c.fillStyle = c.strokeStyle = "#fff"; c.lineWidth = 1.4; c.lineCap = "round"; c.lineJoin = "round";
+  const P = () => c.beginPath();
+  switch (name) {
+    case "cross": c.fillRect(-1.3, -4.2, 2.6, 8.4); c.fillRect(-4.2, -1.3, 8.4, 2.6); break;
+    case "cup": P(); c.moveTo(-3.5, -2.5); c.lineTo(2, -2.5); c.lineTo(1.4, 3); c.lineTo(-2.9, 3); c.closePath(); c.fill(); P(); c.arc(2.4, -0.3, 1.6, -1.4, 1.4); c.stroke(); break;
+    case "fork": P(); c.moveTo(-2, -4); c.lineTo(-2, 4); c.moveTo(-3.4, -4); c.lineTo(-3.4, -1); c.lineTo(-0.6, -1); c.lineTo(-0.6, -4); c.moveTo(2.4, 4); c.lineTo(2.4, -4); c.quadraticCurveTo(4.2, -2, 2.4, 0.5); c.stroke(); break;
+    case "bag": c.fillRect(-3.6, -1.6, 7.2, 5.6); P(); c.arc(0, -1.6, 2, Math.PI, 0); c.stroke(); break;
+    case "rub": c.font = "bold 10px sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("₽", 0, 0.5); break;
+    case "fuel": c.fillRect(-3.5, -3.8, 4.6, 7.8); P(); c.moveTo(1.1, -1.5); c.lineTo(3.3, 0); c.lineTo(3.3, 3); c.stroke(); break;
+    case "book": P(); c.moveTo(0, -2.5); c.lineTo(-4, -3.5); c.lineTo(-4, 3); c.lineTo(0, 4); c.lineTo(4, 3); c.lineTo(4, -3.5); c.closePath(); c.fill(); c.strokeStyle = PLACE_STYLE.other.col; c.lineWidth = 0.8; P(); c.moveTo(0, -2.5); c.lineTo(0, 4); c.stroke(); break;
+    case "star": P(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 1.9 : 4.4; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.fill(); break;
+    case "columns": P(); c.moveTo(-4.4, -2); c.lineTo(0, -4.6); c.lineTo(4.4, -2); c.closePath(); c.fill(); c.fillRect(-3.6, -1.2, 1.5, 4.2); c.fillRect(-0.75, -1.2, 1.5, 4.2); c.fillRect(2.1, -1.2, 1.5, 4.2); c.fillRect(-4.4, 3.2, 8.8, 1.3); break;
+    case "bed": c.fillRect(-4.2, -0.4, 8.4, 2.6); c.fillRect(-4.2, -3.6, 1.4, 7.4); c.fillRect(2.8, 2.2, 1.4, 1.6); c.fillRect(-2.4, -2.4, 2.6, 2); break;
+    case "ring": P(); c.arc(0, 0, 3.4, 0, 7); c.lineWidth = 1.8; c.stroke(); break;
+    case "tree": P(); c.arc(0, -1.2, 3.4, 0, 7); c.fill(); c.fillRect(-0.7, 1.5, 1.4, 3); break;
+    case "train": c.fillRect(-3.2, -4, 6.4, 6.6); P(); c.moveTo(-2.4, 2.5); c.lineTo(-3.6, 4.4); c.moveTo(2.4, 2.5); c.lineTo(3.6, 4.4); c.stroke(); break;
+    case "bus": c.fillRect(-3.6, -4, 7.2, 6.8); c.fillRect(-3.2, 2.8, 1.6, 1.4); c.fillRect(1.6, 2.8, 1.6, 1.4); break;
+    case "plane": P(); c.moveTo(0, -4.6); c.lineTo(0.9, -1); c.lineTo(4.4, 1); c.lineTo(4.4, 2); c.lineTo(0.9, 1); c.lineTo(0.6, 3.4); c.lineTo(1.8, 4.4); c.lineTo(-1.8, 4.4); c.lineTo(-0.6, 3.4); c.lineTo(-0.9, 1); c.lineTo(-4.4, 2); c.lineTo(-4.4, 1); c.lineTo(-0.9, -1); c.closePath(); c.fill(); break;
+    default: P(); c.arc(0, 0, 2, 0, 7); c.fill();
+  }
+  c.restore();
+}
+const textColor = col => "#" + [1, 3, 5].map(i => Math.round(parseInt(col.substr(i, 2), 16) * 0.82).toString(16).padStart(2, "0")).join("");   // подпись чуть темнее значка
+function placeIcon(x, y, k, major) {
+  const st = PLACE_STYLE[k] || PLACE_STYLE.other, r = major ? 8.5 : 7.5;
+  ctx.beginPath(); ctx.arc(x, y + 0.8, r, 0, 7); ctx.fillStyle = "rgba(0,0,0,.16)"; ctx.fill();   // мягкая тень
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = st.col; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = "#fff"; ctx.stroke();
+  if (!major) { ctx.save(); ctx.translate(x, y); ctx.scale(0.85, 0.85); ctx.translate(-x, -y); }
+  glyph(st.g, x, y); if (!major) ctx.restore();
 }
 function pin(x, y, col, letter) {
   ctx.save(); ctx.translate(x, y); ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(-16, -16, -14, -38, 0, -38); ctx.bezierCurveTo(14, -38, 16, -16, 0, 0);
@@ -582,7 +654,7 @@ function draw() {
   const k = dpr * scale, vx = camX - viewW / 2, vy = camY - viewH / 2, sx = x => (x - vx) * scale, sy = y => (y - vy) * scale;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = MAP_BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.setTransform(k, 0, 0, k, -vx * k, -vy * k);   // дальше рисуем в метрах города
-  drawBuildings(vx, vy);   // дома рисуем первыми, под дорогами
+  drawBaseLayer(vx, vy);   // вода, зелень и дома - первыми, под дорогами
   const vis = [[], [], [], [], [], []];
   for (const e of D.edges) {   // отбираем только те дороги, что попадают в экран
     const a = N[e[0]], b = N[e[1]];
@@ -601,38 +673,61 @@ function draw() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);   // дальше рисуем в пикселях экрана: подписи, метки, машина
   ctx.font = "11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
   // Подписи без наложений: каждая занимает прямоугольник, и новая не ставится, если пересекает уже занятое
-  const vp = D.places.filter(p => p.x > vx && p.x < vx + viewW && p.y > vy && p.y < vy + viewH), placed = [], used = new Set();
-  const free = (x, y, w, h) => { if (x - w / 2 < 6 || x + w / 2 > cw - 6 || y < 96) return false;   // не у краёв и не под верхними плашками
+  const placed = [], used = new Set();
+  const free = (x, y, w, h) => { if (x - w / 2 < 6 || x + w / 2 > cw - 6 || y - h / 2 < 92) return false;   // не у краёв и не под верхними плашками
     return !placed.some(r => x - w / 2 < r[0] + r[2] && x + w / 2 > r[0] && y - h / 2 < r[1] + r[3] && y + h / 2 > r[1]); };
   const take = (x, y, w, h) => placed.push([x - w / 2, y - h / 2, w, h]);
-  take(sx(car.x), sy(car.y), 70, 50);   // машину подписями не закрываем
-  ctx.font = "bold 11px sans-serif";
-  const pl = vp.length <= 14 ? vp : [];
-  for (const p of pl) {   // места подписываем в первую очередь: справа от значка, а если не влезает - слева
-    const w = ctx.measureText(p.n).width, x = sx(p.x), y = sy(p.y);
-    p._side = y < 100 ? 0 : x + 14 + w < cw - 4 ? 1 : x - 14 - w > 4 ? -1 : 0;   // 0 - без подписи
-    if (p._side) take(x + p._side * (8 + w / 2), y, w + 26, 18);
-  }
+  take(sx(car.x), sy(car.y), 70, 50);   // машину значками и подписями не закрываем
+  // Места: идём от важных к мелким. Мелкое место показываем только вместе с подписью, иначе карта превращается в россыпь значков
+  const shown = []; let labels = 0;
+  const placePois = major => {
+    ctx.font = "600 11px sans-serif";
+    for (const p of POIS) {
+      if (p.major !== major || p.x < vx || p.x > vx + viewW || p.y < vy || p.y > vy + viewH) continue;
+      if (!major && (shown.length >= 22 || labels >= 14)) break;
+      const x = sx(p.x), y = sy(p.y), r = major ? 19 : 17;
+      if (!free(x, y, r + (major ? 0 : 16), r + (major ? 0 : 16))) continue;   // мелкие держим на расстоянии друг от друга
+      const w = ctx.measureText(p.n).width;
+      let side = labels < 14 && free(x + 12 + w / 2, y, w + 6, 16) ? 1 : labels < 14 && free(x - 12 - w / 2, y, w + 6, 16) ? -1 : 0;
+      if (!side && !major) continue;
+      take(x, y, r, r); if (side) { take(x + side * (12 + w / 2), y, w + 6, 16); labels++; }
+      shown.push([p, x, y, side]);
+    }
+  };
+  placePois(true);
   ctx.font = "11px sans-serif";
-  for (const c of [0, 1, 2, 3, 4]) for (const e of vis[c]) {   // названия улиц, важные дороги первыми
-    if (e[4] < 0 || used.size > 70) continue;
-    const a = N[e[0]], b = N[e[1]], name = D.names[e[4]];
-    if (Math.hypot(a[0] - b[0], a[1] - b[1]) * scale < 45 || used.has(name + ":" + Math.round(sx((a[0] + b[0]) / 2) / 260) + ":" + Math.round(sy((a[1] + b[1]) / 2) / 260))) continue;
-    const mx = sx((a[0] + b[0]) / 2), my = sy((a[1] + b[1]) / 2);
-    let ang = Math.atan2(b[1] - a[1], b[0] - a[0]); if (ang > Math.PI / 2 || ang < -Math.PI / 2) ang += Math.PI;
-    const w = ctx.measureText(name).width + 6, bw = Math.abs(w * Math.cos(ang)) + 14 * Math.abs(Math.sin(ang)), bh = Math.abs(w * Math.sin(ang)) + 14 * Math.abs(Math.cos(ang));
-    if (!free(mx, my, bw, bh)) continue;
-    take(mx, my, bw, bh); used.add(name + ":" + Math.round(mx / 260) + ":" + Math.round(my / 260));
-    ctx.save(); ctx.translate(mx, my); ctx.rotate(ang); ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.strokeText(name, 0, 0);
-    ctx.fillStyle = "#5b6370"; ctx.fillText(name, 0, 0); ctx.restore();
+  let streetLabels = 0;
+  for (const st of STREETS) {   // ищем на улице почти прямой кусок нужной длины и пишем название вдоль него
+    if (streetLabels > 40) break;
+    if (st.x1 < vx || st.x0 > vx + viewW || st.y1 < vy || st.y0 > vy + viewH) continue;
+    const w = ctx.measureText(st.name).width + 8, P = st.xy;
+    for (let i = 0; i < P.length - 1; i++) {
+      let len = 0, j = i;
+      while (j < P.length - 1 && len < w) { len += Math.hypot(P[j + 1][0] - P[j][0], P[j + 1][1] - P[j][1]) * scale; j++; }
+      if (len < w) break;
+      const ax = sx(P[i][0]), ay = sy(P[i][1]), bx = sx(P[j][0]), by = sy(P[j][1]), cl = Math.hypot(bx - ax, by - ay);
+      if (cl < w * 0.92) continue;   // кусок слишком изогнут
+      let straight = true;
+      for (let q = i + 1; q < j && straight; q++) { const px = sx(P[q][0]), py = sy(P[q][1]); if (Math.abs((bx - ax) * (ay - py) - (ax - px) * (by - ay)) / cl > 3) straight = false; }
+      if (!straight) continue;
+      const mx = (ax + bx) / 2, my = (ay + by) / 2, key = st.name + ":" + Math.round(mx / 260) + ":" + Math.round(my / 260);
+      if (used.has(key)) continue;
+      let ang = Math.atan2(by - ay, bx - ax); if (ang > Math.PI / 2 || ang < -Math.PI / 2) ang += Math.PI;
+      const bw = Math.abs(w * Math.cos(ang)) + 14 * Math.abs(Math.sin(ang)), bh = Math.abs(w * Math.sin(ang)) + 14 * Math.abs(Math.cos(ang));
+      if (!free(mx, my, bw, bh)) continue;
+      take(mx, my, bw, bh); used.add(key); streetLabels++;
+      ctx.save(); ctx.translate(mx, my); ctx.rotate(ang); ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.strokeText(st.name, 0, 0);
+      ctx.fillStyle = "#5b6370"; ctx.fillText(st.name, 0, 0); ctx.restore();
+      i = j;   // следующий кусок этой же улицы - дальше по линии
+    }
   }
-  for (const p of vp) if (sy(p.y) > 92) placeIcon(sx(p.x), sy(p.y), p.k);
-  ctx.textAlign = "left";
-  for (const p of pl) {   // подпись цветом категории
-    if (!p._side) continue;
-    const st = PLACE_STYLE[p.k] || PLACE_STYLE.other, x = sx(p.x) + p._side * 12, y = sy(p.y);
-    ctx.textAlign = p._side > 0 ? "left" : "right";
-    ctx.font = "600 11px sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.92)"; ctx.strokeText(p.n, x, y); ctx.fillStyle = st.text; ctx.fillText(p.n, x, y);
+  placePois(false);
+  for (const [p, x, y] of shown) placeIcon(x, y, p.k, p.major);
+  ctx.font = "600 11px sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.92)";
+  for (const [p, x, y, side] of shown) {   // подпись цветом категории, чуть темнее значка
+    if (!side) continue;
+    ctx.textAlign = side > 0 ? "left" : "right"; ctx.strokeText(p.n, x + side * 12, y);
+    ctx.fillStyle = textColor((PLACE_STYLE[p.k] || PLACE_STYLE.other).col); ctx.fillText(p.n, x + side * 12, y);
   }
   ctx.textAlign = "center";
   let A = null, B = null, S = null;   // метки: A - где забрать клиента, B - куда его везти (видна только в пути)
