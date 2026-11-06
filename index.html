@@ -37,7 +37,8 @@ button{font-family:inherit}
 .grab{display:block;width:40px;height:4px;border-radius:2px;background:#d5d8df;margin:-8px auto 12px}
 #ledger{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#ledger[hidden]{display:none}
 .lrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eceef1;font-size:15px}.lrow span{color:var(--m)}
-.lrow.minus b{color:#c9363b}.lrow.total{border-bottom:none;font-size:17px;padding-top:12px}.lrow.total span{color:var(--ink);font-weight:600}.lsub{font-size:13px;color:var(--m);margin-top:6px}
+.lrow.minus b{color:#c9363b}.lrow.total{border-bottom:none;font-size:17px;padding-top:12px}.lrow.total span{color:var(--ink);font-weight:600}.lsub,.mode small,.askcard p,.ginfo small,.msect small{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.lsub{font-size:13px;color:var(--m);margin-top:6px}
 #modes{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#modes[hidden]{display:none}
 .mode{display:block;width:100%;text-align:left;margin-top:10px;padding:12px 14px;border:2px solid #eceef1;border-radius:14px;background:#fff;font-family:inherit;cursor:pointer}
 .mode b{display:flex;justify-content:space-between;font-size:16px;color:var(--ink)}.mode b i{font-style:normal;font-weight:600;font-size:13px;color:var(--m)}
@@ -755,8 +756,10 @@ function finishRide(reason) {
   if (fare > 0) floaters.push({ text: "+" + (fare - fee) + " ₽", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -20 });
   if (tip > 0) floaters.push({ text: "+" + tip + " ₽ чаевые", x: car.x, y: car.y, age: 0, color: "#b8860b", dy: 6 });
   lastRide = { name: c.name, cash: c.cash, offApp: c.offApp, fines: c.fineList || [], price: fare, fee, tip, stars, mood: c.mood, note: reason ? reason + (mult === 0 ? ", оплаты нет" : c.partial !== undefined ? ", оплата за проеханное" : "") : mult === 0 ? "Пассажир не заплатил" : "", wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
-  const chained = c.next; current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); checkBusinessDone(); updateTop(); saveGame();
+  const chained = c.next, pendingNext = !c.next && c.nextOffer;   // предложенный, но ещё не принятый следующий заказ
+  current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); checkBusinessDone(); updateTop(); saveGame();
   if (chained) { chained.ttl = ORDER_TTL; orders = [chained]; acceptOrder(chained.id); return renderPanel(); }   // сразу едем к следующему клиенту
+  if (pendingNext && pendingNext.ttl > 0 && online) { orders = [pendingNext]; previewId = null; }   // неотвеченное предложение остаётся и ждёт решения
   renderPanel();
 }
 
@@ -803,6 +806,7 @@ function showLedger() {
   $("lday").textContent = day;
   $("lrows").innerHTML = row("Заказы (" + shiftRides + ")", L.fares) + row("Чаевые и доплаты", L.tips) + row("Комиссия", L.fee, true) +
     row("Аренда (" + myCar().name + ")", L.rent, true) + row("Топливо" + (L.fuelL ? " (" + Math.round(L.fuelL) + " л)" : ""), L.fuel, true) + (L.fines ? row("Штрафы, обед и прочее", L.fines, true) : "") +
+    '<div class="lrow"><span>Чистыми в час</span><b>' + (onlineT >= 1800 ? (shiftNet() < 0 ? "−" : "") + f(Math.abs(Math.round(shiftNet() / (onlineT / 3600)))) : "—") + "</b></div>" +
     '<div class="lrow total"><span>Итого за смену</span><b>' + (shiftNet() < 0 ? "−" : "") + f(Math.abs(shiftNet())) + "</b></div>" +
     '<div class="lsub">Пробег ' + Math.round(L.km) + " км · в баке " + Math.round(fuel) + " л · на счету " + f(money) + "</div>";
   $("ledger").hidden = false;
@@ -825,7 +829,7 @@ function carSvg(shape, w) {
 function showGarage() {   // выбор машины и тарифа; сменить можно только до выхода на линию в этой смене (аренда уже оплачена)
   const locked = ledger.rent > 0;
   let html = '<div class="gtar"><b>Принимать заказы</b></div><div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + '" data-cls="' + c + '"' + (clsAllowed(c) ? "" : " disabled") + ">" + TARIFFS[c].name + "</button>").join("") + "</div>" +
-    '<p class="lsub">' + (myCar().t === "econ" ? "На машине Эконом доступны только заказы Эконом." : "Выключите тарифы ниже классом, чтобы брать только дорогие заказы. Но тогда простой будет дольше, особенно в пригороде и без спроса.") + "</p>";
+    '<p class="lsub">' + (myCar().t === "econ" ? "На машине Эконом доступны только заказы Эконом." : "Выключите тарифы ниже классом, чтобы брать только дорогие заказы. Но тогда заказов будет меньше.") + "</p>";
   html += '<p class="lsub">' + (locked ? "Аренда на эту смену уже оплачена. Сменить машину можно в начале следующей смены." : "Аренда списывается при выходе на линию.") + "</p>";
   for (const t of ["econ", "comfort", "cplus"]) {
     const T = TARIFFS[t];
@@ -1345,8 +1349,8 @@ function pin(x, y, col, letter) {
 }
 // Раскладка подписей (улицы, места, коэффициенты спроса). Считаем её не каждый кадр, а когда карта заметно сдвинулась:
 // подписи запоминаются в метрах карты и едут вместе с ней, поэтому при ускорении не мелькают
-let labelCache = null;
-function layoutLabels(vx, vy, sx, sy, surgeLabels) {
+let labelCache = null; const labelBorn = new Map();   // когда подпись впервые появилась - для плавного проявления
+function layoutLabels(vx, vy, sx, sy, surgeLabels, prev) {
   const streetsOut = [], surgeOut = [];
   const placed = [], used = new Set();
   const free = (x, y, w, h) => { if (x - w / 2 < 6 || x + w / 2 > cw - 6 || y - h / 2 < 92) return false;   // не у краёв и не под верхними плашками
@@ -1354,10 +1358,19 @@ function layoutLabels(vx, vy, sx, sy, surgeLabels) {
   const take = (x, y, w, h) => placed.push([x - w / 2, y - h / 2, w, h]);
   take(sx(car.x), sy(car.y), 70, 50);   // машину значками и подписями не закрываем
   // Места: идём от важных к мелким. Мелкое место показываем только вместе с подписью, иначе карта превращается в россыпь значков
-  const shown = []; let labels = 0;
+  const shown = []; let labels = 0; const had = new Set();
+  ctx.font = "600 11px sans-serif";
+  if (prev && prev.scale === scale) for (const [p, side] of prev.shown) {   // уже показанные места оставляем на своих местах
+    if (p.x < vx || p.x > vx + viewW || p.y < vy || p.y > vy + viewH) continue;
+    const x = sx(p.x), y = sy(p.y), r = p.major ? 19 : 17, w = ctx.measureText(p.n).width;
+    if (!free(x, y, r, r) || (side && !free(x + side * (12 + w / 2), y, w + 6, 16))) continue;
+    take(x, y, r, r); if (side) { take(x + side * (12 + w / 2), y, w + 6, 16); labels++; }
+    shown.push([p, side]); had.add(p);
+  }
   const placePois = major => {
     ctx.font = "600 11px sans-serif";
     for (const p of POIS) {
+      if (had.has(p)) continue;
       if (p.major !== major || p.x < vx || p.x > vx + viewW || p.y < vy || p.y > vy + viewH) continue;
       if (!major && (shown.length >= 22 || labels >= 14)) break;
       const far = scale < 0.12;   // издалека - только вокзалы, аэропорт, ТЦ, крупные больницы и вузы, и только с подписью
@@ -1374,6 +1387,13 @@ function layoutLabels(vx, vy, sx, sy, surgeLabels) {
   placePois(true);
   ctx.font = "11px sans-serif";
   let streetLabels = 0;
+  const wkey = (name, wx, wy) => name + ":" + Math.round(wx * scale / 260) + ":" + Math.round(wy * scale / 260);   // ключ в метрах карты - не зависит от сдвига экрана
+  if (prev && prev.scale === scale && scale >= 0.12) for (const sl of prev.streets) {   // прежние названия улиц - на прежних местах
+    const [name, wx, wy, ang] = sl, mx = sx(wx), my = sy(wy), w = ctx.measureText(name).width + 8;
+    const bw = Math.abs(w * Math.cos(ang)) + 14 * Math.abs(Math.sin(ang)), bh = Math.abs(w * Math.sin(ang)) + 14 * Math.abs(Math.cos(ang));
+    if (!free(mx, my, bw, bh)) continue;
+    take(mx, my, bw, bh); used.add(wkey(name, wx, wy)); streetLabels++; streetsOut.push(sl);
+  }
   for (const st of scale >= 0.12 ? STREETS : []) {   // ищем на улице почти прямой кусок нужной длины и пишем название вдоль него
     if (streetLabels > 40) break;
     if (st.x1 < vx || st.x0 > vx + viewW || st.y1 < vy || st.y0 > vy + viewH) continue;
@@ -1387,8 +1407,8 @@ function layoutLabels(vx, vy, sx, sy, surgeLabels) {
       let straight = true;
       for (let q = i + 1; q < j && straight; q++) { const px = sx(P[q][0]), py = sy(P[q][1]); if (Math.abs((bx - ax) * (ay - py) - (ax - px) * (by - ay)) / cl > 3) straight = false; }
       if (!straight) continue;
-      const mx = (ax + bx) / 2, my = (ay + by) / 2, key = st.name + ":" + Math.round(mx / 260) + ":" + Math.round(my / 260);
-      if (used.has(key)) continue;
+      const mx = (ax + bx) / 2, my = (ay + by) / 2, key = wkey(st.name, (P[i][0] + P[j][0]) / 2, (P[i][1] + P[j][1]) / 2);
+      if (used.has(key) || streetsOut.some(o => o[0] === st.name && Math.hypot(sx(o[1]) - mx, sy(o[2]) - my) < 260)) continue;
       let ang = Math.atan2(by - ay, bx - ax); if (ang > Math.PI / 2 || ang < -Math.PI / 2) ang += Math.PI;
       const bw = Math.abs(w * Math.cos(ang)) + 14 * Math.abs(Math.sin(ang)), bh = Math.abs(w * Math.sin(ang)) + 14 * Math.abs(Math.cos(ang));
       if (!free(mx, my, bw, bh)) continue;
@@ -1432,23 +1452,27 @@ function draw() {
   // Подписи без наложений: каждая занимает прямоугольник, и новая не ставится, если пересекает уже занятое
   const LC = labelCache;
   if (!LC || LC.scale !== scale || Math.abs(LC.vx - vx) * scale > 140 || Math.abs(LC.vy - vy) * scale > 140 || performance.now() - LC.t > 4000)
-    labelCache = layoutLabels(vx, vy, sx, sy, surgeLabels);
+    labelCache = layoutLabels(vx, vy, sx, sy, surgeLabels, LC);
+  const now = performance.now(), fade = o => { let t = labelBorn.get(o); if (t === undefined) { t = now; labelBorn.set(o, t); } return Math.min(1, (now - t) / 350); };
+  if (labelBorn.size > 4000) labelBorn.clear();
   ctx.font = "11px sans-serif"; ctx.textAlign = "center"; ctx.lineWidth = 3;
-  for (const [name, wx, wy, ang] of labelCache.streets) {
-    ctx.save(); ctx.translate(sx(wx), sy(wy)); ctx.rotate(ang); ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.strokeText(name, 0, 0);
+  for (const sl of labelCache.streets) {
+    const [name, wx, wy, ang] = sl;
+    ctx.save(); ctx.globalAlpha = fade(sl); ctx.translate(sx(wx), sy(wy)); ctx.rotate(ang); ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.strokeText(name, 0, 0);
     ctx.fillStyle = "#5b6370"; ctx.fillText(name, 0, 0); ctx.restore();
   }
   ctx.font = "700 12px sans-serif"; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.fillStyle = "#2456c9";
   for (const [h] of labelCache.surge) { const hh = HEX_BASE.get(hexKey(h.q, h.r)), m = hh ? surgeMult(hexLevel(hh)) : 1; if (m <= 1) continue; const t = "×" + m.toFixed(1); ctx.strokeText(t, sx(h.x), sy(h.y)); ctx.fillText(t, sx(h.x), sy(h.y)); }
   const shown = labelCache.shown.filter(([p]) => sy(p.y) > 92).map(([p, side]) => [p, sx(p.x), sy(p.y), side]);
-  for (const [p, x, y] of shown) placeIcon(x, y, p.k, p.major);
+  for (const [p, x, y] of shown) { ctx.globalAlpha = fade(p); placeIcon(x, y, p.k, p.major); }
+  ctx.globalAlpha = 1;
   ctx.font = "600 11px sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.92)";
   for (const [p, x, y, side] of shown) {   // подпись цветом категории, чуть темнее значка
     if (!side) continue;
-    ctx.textAlign = side > 0 ? "left" : "right"; ctx.strokeText(p.n, x + side * 12, y);
+    ctx.globalAlpha = fade(p); ctx.textAlign = side > 0 ? "left" : "right"; ctx.strokeText(p.n, x + side * 12, y);
     ctx.fillStyle = textColor((PLACE_STYLE[p.k] || PLACE_STYLE.other).col); ctx.fillText(p.n, x + side * 12, y);
   }
-  ctx.textAlign = "center";
+  ctx.globalAlpha = 1; ctx.textAlign = "center";
   let A = null, B = null, S = null;   // метки: A - где забрать клиента, B - куда его везти (видна только в пути)
   if (state === "idle" || state === "selfDrive") {
     const o = orders.find(x => x.id === previewId) || (modeNow() !== "classic" ? orders[0] : null);
