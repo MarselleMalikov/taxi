@@ -160,7 +160,7 @@ button{font-family:inherit}
   </div>
   <div id="pickbar" hidden><span>Нажмите на карте, куда вам нужно</span><button id="pickcancel">Отмена</button></div>
   <div id="osm">© участники OpenStreetMap</div>
-  <button id="ff" hidden>⏩ ×1</button>
+  <button id="ff" hidden>»&nbsp;×1</button>
   <div id="zoom"><button id="zin" aria-label="Приблизить">+</button><button id="zout" aria-label="Отдалить">&minus;</button></div>
   <button id="recenter" hidden title="Вернуться к машине" aria-label="Вернуться к машине"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
   <div id="sheet"><span class="grab"></span><div id="panel"></div><button id="shift" class="off"></button></div>
@@ -184,7 +184,7 @@ button{font-family:inherit}
 </div>
 <div id="ledger" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Смена <span id="lday"></span></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="lrows"></div></div></div>
 <div id="modes" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Режим работы</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="modelist"></div></div></div>
-<div id="pause" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Пауза</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
+<div id="pause" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
   <p class="lsub" id="pauseinfo"></p>
   <button class="pbtn" id="prest"><b>Отдохнуть</b><small>20 минут · настроение +12% · бесплатно</small></button>
   <button class="pbtn" id="plunch"><b>Пообедать</b><small>20 минут · настроение +20% · 350 ₽</small></button>
@@ -552,6 +552,20 @@ function businessFits(A, B) {   // заказ «по пути»: клиент н
 }
 function createOrder() { const o = buildOrder(car.x, car.y, carNode, PICK_MIN, PICK_MAX); if (o) { orders.push(o); renderPanel(); } }
 // Заказ рядом с точкой (cx, cy): для обычного предложения - от машины, для цепочки - от места высадки текущего пассажира
+// Пригороды и окраины, отделённые от города. Здесь заказы в основном местные: подача рядом, а первые 2-3 заказа подряд
+// и начинаются, и заканчиваются в этом же районе. Дальняя подача (больше 4 км) - редко. Так есть смысл возвращаться в город по делам
+const SUBURBS = [
+  { name: "Дёма",   lat0: 54.655, lat1: 54.735, lon0: 55.78, lon1: 55.905 },
+  { name: "Затон",  lat0: 54.735, lat1: 54.80,  lon0: 55.80, lon1: 55.905 },
+  { name: "Север",  lat0: 54.85,  lat1: 54.95,  lon0: 55.70, lon1: 56.40 },
+  { name: "Восток", lat0: 54.70,  lat1: 54.85,  lon0: 56.16, lon1: 56.40 }
+].map(r => { const [x0, y1] = geoXY(r.lat0, r.lon0), [x1, y0] = geoXY(r.lat1, r.lon1); return { name: r.name, x0, x1, y0, y1 }; });
+const suburbAt = (x, y) => SUBURBS.find(r => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1) || null;
+let suburbQuota = null, suburbName = null;   // сколько ещё заказов подряд останутся внутри пригорода
+function spotIn(reg, cx, cy, dmin, dmax, share) {   // точка внутри района reg
+  for (let t = 0; t < 25; t++) { const sp = randSpot(cx, cy, dmin, dmax, share); if (suburbAt(N[sp.node][0], N[sp.node][1]) === reg) return sp; }
+  return null;
+}
 function buildOrder(cx, cy, cnode, pmin, pmax) {
   // постоянные пассажиры со своей историей попадаются редко и только пока история не закончилась
   const story = PASSENGERS.filter(p => p.scenes && getAff(p.name) > REFUSE_AT && (storyStep[p.name] || 0) < p.scenes.length && !orders.some(o => o.name === p.name) && !(current && current.name === p.name));
@@ -564,6 +578,16 @@ function buildOrder(cx, cy, cnode, pmin, pmax) {
   if (cls === "cplus" && rating < 4.7) rating = 4.7 + Math.random() * 0.3;   // в Комфорт+ ездят в основном аккуратные пассажиры
   let A = randSpot(cx, cy, pmin, pmax, 0.2);                 // забирают чаще из дома, иногда из ТЦ, вокзала, кафе
   let B = randSpot(N[A.node][0], N[A.node][1], TRIP_MIN, TRIP_MAX, A.place ? 0.25 : 0.45);   // везут чаще в место, но и домой тоже
+  let local = false, far = false;
+  const reg = business ? null : suburbAt(cx, cy);
+  if (reg) {   // водитель в пригороде
+    if (suburbName !== reg.name) { suburbName = reg.name; suburbQuota = 2 + Math.floor(Math.random() * 2); }
+    if (Math.random() < 0.1) { A = randSpot(cx, cy, 4000, 9000, 0.2); far = true; }   // изредка - дальняя подача из города
+    else { A = spotIn(reg, cx, cy, 200, 3000, 0.15); if (!A) return null; }
+    if (suburbQuota > 0 && suburbAt(N[A.node][0], N[A.node][1]) === reg) {   // первые заказы - внутри района
+      B = spotIn(reg, N[A.node][0], N[A.node][1], 1200, 7000, 0.3); if (!B) return null; local = true;
+    }
+  } else suburbName = null;
   if (business) {   // «по делам»: подбираем заказ в сторону своей точки, а не нашли - заказа пока нет
     let ok = false;
     for (let t = 0; t < 14 && !ok; t++) {
@@ -578,9 +602,10 @@ function buildOrder(cx, cy, cnode, pmin, pmax) {
   const trip = findPath(from, to), pick = findPath(cnode, from);
   if (!trip || !pick) return null;
   const st = sumPath(trip), sp = sumPath(pick);
+  if (reg && !far && sp.km > 5) return null;   // в пригороде подача по дорогам не дальше 5 км (через реку бывает большой крюк)
   const o = ({ id: nextOrderId++, passenger: p, name: p.name, fromPlace, fromAddr, toAddr, rating: rating.toFixed(2), cash: Math.random() < 0.45, runner: false, late: rating > 4.85 || Math.random() >= LATE_SHARE ? 0 : 3 + Math.random() * (LATE_MAX - 3), from, to, place,
     tripKm: st.km, pickupKm: sp.km, pickupMin: Math.max(1, Math.round(sp.sec / 60)),
-    price: 0, tip: 0, mood: 0, ttl: ORDER_TTL, feeRate: feeRate() });
+    price: 0, tip: 0, mood: 0, ttl: ORDER_TTL, feeRate: feeRate(), local });
   o.cls = cls;
   const basePrice = Math.round((BASE_FARE + st.km * PER_KM) * TARIFFS[cls].mult / 10) * 10;
   o.surge = orderSurge(N[from][0], N[from][1], st.km);            // повышенный спрос в точке подачи
@@ -608,6 +633,7 @@ function tickOrders(dt) {   // предложения заказов: появл
 function acceptOrder(id) {
   const o = orders.find(x => x.id === id); if (!o || (state !== "idle" && state !== "selfDrive")) return;
   // крупная надбавка за спрос радует, а несколько заказов подряд без спроса - понемногу утомляют
+  if (o.local && suburbQuota > 0) suburbQuota--;   // ещё один заказ внутри пригорода
   if (o.surgeAdd > 100) moodAdd(2);
   noSurgeRow = o.surgeAdd > 0 ? 0 : noSurgeRow + 1;
   if (noSurgeRow >= 3) moodAdd(-1);
@@ -854,7 +880,7 @@ function showPause() {   // окно «Пауза»: перерыв, обед, �
   const left = MAX_BREAKS - breaks, idle = state === "idle";
   $("pauseinfo").textContent = "Настроение " + Math.round(mood) + "% · на линии " + fmtHM(onlineT) + " из " + fmtHM(onlineLimit()) + " · в баке " + Math.round(fuel) + " л";
   $("prest").disabled = $("plunch").disabled = !idle || left <= 0; $("pfuel").disabled = !idle;
-  $("pausenote").textContent = !idle ? "Сначала завершите заказ." : left <= 0 ? "Перерывов на эту смену больше нет." : "Перерыв или обед занимает 20 минут и сокращает время на линии на 10 минут. Осталось перерывов: " + left + ".";
+  $("pausenote").textContent = !idle ? "Сначала завершите заказ." : left <= 0 ? "Перерывов на эту смену больше нет." : "";
   $("pause").hidden = false;
 }
 $("fuelpill").addEventListener("click", showPause);
@@ -1116,7 +1142,7 @@ function updateTop() {
 function updateStatus() {
   const idle = state === "idle", cls = !idle ? "ride" : online ? "on" : "off";
   statusPill.className = "pill status " + cls; $("mstatus").className = "mstatus status " + cls; statusText.textContent = !idle ? "В заказе" : online ? "На линии" : "Не на линии";
-  $("ff").hidden = !(state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel" || state === "selfDrive"); $("ff").textContent = "⏩ ×" + ff;
+  $("ff").hidden = !(state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel" || state === "selfDrive"); $("ff").textContent = "»\u00a0×" + ff;
   shiftBtn.style.display = idle ? "block" : "none"; if (state === "break") shiftBtn.style.display = "none"; shiftBtn.className = online ? "on" : "off";
   shiftBtn.innerHTML = online ? "На линии<small>нажмите, чтобы закончить смену</small>" : "Катать<small>нажмите, чтобы выйти на линию</small>";
 }
