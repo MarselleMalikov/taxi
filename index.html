@@ -264,6 +264,8 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .addr b{line-height:1.25}.addr small{display:block;line-height:1.3;margin-top:2px;text-align:left}
 .sitem b{font-size:15px!important;font-weight:700!important;line-height:1.2}.sitem small{font-size:12.5px}
 .mbtn.dark{background:#1E1F23;color:#fff}
+.carimg{display:block;height:auto;object-fit:contain}.gcar .carimg{width:112px}.icar{background:none!important;width:88px}.icar .carimg{width:84px}
+#osm{left:12px;right:auto}#ff{left:auto}
 </style></head>
 <body>
 <div id="app">
@@ -368,16 +370,14 @@ const TARIFFS = {
   comfort: { name: "Комфорт",   mult: 1.36, tipMult: 1.4, rateChance: 0.42 },
   cplus:   { name: "Комфорт+",  mult: 1.53, tipMult: 1.9, rateChance: 0.5 }
 };
-const CARS = [
-  { id: "vesta",   t: "econ",    name: "Lada Vesta",            rent: 1850, fuel: 0.066, shape: "sedan" },
-  { id: "rio",     t: "econ",    name: "Kia Rio",               rent: 2000, fuel: 0.063, shape: "sedan" },
-  { id: "tiggo4",  t: "econ",    name: "Chery Tiggo 4 Pro",     rent: 2150, fuel: 0.059, shape: "suv", isNew: true },
-  { id: "octavia", t: "comfort", name: "Skoda Octavia",         rent: 2450, fuel: 0.069, shape: "lift" },
-  { id: "k5",      t: "comfort", name: "Kia K5",                rent: 2600, fuel: 0.071, shape: "sedan" },
-  { id: "tiggo7",  t: "comfort", name: "Chery Tiggo 7 Pro Max", rent: 2750, fuel: 0.066, shape: "suv", isNew: true },
-  { id: "sonata",  t: "cplus",   name: "Hyundai Sonata",        rent: 3500, fuel: 0.080, shape: "sedan" },
-  { id: "camry",   t: "cplus",   name: "Toyota Camry",          rent: 3700, fuel: 0.078, shape: "sedan" },
-  { id: "monjaro", t: "cplus",   name: "Geely Monjaro",         rent: 3850, fuel: 0.074, shape: "suv", isNew: true }
+const CARS = [   // img - рисунок машины в папке cars/
+  { id: "granta",  t: "econ",    name: "Lada Granta",   rent: 1850, fuel: 0.066 },
+  { id: "rio",     t: "econ",    name: "Kia Rio",       rent: 2000, fuel: 0.063 },
+  { id: "polo",    t: "comfort", name: "Volkswagen Polo", rent: 2450, fuel: 0.066 },
+  { id: "octavia", t: "comfort", name: "Skoda Octavia", rent: 2600, fuel: 0.069 },
+  { id: "tiggo4",  t: "cplus",   name: "Chery Tiggo 4", rent: 3500, fuel: 0.072, isNew: true },
+  { id: "optima",  t: "cplus",   name: "Kia Optima",    rent: 3600, fuel: 0.077 },
+  { id: "camry",   t: "cplus",   name: "Toyota Camry",  rent: 3700, fuel: 0.078 }
 ];
 // Магазин: покупки для машины, которые остаются навсегда и помогают зарабатывать
 const SHOP = [
@@ -397,6 +397,7 @@ const clsAllowed = c => TORDER.indexOf(c) <= TORDER.indexOf(myCar().t);   // м�
 const clsActive = c => clsAllowed(c) && clsOn[c];
 function ensureCls() { if (!TORDER.some(clsActive)) clsOn[myCar().t] = true; }   // хотя бы свой тариф машины всегда включён
 const myCar = () => CARS.find(c => c.id === carId) || CARS[1];
+const carImg = (c, w) => '<img class="carimg" src="cars/' + c.id + '.webp" alt="" width="' + w + '" loading="lazy">';
 const myTariff = () => TARIFFS[myCar().t];
 // Класс заказа: машина высокого класса получает и свои заказы (реже), и заказы классом ниже (дешевле)
 function pickOrderClass() {
@@ -863,7 +864,7 @@ function pickScene(o, later) {
     }
     if (aff < 0) return Math.random() < 0.3 ? COLD[0] : null;   // обиженный пассажир чаще просто молчит
   }
-  const r = +o.rating, conflict = r < 4.6 && Math.random() < 0.65;   // у пассажира с рейтингом ниже 4.6 часто бывают проблемы
+  const r = +o.rating, conflict = r < 4.5 ? Math.random() < 0.85 : r < 4.6 && Math.random() < 0.5;   // у пассажира с рейтингом ниже 4.6 часто бывают проблемы
   if (conflict) { o.conflict = true; moodAdd(-8); return fresh(CONFLICTS); }
   const x = Math.random();
   if (x >= 0.65) moodAdd(4);   // забавный пассажир поднимает настроение
@@ -898,7 +899,8 @@ function chooseAnswer(i) {
   if (ch.delay) clock += ch.delay * 60;
   if (ch.moodD) moodAdd(ch.moodD);
   if (ch.cost) { spend("fines", ch.cost, ch.why || "расход"); (current.fineList = current.fineList || []).push((ch.why || "расход") + ": −" + ch.cost + " ₽"); }
-  if (ch.perk && !owns(ch.perk)) { owned[ch.perk] = true; const it = SHOP.find(x => x.id === ch.perk); floaters.push({ text: "подарок: " + (it ? it.name : ch.perk), x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -34 }); saveGame(); }   // проверка документов и т.п. отнимает время смены
+  if (ch.perk && owns(ch.perk)) { const it = SHOP.find(x => x.id === ch.perk); current.gift = (current.gift || 0) + (it ? it.price : 1000); }   // уже есть - деньгами
+  else if (ch.perk) { owned[ch.perk] = true; const it = SHOP.find(x => x.id === ch.perk); floaters.push({ text: "подарок: " + (it ? it.name : ch.perk), x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -34 }); saveGame(); }   // проверка документов и т.п. отнимает время смены
   let fineSum = ch.fine || 0;
   if (ch.kitFine && !owns("kit")) fineSum += ch.kitFine;                 // без аптечки и огнетушителя - штраф
   if (ch.camFine) { if (owns("cam")) floaters.push({ text: "запись регистратора помогла", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -30 }); else fineSum += ch.camFine; }
@@ -1081,7 +1083,7 @@ function showGarage() {   // выбор машины и тарифа; смени
   for (const t of ["econ", "comfort", "cplus"]) {
     const T = TARIFFS[t];
     html += '<div class="gtar"><b>' + T.name + "</b></div>";
-    for (const c of CARS.filter(c => c.t === t)) html += '<button class="gcar' + (c.id === carId ? " on" : "") + '" data-car="' + c.id + '"' + (locked ? " disabled" : "") + ">" + carSvg(c.shape, 104) +
+    for (const c of CARS.filter(c => c.t === t)) html += '<button class="gcar' + (c.id === carId ? " on" : "") + '" data-car="' + c.id + '"' + (locked ? " disabled" : "") + ">" + carImg(c, 112) +
       '<span class="ginfo"><b>' + c.name + (c.isNew ? ' <i class="gnew">новая</i>' : "") + "</b><small>Аренда " + c.rent.toLocaleString("ru-RU") + " ₽ за смену</small><small>Расход " + (c.fuel * 100).toFixed(1).replace(".", ",") + " л на 100 км" + (c.isNew ? " · больше чаевых" : "") + "</small></span></button>";
   }
   $("garagelist").innerHTML = html; $("garage").hidden = false; menuEl.hidden = true;
@@ -1239,7 +1241,7 @@ function updateInner(dt) {
       const r = +current.rating, g = route.reduce((a, s) => a + s.t, 0) / 60;   // длительность поездки в игровых минутах
       const story = current.passenger.scenes && (storyStep[current.name] || 0) < current.passenger.scenes.length;
       current.talkAt = []; current.talkIdx = 0;
-      if (story || Math.random() < (r < 4.6 ? 0.85 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
+      if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
       if (g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
       renderPanel();
     }
@@ -1417,6 +1419,11 @@ function refuel() {   // на заправке: доливаем до полно
   fuel = TANK; ledger.fuelL += liters; spend("fuel", cost, "бензин"); clock += 5 * 60;   // заправка занимает около 5 минут
   state = "idle"; route = []; fuelStop = null; spawnTimer = 2; renderPanel();
 }
+function placeControls() {   // кнопку ускорения и кнопки карты ставим под самой высокой плашкой - на любом телефоне
+  const app = appEl.getBoundingClientRect(), bottom = Math.max(...["ratingpill", "fuelpill", "earn", "menubtn"].map(id => $(id).getBoundingClientRect().bottom)) - app.top;
+  $("ff").style.top = (bottom + 10) + "px"; $("osm").style.top = (bottom + 6) + "px"; $("mapctl").style.top = (bottom + 58) + "px";
+}
+window.addEventListener("resize", placeControls); setTimeout(placeControls, 50); if (document.fonts) document.fonts.ready.then(placeControls);
 function updateTop() {
   $("prion").textContent = Math.round(priority); $("priofill").style.width = (priority / PRIO_MAX * 100) + "%";
   $("prio").className = "prow" + (priority < 25 ? " low" : priority >= PRIO_MAX ? " high" : "");
@@ -1479,7 +1486,7 @@ function chainHtml() {
 }
 function idleHtml(searching) {   // машина и статус, под ними плитки: доход, режим, гараж, магазин
   const c = myCar(), tile = (act, icon, t) => '<button class="tile" data-act="' + act + '">' + ico(icon) + t + "</button>";
-  return '<div class="ihead"><div class="icar">' + carSvg(c.shape, 70) + "</div><div><b>" + (searching ? "Свободные заказы" : c.name) + "</b><small>" +
+  return '<div class="ihead"><div class="icar">' + carImg(c, 84) + "</div><div><b>" + (searching ? "Свободные заказы" : c.name) + "</b><small>" +
     (searching ? '<i class="live"></i>Ищем пассажиров…' : TARIFFS[c.t].name + " · " + MODE_NAME[modeNow()]) + "</small></div></div>" +
     '<div class="tiles">' + tile("tledger", "wallet", "Доход") + tile("tmodes", "sliders", "Режим") + tile("tgarage", "car", "Гараж") + tile("tshop", "bag", "Магазин") + "</div>";
 }
