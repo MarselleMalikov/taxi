@@ -54,6 +54,18 @@ button{font-family:inherit}
 .sitem{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #eceef1}.sitem>div{flex:1}.sitem b{display:block;font-size:15px}.sitem small{display:block;margin-top:3px;color:var(--m);font-size:13px;line-height:1.35}
 .sbuy{flex:none;min-width:92px;padding:9px 10px;border:none;border-radius:10px;background:var(--g);color:#fff;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer}
 .sbuy:disabled{background:#eceef1;color:var(--m);cursor:default}.sbuy.got{background:#e3f6ea;color:#16883f}
+#casino{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#casino[hidden]{display:none}
+.wheel{display:flex;flex-direction:column;align-items:center;margin:4px 0 8px}
+.wnum{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800;color:#fff;background:#1E1F23;box-shadow:inset 0 0 0 6px #FFD233,0 8px 20px rgba(0,0,0,.18)}
+.wnum.red{background:#D63A3A}.wnum.green{background:#1FAF55}.wnum.spin{animation:wspin .12s linear infinite}
+@keyframes wspin{50%{transform:scale(.95)}}
+.whist{display:flex;gap:5px;margin-top:10px;min-height:22px}.whist i{font-style:normal;width:24px;height:22px;border-radius:7px;font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;background:#1E1F23}
+.whist i.red{background:#D63A3A}.whist i.green{background:#1FAF55}
+.chips{display:flex;gap:8px;margin-top:6px}.chip2{flex:1;padding:9px 4px;border:2px solid var(--line);border-radius:16px;background:#fff;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer}.chip2.on{border-color:var(--yd);background:#FFFBEA}
+.bets{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.bet{border:none;border-radius:18px;padding:12px;background:var(--c);font-family:inherit;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.bet b{font-size:15px}.bet small{font-size:13px;font-weight:700;color:var(--m)}.bet.red{background:#FDE7E7}.bet.red b{color:#C42E2E}.bet.black{background:#1E1F23}.bet.black b,.bet.black small{color:#fff}
+.bet.zero{grid-column:span 2;background:#E3F6EA}.bet.zero b{color:#16883F}.bet:disabled{opacity:.45;cursor:default}
+.cres{text-align:center;font-weight:700;font-size:16px;min-height:22px;margin:12px 0 2px}.cres.win{color:#16883F}.cres.lose{color:#C9363B}
 #garage{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#garage[hidden]{display:none}
 .clsrow{display:flex;gap:8px;margin-top:8px}.clsbtn{flex:1;padding:10px 6px;border:2px solid #eceef1;border-radius:12px;background:#fff;font-family:inherit;font-size:14px;font-weight:600;color:var(--m);cursor:pointer}
 .clsbtn.on{border-color:var(--g);background:#f1fbf4;color:#16883f}.clsbtn:disabled{opacity:.4;cursor:default}
@@ -234,6 +246,18 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .bizchip{border-radius:20px}.bizchip button{border-radius:14px}
 #pickbar{border-radius:18px}
 .lrow b{font-weight:700}
+
+/* правки раскладки */
+#ff{top:calc(env(safe-area-inset-top,0px) + 92px)}
+#osm{top:calc(env(safe-area-inset-top,0px) + 84px)}
+.tile{padding:16px 4px 14px;gap:9px;font-size:13px}.tile .ico{width:26px;height:26px}
+#shift{font-size:21px;font-weight:800}#shift.off{padding:18px}
+.gtar{margin:10px 2px 0}.gcar{margin-top:6px;padding:5px 10px 5px 6px;gap:10px}.ginfo b{font-size:14.5px}.ginfo small{margin-top:0;line-height:1.3}
+.gcard .lsub{margin:4px 0 0;line-height:1.35}.clsrow{margin-top:6px}.clsbtn{padding:8px 6px}
+.sitem{padding:9px 0;gap:10px}.sitem small{margin-top:1px;line-height:1.3}.sbuy{padding:8px 10px}
+#pause .askcard{padding-top:16px}#pause .mhead{position:absolute;right:14px;top:12px}#pause .mhead b{display:none}
+#pauseinfo,#pausenote{text-align:left!important;margin:0 44px 4px 2px;line-height:1.35}#pausenote:empty{display:none}
+#pause .pbtn{margin-top:8px;padding:11px 14px}
 </style></head>
 <body>
 <div id="app">
@@ -270,6 +294,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
       <div class="mstats"><div><span>Смена</span><b id="mday">1</b></div></div>
       <button class="mbtn" id="garagebtn">Гараж: выбрать машину и тариф</button>
       <button class="mbtn" id="shopbtn">Магазин</button>
+      <button class="mbtn" id="casinobtn">Казино</button>
       <button id="reset">Сбросить прогресс</button>
     </aside>
   </div>
@@ -284,6 +309,15 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
   <p class="lsub" id="pausenote"></p></div></div>
 <div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Гараж</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
+<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
+  <div class="wheel"><div class="wnum" id="wnum">?</div><div class="whist" id="whist"></div></div>
+  <p class="lsub" id="cbal" style="text-align:left"></p>
+  <div class="gtar"><b>Ставка</b></div><div class="chips" id="chips"></div>
+  <div class="bets">
+    <button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button>
+    <button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button>
+    <button class="bet zero" data-bet="zero"><b>Зеро</b><small>×36</small></button></div>
+  <p class="cres" id="cres"></p></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -570,9 +604,10 @@ const PICK_FREE = 6;   // бесплатное ожидание клиента �
 const liveFare = () => current.price + (current.waitFee || 0) + (current.extraFare || 0) +   // текущая стоимость с ожиданием и заездами
   (state === "stopped" ? Math.max(0, Math.floor(stopT - FREE_WAIT)) * WAIT_RATE : state === "boarding" ? Math.max(0, Math.floor(boardT - PICK_FREE)) * WAIT_RATE : 0);
 let clock = 0, day = 1, shiftMoney = 0, shiftRides = 0, shiftOver = false, ff = 1, lastClk = "";
-// Приоритет водителя: старт 50, выполненный заказ +1, пропущенный -5. Чем выше, тем чаще приходят заказы
-let priority = 50;
-const prioFactor = () => 1.3 - 0.006 * priority;   // 50 -> обычная частота, 100 -> заказы на 30% чаще, 0 -> на 30% реже
+// Приоритет водителя: максимум и старт 50, выполненный заказ +1, пропущенный -5. Ниже 50 - заказы приходят реже
+const PRIO_MAX = 50;
+let priority = PRIO_MAX;
+const prioFactor = () => 1 + 0.6 * (1 - priority / PRIO_MAX);   // 50 -> обычная частота, 0 -> заказы в 1,6 раза реже
 // Посты ДПС: каждую смену стоят в разных местах на крупных улицах. Проезжаешь мимо - могут остановить
 let dpsPosts = [], dpsDay = -1, dpsStops = 0;
 function placeDps() {
@@ -598,7 +633,7 @@ function checkDps() {   // машина проезжает пост: иногд�
   }
 }
 function prioAdd(d) {
-  priority = clamp(priority + d, 0, 100); updateTop();
+  const was = priority; priority = clamp(priority + d, 0, PRIO_MAX); updateTop(); if (priority === was) return;
   floaters.push({ text: "приоритет " + (d > 0 ? "+" : "−") + Math.abs(d), x: car.x, y: car.y, age: 0, color: d > 0 ? "#2456c9" : "#c9363b", dy: 44 });
 }
 let noSurgeRow = 0, mood = 100, breaks = 0, onlineT = 0, idleNoOrder = 0, shiftEndWhy = "", breakT = 0, breakKind = "";   // настроение и время на линии
@@ -628,7 +663,7 @@ function loadGame() {
     money = d.money || 0; ridesDone = d.ridesDone || 0; if (Array.isArray(d.rates)) rates = d.rates; else if (d.ratingCount) rates = Array(150).fill(Math.min(5, Math.max(4.5, d.ratingSum / d.ratingCount)));   // старое сохранение
     Object.assign(affection, d.affection); Object.assign(storyStep, d.storyStep); Object.assign(met, d.met); Object.assign(seen, d.seen); goalReached = !!d.goalReached;
     clock = d.clock || 0; day = d.day || 1; shiftMoney = d.shiftMoney || 0; shiftRides = d.shiftRides || 0; shiftOver = !!d.shiftOver;
-    fuel = d.fuel === undefined ? TANK : d.fuel; businessUses = d.businessUses || 0; mood = d.mood === undefined ? 100 : d.mood; breaks = d.breaks || 0; onlineT = d.onlineT || 0; carId = d.carId || "rio"; owned = d.owned || {}; priority = d.priority === undefined ? 50 : d.priority; if (d.clsOn) clsOn = Object.assign(clsOn, d.clsOn); ensureCls(); carChosen = !!d.carChosen; workMode = d.workMode === "flex" ? "flex" : "classic"; ledger = Object.assign(newLedger(), d.ledger || {});
+    fuel = d.fuel === undefined ? TANK : d.fuel; businessUses = d.businessUses || 0; mood = d.mood === undefined ? 100 : d.mood; breaks = d.breaks || 0; onlineT = d.onlineT || 0; carId = d.carId || "rio"; owned = d.owned || {}; priority = d.priority === undefined ? PRIO_MAX : Math.min(PRIO_MAX, d.priority); if (d.clsOn) clsOn = Object.assign(clsOn, d.clsOn); ensureCls(); carChosen = !!d.carChosen; workMode = d.workMode === "flex" ? "flex" : "classic"; ledger = Object.assign(newLedger(), d.ledger || {});
   } catch (e) {}
 }
 function resetGame() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); }
@@ -708,10 +743,11 @@ function spotIn(reg, cx, cy, dmin, dmax, share) {   // точка внутри �
   for (let t = 0; t < 25; t++) { const sp = randSpot(cx, cy, dmin, dmax, share); if (suburbAt(N[sp.node][0], N[sp.node][1]) === reg) return sp; }
   return null;
 }
+const STORY_CHANCE = 0;   // истории постоянных пассажиров выключены, пока их не перепишем с настоящими последствиями
 function buildOrder(cx, cy, cnode, pmin, pmax) {
   // постоянные пассажиры со своей историей попадаются редко и только пока история не закончилась
   const story = PASSENGERS.filter(p => p.scenes && getAff(p.name) > REFUSE_AT && (storyStep[p.name] || 0) < p.scenes.length && !orders.some(o => o.name === p.name) && !(current && current.name === p.name));
-  const p = story.length && Math.random() < 0.07 ? story[Math.floor(Math.random() * story.length)] : { name: NAMES[Math.floor(Math.random() * NAMES.length)] };
+  const p = story.length && Math.random() < STORY_CHANCE ? story[Math.floor(Math.random() * story.length)] : { name: NAMES[Math.floor(Math.random() * NAMES.length)] };
   const cls = pickOrderClass();
   // выключенный тариф заказов - этого заказа просто нет, ждём следующий (простой дольше)
   if (!clsActive(cls)) return null;
@@ -984,7 +1020,7 @@ function showLedger() {
   const L = ledger, f = v => v.toLocaleString("ru-RU") + " ₽", row = (t, v, minus) => '<div class="lrow' + (minus && v ? " minus" : "") + '"><span>' + t + "</span><b>" + (minus && v ? "−" : "") + f(v) + "</b></div>";
   $("lday").textContent = day;
   $("lrows").innerHTML = row("Заказы (" + shiftRides + ")", L.fares) + row("Чаевые и доплаты", L.tips) + row("Комиссия", L.fee, true) +
-    row("Аренда (" + myCar().name + ")", L.rent, true) + row("Топливо" + (L.fuelL ? " (" + Math.round(L.fuelL) + " л)" : ""), L.fuel, true) + (L.fines ? row("Штрафы, обед и прочее", L.fines, true) : "") +
+    row("Аренда (" + myCar().name + ")", L.rent, true) + row("Топливо" + (L.fuelL ? " (" + Math.round(L.fuelL) + " л)" : ""), L.fuel, true) + (L.fines ? row("Штрафы, обед и прочее", L.fines, true) : "") + (L.casino ? '<div class="lrow' + (L.casino < 0 ? " minus" : "") + '"><span>Казино (не входит в итог)</span><b>' + (L.casino < 0 ? "−" : "+") + f(Math.abs(L.casino)) + "</b></div>" : "") +
     '<div class="lrow"><span>Чистыми в час</span><b>' + (onlineT >= 1800 ? (shiftNet() < 0 ? "−" : "") + f(Math.abs(Math.round(shiftNet() / (onlineT / 3600)))) : "—") + "</b></div>" +
     '<div class="lrow total"><span>Итого за смену</span><b>' + (shiftNet() < 0 ? "−" : "") + f(Math.abs(shiftNet())) + "</b></div>" +
     '<div class="lsub">Пробег ' + Math.round(L.km) + " км · в баке " + Math.round(fuel) + " л · на счету " + f(money) + "</div>";
@@ -1065,6 +1101,38 @@ function showShop() {
   menuEl.hidden = true; $("shop").hidden = false;
 }
 $("shopbtn").addEventListener("click", showShop);
+// ====== Казино: рулетка (0-36). Деньги меняются на счету, но в заработок за смену не идут ======
+const RED = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+let betSize = 500, spinning = false; const rouHist = [];
+const numCls = n => n === 0 ? "green" : RED.has(n) ? "red" : "black";
+function showCasino() {
+  $("cbal").textContent = "На счету " + money.toLocaleString("ru-RU") + " ₽" + (ledger.casino ? " · за смену в казино " + (ledger.casino > 0 ? "+" : "−") + Math.abs(ledger.casino).toLocaleString("ru-RU") + " ₽" : "");
+  $("chips").innerHTML = [100, 500, 1000, 5000].map(v => '<button class="chip2' + (v === betSize ? " on" : "") + '" data-chip="' + v + '">' + v.toLocaleString("ru-RU") + "</button>").join("");
+  for (const b of document.querySelectorAll(".bet")) b.disabled = spinning || money < betSize;
+  $("whist").innerHTML = rouHist.map(n => '<i class="' + numCls(n) + '">' + n + "</i>").join("");
+  menuEl.hidden = true; $("casino").hidden = false;
+}
+function spin(kind) {
+  if (spinning || money < betSize) return;
+  const bet = betSize; money -= bet; spinning = true; updateTop(); showCasino();
+  const w = $("wnum"); w.classList.add("spin"); $("cres").textContent = ""; $("cres").className = "cres";
+  let k = 0; const iv = setInterval(() => { const n = Math.floor(Math.random() * 37); w.textContent = n; w.className = "wnum spin " + numCls(n); if (++k > 14) done(); }, 90);
+  function done() {
+    clearInterval(iv); const n = Math.floor(Math.random() * 37);
+    const win = kind === "zero" ? n === 0 : n === 0 ? false : kind === "red" ? RED.has(n) : kind === "black" ? !RED.has(n) : kind === "even" ? n % 2 === 0 : n % 2 === 1;
+    const pay = win ? bet * (kind === "zero" ? 36 : 2) : 0;
+    money += pay; ledger.casino = (ledger.casino || 0) + pay - bet;
+    w.textContent = n; w.className = "wnum " + numCls(n); rouHist.unshift(n); if (rouHist.length > 8) rouHist.pop();
+    spinning = false; updateTop(); saveGame(); showCasino();
+    $("cres").textContent = win ? "Выигрыш +" + pay.toLocaleString("ru-RU") + " ₽" : "Проигрыш −" + bet.toLocaleString("ru-RU") + " ₽"; $("cres").className = "cres " + (win ? "win" : "lose");
+  }
+}
+$("casinobtn").addEventListener("click", showCasino);
+$("casino").addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { if (!spinning) $("casino").hidden = true; return; }
+  const c = e.target.closest("[data-chip]"); if (c) { betSize = +c.dataset.chip; return showCasino(); }
+  const b = e.target.closest("[data-bet]"); if (b && !b.disabled) spin(b.dataset.bet);
+});
 $("shop").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("shop").hidden = true; return; }
   const b = e.target.closest("[data-buy]"); if (!b || b.disabled) return;
@@ -1303,7 +1371,7 @@ function takeBreak(kind) {   // отдохнуть на месте (беспла
   orders = []; previewId = null; lastRide = null; breakT = 0; breakKind = kind; $("pause").hidden = true;
   if (kind === "lunch") {
     let best = null, bd = 1e18;
-    for (const p of POIS) if (p.k === "cafe" || p.k === "food") { const d = Math.hypot(p.x - car.x, p.y - car.y); if (d < bd) { bd = d; best = p; } }
+    for (const p of POIS) if (p.k === "cafe" || p.k === "food") { const d = Math.hypot(p.x - car.x, p.y - car.y); if (d >= 400 && d < bd) { bd = d; best = p; } }   // не впритык, чтобы поездку было видно
     if (best && bd < 4000) {
       cafeStop = { n: best.n, node: nodeNear(best.x, best.y), addr: addrNear(best.x, best.y) };
       route = findPath(carNode, cafeStop.node) || []; legScale = legSpeed(route, SOFT_PICK); state = "toCafe"; freeCam = false; return renderPanel();
@@ -1329,8 +1397,8 @@ function refuel() {   // на заправке: доливаем до полно
   state = "idle"; route = []; fuelStop = null; spawnTimer = 2; renderPanel();
 }
 function updateTop() {
-  $("prion").textContent = Math.round(priority); $("priofill").style.width = priority + "%";
-  $("prio").className = "prow" + (priority < 30 ? " low" : priority >= 70 ? " high" : "");
+  $("prion").textContent = Math.round(priority); $("priofill").style.width = (priority / PRIO_MAX * 100) + "%";
+  $("prio").className = "prow" + (priority < 25 ? " low" : priority >= PRIO_MAX ? " high" : "");
   updateFuel();
   moneyEl.textContent = money.toLocaleString("ru-RU") + " ₽"; moneyEl.style.color = money < 0 ? "#c9363b" : ""; ridesEl.textContent = ridesDone; ratingEl.textContent = getRating().toFixed(2);
   goalText.textContent = fmtHM(onlineT) + " из " + fmtHM(onlineLimit());
@@ -1670,8 +1738,9 @@ function spawnAmbient() {
   const e = adj[n][Math.floor(Math.random() * adj[n].length)];
   return { a: n, b: e.to, t: Math.random(), len: e.len || 1, v: KMH[e.c] / 3.6 };
 }
+const SHOW_AMBIENT = false;   // другие такси на карте выключены
 function tickAmbient(dt) {
-  if (scale < 0.1) return;
+  if (!SHOW_AMBIENT || scale < 0.1) return;
   while (amb.length < 7) { const c = spawnAmbient(); if (!c) break; amb.push(c); }
   for (let i = amb.length - 1; i >= 0; i--) {
     const c = amb[i]; c.t += dt * c.v * TIME_SCALE * ff / c.len;
@@ -1685,7 +1754,7 @@ function tickAmbient(dt) {
   }
 }
 function drawAmbient(sx, sy) {
-  if (scale < 0.1) return;
+  if (!SHOW_AMBIENT || scale < 0.1) return;
   for (const c of amb) {
     const ax = N[c.a][0], ay = N[c.a][1], bx = N[c.b][0], by = N[c.b][1], t = Math.min(1, c.t);
     const x = sx(ax + (bx - ax) * t), y = sy(ay + (by - ay) * t);
@@ -1756,7 +1825,7 @@ function draw() {
   else if (state === "toPickup" || state === "boarding") A = current.from; else if (state === "toDropoff") B = current.to; else if (state === "toStop" || state === "stopped") { B = current.to; S = current.stopNode; }
   drawAmbient(sx, sy);
   if (dpsDay !== day) placeDps();
-  if (scale >= 0.08) for (const p of dpsPosts) {   // пост ДПС: маленькая бело-синяя табличка
+  if (false) for (const p of dpsPosts) {   // посты ДПС на карте не показываем - остановка бывает неожиданно
     const x = sx(p.x), y = sy(p.y); if (x < -30 || y < -30 || x > cw + 30 || y > ch + 30) continue;
     ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.fillRect(x - 15, y - 8, 31, 17); ctx.fillStyle = "#fff"; ctx.fillRect(x - 15, y - 9, 30, 16);
     ctx.strokeStyle = "#1f4fd1"; ctx.lineWidth = 2; ctx.strokeRect(x - 15, y - 9, 30, 16);
