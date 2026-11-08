@@ -294,7 +294,11 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 #fuelpill .frow{display:grid;grid-template-columns:16px 40px 30px;align-items:center;gap:5px}#fuelpill .frow>span{display:contents}
 #fuelpill b{min-width:0;text-align:left}#fuelpill .fbar{width:30px}#fuelpill svg{justify-self:center}
 /* рейтинг ниже */
-#ratingpill{justify-content:flex-end;padding-bottom:6px}.rtop{margin-top:0}.prow{margin-top:6px}.rtop .star{width:18px;height:18px}
+#ratingpill{justify-content:flex-start;padding-top:12px;padding-bottom:0}.rtop{margin-top:0}.prow{margin-top:6px}.rtop .star{width:18px;height:18px}
+
+#garage .gcard{padding-top:50px}#garage .mhead{top:12px;right:12px}
+#garage .gnote{margin:0 2px 8px}#garage .clsrow{margin:0}
+.ginfo em{margin-top:1px}.gcar{padding:3px 10px 3px 6px}.gcar .carimg{width:96px}.gtar{margin:8px 2px 0}
 </style></head>
 <body>
 <div id="app">
@@ -1149,7 +1153,7 @@ function showGarage() {   // выбор машины и тарифа; смени
   for (const t of ["econ", "comfort", "cplus"]) {
     html += '<div class="gtar"><b>' + TARIFFS[t].name + "</b></div>";
     for (const c of CARS.filter(c => c.t === t)) html += '<button class="gcar' + (c.id === carId ? " on" : "") + '" data-car="' + c.id + '"' + (locked ? " disabled" : "") + ">" + carImg(c, 112) +
-      '<span class="ginfo"><b>' + c.name + "</b><em>" + c.rent.toLocaleString("ru-RU") + " ₽ · " + (c.fuel * 100).toFixed(1).replace(".", ",") + " л/100 км</em></span></button>";
+      '<span class="ginfo"><b>' + c.name + "</b><em>" + c.rent.toLocaleString("ru-RU") + " ₽</em></span></button>";
   }
   $("garagelist").innerHTML = html; $("garage").hidden = false; menuEl.hidden = true;
 }
@@ -2024,7 +2028,7 @@ function draw() {
 }
 
 let lastTime = 0;
-const _drawMain = draw; draw = function () { _drawMain(); drawDistrictLabels(); };
+
 function frame(time) { const dt = Math.min((time - lastTime) / 1000, 0.05); lastTime = time; update(dt); tickAmbient(dt); updateCamera(dt, false); if (!freeCam) $("recenter").hidden = true; draw(); requestAnimationFrame(frame); }
 loadGame(); updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
 </script>
