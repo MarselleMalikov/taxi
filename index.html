@@ -750,7 +750,7 @@ function spotIn(reg, cx, cy, dmin, dmax, share) {   // точка внутри �
   for (let t = 0; t < 25; t++) { const sp = randSpot(cx, cy, dmin, dmax, share); if (suburbAt(N[sp.node][0], N[sp.node][1]) === reg) return sp; }
   return null;
 }
-const STORY_CHANCE = 0;   // истории постоянных пассажиров выключены, пока их не перепишем с настоящими последствиями
+const STORY_CHANCE = 0.06;   // как часто вместо обычного пассажира попадается постоянный со своей историей
 function buildOrder(cx, cy, cnode, pmin, pmax) {
   // постоянные пассажиры со своей историей попадаются редко и только пока история не закончилась
   const story = PASSENGERS.filter(p => p.scenes && getAff(p.name) > REFUSE_AT && (storyStep[p.name] || 0) < p.scenes.length && !orders.some(o => o.name === p.name) && !(current && current.name === p.name));
@@ -895,7 +895,10 @@ function chooseAnswer(i) {
   if (ch.stars !== undefined) current.stars = ch.stars;    // оценка пассажира (0 = не оценит)
   if (ch.stop) current.stopNow = ch.stop;                     // stop: после разговора машина остановится
   if (ch.gift) current.gift = (current.gift || 0) + ch.gift;   // gift: точная доплата или благодарность сверх цены
-  if (ch.delay) clock += ch.delay * 60;   // проверка документов и т.п. отнимает время смены
+  if (ch.delay) clock += ch.delay * 60;
+  if (ch.moodD) moodAdd(ch.moodD);
+  if (ch.cost) { spend("fines", ch.cost, ch.why || "расход"); (current.fineList = current.fineList || []).push((ch.why || "расход") + ": −" + ch.cost + " ₽"); }
+  if (ch.perk && !owns(ch.perk)) { owned[ch.perk] = true; const it = SHOP.find(x => x.id === ch.perk); floaters.push({ text: "подарок: " + (it ? it.name : ch.perk), x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -34 }); saveGame(); }   // проверка документов и т.п. отнимает время смены
   let fineSum = ch.fine || 0;
   if (ch.kitFine && !owns("kit")) fineSum += ch.kitFine;                 // без аптечки и огнетушителя - штраф
   if (ch.camFine) { if (owns("cam")) floaters.push({ text: "запись регистратора помогла", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -30 }); else fineSum += ch.camFine; }
