@@ -266,6 +266,21 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .mbtn.dark{background:#1E1F23;color:#fff}
 .carimg{display:block;height:auto;object-fit:contain}.gcar .carimg{width:112px}.icar{background:none!important;width:88px}.icar .carimg{width:84px}
 #osm{left:12px;right:auto}#ff{left:auto}
+
+/* гараж */
+#garage .mhead{position:absolute;right:14px;top:12px}#garage .gcard{padding-top:18px}
+#garage .gnote{text-align:left!important;margin:4px 48px 10px 2px;font-size:14px;font-weight:600;color:var(--m);line-height:1.3}
+#garage .clsrow{margin:0 44px 0 0}#garage .gnote+.clsrow{margin-right:0}
+.ginfo b{font-size:16px!important}.ginfo em{display:block;font-style:normal;font-weight:700;font-size:14px;color:#3A404B;margin-top:3px}
+/* верхние плашки: ниже и ровнее */
+#topbar{align-items:stretch}
+#menubtn,#earn,#fuelpill,#ratingpill{height:52px;padding-top:0;padding-bottom:0;display:flex;flex-direction:column;justify-content:center}
+#menubtn{width:52px;align-items:center}
+#earn{padding:0 12px}.money{font-size:16px;line-height:1.1}#earn .sub{margin-top:2px;line-height:1.1}
+#fuelpill{gap:4px;padding:0 10px}
+#ratingpill{padding:0 12px}.rtop{line-height:1}#rating{font-size:16px}.prow{margin-top:6px}
+/* плитки */
+.tile{font-size:14.5px}
 </style></head>
 <body>
 <div id="app">
@@ -316,7 +331,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
   <button class="pbtn" id="plunch"><b>Пообедать</b><small>в ближайшем кафе · 20 минут · настроение +20% · 350 ₽</small></button>
   <button class="pbtn" id="pfuel"><b>Заправиться</b><small>Ближайшая заправка, до полного бака</small></button>
   <p class="lsub" id="pausenote"></p></div></div>
-<div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Гараж</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
+<div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
   <div class="wheel"><div class="wnum" id="wnum">?</div><div class="whist" id="whist"></div></div>
@@ -1077,14 +1092,12 @@ function carSvg(shape, w) {
 }
 function showGarage() {   // выбор машины и тарифа; сменить можно только до выхода на линию в этой смене (аренда уже оплачена)
   const locked = ledger.rent > 0;
-  let html = '<div class="gtar"><b>Принимать заказы</b></div><div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + '" data-cls="' + c + '"' + (clsAllowed(c) ? "" : " disabled") + ">" + TARIFFS[c].name + "</button>").join("") + "</div>" +
-    '<p class="lsub">' + (myCar().t === "econ" ? "На машине Эконом доступны только заказы Эконом." : "Выключите тарифы ниже классом, чтобы брать только дорогие заказы. Но тогда заказов будет меньше.") + "</p>";
-  html += '<p class="lsub">' + (locked ? "Аренда на эту смену уже оплачена. Сменить машину можно в начале следующей смены." : "Аренда списывается при выходе на линию.") + "</p>";
+  let html = (locked ? '<p class="gnote">Сменить машину можно в начале следующей смены</p>' : "") +
+    '<div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + '" data-cls="' + c + '"' + (clsAllowed(c) ? "" : " disabled") + ">" + TARIFFS[c].name + "</button>").join("") + "</div>";
   for (const t of ["econ", "comfort", "cplus"]) {
-    const T = TARIFFS[t];
-    html += '<div class="gtar"><b>' + T.name + "</b></div>";
+    html += '<div class="gtar"><b>' + TARIFFS[t].name + "</b></div>";
     for (const c of CARS.filter(c => c.t === t)) html += '<button class="gcar' + (c.id === carId ? " on" : "") + '" data-car="' + c.id + '"' + (locked ? " disabled" : "") + ">" + carImg(c, 112) +
-      '<span class="ginfo"><b>' + c.name + (c.isNew ? ' <i class="gnew">новая</i>' : "") + "</b><small>Аренда " + c.rent.toLocaleString("ru-RU") + " ₽ за смену</small><small>Расход " + (c.fuel * 100).toFixed(1).replace(".", ",") + " л на 100 км" + (c.isNew ? " · больше чаевых" : "") + "</small></span></button>";
+      '<span class="ginfo"><b>' + c.name + "</b><em>" + c.rent.toLocaleString("ru-RU") + " ₽ · " + (c.fuel * 100).toFixed(1).replace(".", ",") + " л/100 км</em></span></button>";
   }
   $("garagelist").innerHTML = html; $("garage").hidden = false; menuEl.hidden = true;
 }
