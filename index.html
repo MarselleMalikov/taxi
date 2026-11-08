@@ -278,9 +278,16 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 #menubtn{width:52px;align-items:center}
 #earn{padding:0 12px}.money{font-size:16px;line-height:1.1}#earn .sub{margin-top:2px;line-height:1.1}
 #fuelpill{gap:4px;padding:0 10px}
-#ratingpill{padding:0 12px}.rtop{line-height:1}#rating{font-size:16px}.prow{margin-top:6px}
+#ratingpill{padding:0 12px}.rtop{line-height:1;margin-top:4px}#rating{font-size:16px}.prow{margin-top:6px}
 /* плитки */
 .tile{font-size:14.5px}
+
+.dhead{display:flex;align-items:center;gap:12px}.dhead b{font-size:22px;font-weight:800}
+.dback{width:44px;height:44px;border:none;border-radius:50%;background:#fff;box-shadow:var(--sh);display:flex;align-items:center;justify-content:center;cursor:pointer}.dback .ico{width:22px;height:22px}
+.dfee{margin-top:10px;background:var(--c);border-radius:20px;padding:12px 14px}.dfee b{display:block;font-size:16px}.dfee small{display:block;color:var(--m);font-size:13px;margin:2px 0 8px}
+.dfee .pbar{display:block;height:6px}.dfee .pbar i{background:var(--yd)}
+.dbtns{display:flex;gap:10px;margin-top:12px}.dbtns button{flex:1;padding:15px;border:none;border-radius:28px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer}
+.dall{background:var(--c);color:var(--ink)}.dsave{background:var(--y);color:var(--dark)}.dsave:disabled{opacity:.5}
 </style></head>
 <body>
 <div id="app">
@@ -370,7 +377,7 @@ const SOFT_PICK = 20, SOFT_TRIP = 40, SOFT_KEEP = 0.3;   // длинные по�
 const DAY_START = 8 * 60;                            // смена начинается в 08:00
 // Смена длится, пока есть силы: заканчивается, когда настроение падает до 10%, или когда агрегатор блокирует -
 // не больше 13 часов на линии. Каждый перерыв или обед (20 минут) сокращает этот предел на 10 минут
-const ONLINE_LIMIT = 13 * 3600, BREAK_COST = 10 * 60, BREAK_LEN = 20 * 60, MAX_BREAKS = 3, MOOD_END = 10;
+const ONLINE_LIMIT = 13 * 3600, BREAK_COST = 10 * 60, BREAK_LEN = 20 * 60, MAX_BREAKS = 99, MOOD_END = 10;   // перерывов сколько угодно, каждый сокращает время на линии
 const MOOD_PER_HOUR = 7.5;                             // настроение само падает за время работы, % в час
 const LUNCH_PRICE = 350;
 const LATE_SHARE = 0.10, LATE_MAX = 10;                // 10% пассажиров (с рейтингом ниже 4.85) опаздывают, но не больше чем на 10 с
@@ -671,7 +678,7 @@ let carNode = nearest(xs[xs.length >> 1], ys[ys.length >> 1]);
 const car = { x: N[carNode][0], y: N[carNode][1], angle: 0 };
 let route = [];
 
-function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority })); } catch (e) {} }
+function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority })); } catch (e) {} }
 // Детализация смены: всё, что пришло и ушло
 const newLedger = () => ({ fares: 0, tips: 0, fee: 0, rent: 0, fuel: 0, fuelL: 0, fines: 0, km: 0 });
 let fuel = TANK, ledger = newLedger();
@@ -686,7 +693,7 @@ function loadGame() {
     money = d.money || 0; ridesDone = d.ridesDone || 0; if (Array.isArray(d.rates)) rates = d.rates; else if (d.ratingCount) rates = Array(150).fill(Math.min(5, Math.max(4.5, d.ratingSum / d.ratingCount)));   // старое сохранение
     Object.assign(affection, d.affection); Object.assign(storyStep, d.storyStep); Object.assign(met, d.met); Object.assign(seen, d.seen); goalReached = !!d.goalReached;
     clock = d.clock || 0; day = d.day || 1; shiftMoney = d.shiftMoney || 0; shiftRides = d.shiftRides || 0; shiftOver = !!d.shiftOver;
-    fuel = d.fuel === undefined ? TANK : d.fuel; businessUses = d.businessUses || 0; mood = d.mood === undefined ? 100 : d.mood; breaks = d.breaks || 0; onlineT = d.onlineT || 0; carId = d.carId || "rio"; owned = d.owned || {}; priority = d.priority === undefined ? PRIO_MAX : Math.min(PRIO_MAX, d.priority); if (d.clsOn) clsOn = Object.assign(clsOn, d.clsOn); ensureCls(); carChosen = !!d.carChosen; workMode = d.workMode === "flex" ? "flex" : "classic"; ledger = Object.assign(newLedger(), d.ledger || {});
+    fuel = d.fuel === undefined ? TANK : d.fuel; businessUses = d.businessUses || 0; mood = d.mood === undefined ? 100 : d.mood; breaks = d.breaks || 0; onlineT = d.onlineT || 0; carId = d.carId || "rio"; owned = d.owned || {}; priority = d.priority === undefined ? PRIO_MAX : Math.min(PRIO_MAX, d.priority); if (d.clsOn) clsOn = Object.assign(clsOn, d.clsOn); ensureCls(); carChosen = !!d.carChosen; districtSel = Array.isArray(d.districtSel) && d.districtSel.length ? new Set(d.districtSel) : null; workMode = d.workMode === "flex" ? "flex" : "classic"; ledger = Object.assign(newLedger(), d.ledger || {});
   } catch (e) {}
 }
 function resetGame() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); }
@@ -702,12 +709,46 @@ const BUSINESS_PER_SHIFT = 2;
 // Режимы работы. Классический - конечная точка видна только после посадки. Гибкий - видна сразу, комиссия +5%.
 // По делам - заказы в сторону своей точки, комиссия +9%. Мой район - позже
 let workMode = "classic";
-const MODE_NAME = { classic: "Классический", flex: "Гибкий", business: "По делам" };
-const MODE_SHORT = { classic: "Классика", flex: "Гибкий", business: "По делам" };
-const feeRate = () => FEE + (business ? 0.09 : workMode === "flex" ? 0.05 : 0);
-const modeNow = () => business ? "business" : workMode;
+const MODE_NAME = { classic: "Классический", flex: "Гибкий", business: "По делам", district: "Мой район" };
+const MODE_SHORT = { classic: "Классика", flex: "Гибкий", business: "По делам", district: "Мой район" };
+// Мой район: город поделён на 5 районов; заказы приходят только с концом поездки в выбранных районах.
+// Чем меньше районов выбрано, тем выше доплата к комиссии
+const DISTRICTS = [
+  { id: "north",  name: "Север" }, { id: "center", name: "Центр" }, { id: "south", name: "Юг" },
+  { id: "zaton",  name: "Затон" }, { id: "dema",   name: "Дёма" }
+];
+const DISTRICT_FEE = [0, 0.09, 0.06, 0.04, 0.02, 0.01];   // по числу выбранных районов
+let districtSel = null;   // выбранные районы (Set) или null - режим выключен
+function districtAt(x, y) {
+  const lat = D.geo.latMax - y / D.geo.ky, lon = D.geo.lonMin + x / D.geo.kx;
+  if (lon < 55.905 && lat >= 54.655 && lat < 54.735) return "dema";
+  if (lon < 55.905 && lat >= 54.735 && lat < 54.80) return "zaton";
+  return lat < 54.745 ? "south" : lat < 54.79 ? "center" : "north";
+}
+const districtFee = n => DISTRICT_FEE[Math.min(n, 5)];
+const feeRate = () => FEE + (business ? 0.09 : districtSel ? districtFee(districtSel.size) : workMode === "flex" ? 0.05 : 0);
+const modeNow = () => business ? "business" : districtSel ? "district" : workMode;
 let business = null, businessUses = 0, picking = false;
 const distTo = (x, y, b) => Math.hypot(b.x - x, b.y - y);
+let districtPick = null, pickPrev = null;
+function endDistrictPick() {   // вернуть карту как была
+  districtPick = null; freeCam = false; labelCache = null;
+  if (pickPrev) { scale = pickPrev.scale; viewW = cw / scale; viewH = ch / scale; zoomUntil = 0; pickPrev = null; }
+}   // временный выбор районов (Set), пока открыт экран выбора
+function startDistrictPick() {
+  districtPick = new Set(districtSel || []); freeCam = true; freeIdle = -1e9; pickPrev = { scale, camX, camY }; labelCache = null;
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (const h of distCells().values()) { x0 = Math.min(x0, h.x); x1 = Math.max(x1, h.x); y0 = Math.min(y0, h.y); y1 = Math.max(y1, h.y); }
+  scale = clamp(Math.min(cw / (x1 - x0 + 1500), (ch * 0.55) / (y1 - y0 + 1500)), zoomMin(), ZOOM_MAX); viewW = cw / scale; viewH = ch / scale;
+  camX = (x0 + x1) / 2; camY = (y0 + y1) / 2 + 0.2 * viewH; renderPanel();
+}
+function districtPanelHtml() {
+  const n = districtPick.size, fee = Math.round(districtFee(n) * 100);
+  return '<div class="dhead"><button class="dback" data-act="dcancel" aria-label="Назад">' + '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' + "</button><b>Мой район</b></div>" +
+    '<p class="lsub" style="text-align:left">Нажимайте на районы на карте. Заказы будут приходить с концом поездки в выбранных районах.</p>' +
+    '<div class="dfee"><b>' + (n ? "Комиссия +" + fee + "%" : "Выберите хотя бы один район") + "</b><small>Больше районов - ниже комиссия</small>" +
+    '<span class="pbar"><i style="width:' + (n / 5 * 100) + '%"></i></span></div>' +
+    '<div class="dbtns"><button class="dall" data-act="dall">Выбрать все</button><button class="dsave" data-act="dsave"' + (n ? "" : " disabled") + ">Сохранить</button></div>";
+}
 function setBusiness(x, y) {
   const node = nodeNear(x, y);
   business = { node, x: N[node][0], y: N[node][1], addr: addrNear(N[node][0], N[node][1]) || addrOf(node) };
@@ -789,6 +830,11 @@ function buildOrder(cx, cy, cnode, pmin, pmax) {
       B = spotIn(reg, N[A.node][0], N[A.node][1], 1200, 7000, 0.3); if (!B) return null; local = true;
     }
   } else suburbName = null;
+  if (districtSel && !business) {   // мой район: конец поездки - в выбранных районах
+    let ok = districtSel.has(districtAt(N[B.node][0], N[B.node][1]));
+    for (let t = 0; t < 12 && !ok; t++) { B = randSpot(N[A.node][0], N[A.node][1], TRIP_MIN, TRIP_MAX, 0.35); ok = districtSel.has(districtAt(N[B.node][0], N[B.node][1])); }
+    if (!ok) return null;
+  }
   if (business) {   // «по делам»: подбираем заказ в сторону своей точки, а не нашли - заказа пока нет
     let ok = false;
     for (let t = 0; t < 14 && !ok; t++) {
@@ -1116,7 +1162,7 @@ function showPause() {   // окно «Пауза»: перерыв, обед, �
   const left = MAX_BREAKS - breaks, idle = state === "idle";
   $("pauseinfo").textContent = "Настроение " + Math.round(mood) + "% · на линии " + fmtHM(onlineT) + " из " + fmtHM(onlineLimit()) + " · в баке " + Math.round(fuel) + " л";
   $("prest").disabled = $("plunch").disabled = !idle || left <= 0; $("pfuel").disabled = !idle;
-  $("pausenote").textContent = !idle ? "Сначала завершите заказ." : left <= 0 ? "Перерывов на эту смену больше нет." : "";
+  $("pausenote").textContent = !idle ? "Сначала завершите заказ." : "";
   $("pause").hidden = false;
 }
 $("fuelpill").addEventListener("click", showPause);
@@ -1149,6 +1195,7 @@ function spin(kind) {
     const win = kind === "zero" ? n === 0 : n === 0 ? false : kind === "red" ? RED.has(n) : kind === "black" ? !RED.has(n) : kind === "even" ? n % 2 === 0 : n % 2 === 1;
     const pay = win ? bet * (kind === "zero" ? 36 : 2) : 0;
     money += pay; ledger.casino = (ledger.casino || 0) + pay - bet;
+    if (pay - bet > 500) moodAdd(5); else if (!win && bet >= 500) moodAdd(-5);   // крупный выигрыш радует, крупный проигрыш расстраивает
     w.textContent = n; w.className = "wnum " + numCls(n); rouHist.unshift(n); if (rouHist.length > 8) rouHist.pop();
     spinning = false; updateTop(); saveGame(); showCasino();
     $("cres").textContent = win ? "Выигрыш +" + pay.toLocaleString("ru-RU") + " ₽" : "Проигрыш −" + bet.toLocaleString("ru-RU") + " ₽"; $("cres").className = "cres " + (win ? "win" : "lose");
@@ -1178,15 +1225,20 @@ function showModes() {
     card("classic", "Классический", "комиссия 25%", "Куда ехать, станет известно после посадки.") +
     card("flex", "Гибкий", "+5% комиссии", "Конечная точка видна сразу в предложении заказа, карта показывает весь маршрут.") +
     card("business", "По делам", "+9% комиссии", business ? "Едете к точке: " + business.addr + ". Нажмите, чтобы выключить." : "Отметьте на карте, куда вам нужно, - будут приходить заказы по пути. Осталось " + left + " из " + BUSINESS_PER_SHIFT + " за смену.", !business && left <= 0) +
-    card("district", "Мой район", "скоро", "Режим появится позже.", true);
+    card("district", "Мой район", districtSel ? "+" + Math.round(districtFee(districtSel.size) * 100) + "% комиссии" : "+1-9% комиссии", districtSel ? "Районы: " + DISTRICTS.filter(d => districtSel.has(d.id)).map(d => d.name).join(", ") + ". Нажмите, чтобы закончить режим." : "Заказы только с концом поездки в выбранных районах. Больше районов - ниже комиссия.");
   $("modes").hidden = false;
 }
 $("modes").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("modes").hidden = true; return; }
   const b = e.target.closest("[data-mode]"); if (!b || b.disabled) return;
   const id = b.dataset.mode; $("modes").hidden = true;
-  if (id === "business") { if (business) stopBusiness(); else if (businessUses < BUSINESS_PER_SHIFT) { picking = true; $("pickbar").hidden = false; } }
-  else { if (business) stopBusiness(); workMode = id; orders = []; previewId = null; spawnTimer = 1.5; saveGame(); renderPanel(); }
+  if (id === "district") {
+    if (districtSel) askConfirm("Закончить режим «Мой район»?", "Заказы снова будут приходить по всему городу.", "Закончить", () => { districtSel = null; workMode = "classic"; orders = []; spawnTimer = 1.5; lastClk = ""; saveGame(); renderPanel(); }, "pin");
+    else startDistrictPick();
+    lastClk = ""; return;
+  }
+  if (id === "business") { if (districtSel) districtSel = null; if (business) stopBusiness(); else if (businessUses < BUSINESS_PER_SHIFT) { picking = true; $("pickbar").hidden = false; } }
+  else { if (business) stopBusiness(); districtSel = null; workMode = id; orders = []; previewId = null; spawnTimer = 1.5; saveGame(); renderPanel(); }
   lastClk = "";
 });
 $("ratingpill").addEventListener("click", showModes);
@@ -1322,7 +1374,7 @@ function updateCamera(dt, snap) {
   }
   if (savedScale !== null && !freeCam) { easeScale(savedScale, snap ? 1 : Math.min(1, dt * 4)); if (scale === savedScale) savedScale = null; }
   if (freeCam) {
-    camX = clamp(camX, viewW / 2, W - viewW / 2); camY = clamp(camY, viewH / 2, H - viewH / 2);
+    if (!districtPick) { camX = clamp(camX, viewW / 2, W - viewW / 2); camY = clamp(camY, viewH / 2, H - viewH / 2); }
     if (!ptrs.size && (freeIdle += dt) > FREE_RETURN) freeCam = false; else return;
   }
   const f = getFocus(), k = snap ? 1 : Math.min(1, dt * 5);
@@ -1332,7 +1384,7 @@ function updateCamera(dt, snap) {
 
 // Масштаб: колесо мыши, два пальца или кнопки + и -
 const ZOOM_MAX = 1.6;                                           // пикселей на метр при максимальном приближении
-const zoomMin = () => Math.max(0.035, cw / W, ch / H);          // дальше отдалять нельзя: вся карта уже на экране
+const zoomMin = () => districtPick ? 0.008 : Math.max(0.035, cw / W, ch / H);          // дальше отдалять нельзя: вся карта уже на экране
 let zoomUntil = 0;                                              // пока идёт масштабирование, слой карты не перерисовываем каждый кадр
 function setZoom(ns, ax = cw / 2, ay = ch / 2) {                // ax, ay - точка экрана, которая остаётся на месте
   ns = clamp(ns, zoomMin(), ZOOM_MAX); if (ns === scale) return; savedScale = null;
@@ -1370,11 +1422,15 @@ canvas.addEventListener("pointermove", e => {
   $("recenter").hidden = false;
 });
 const endDrag = e => {
-  if (picking && tapStart && e.type === "pointerup" && Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) < 8 && performance.now() - tapStart.t < 500) {
+  if (districtPick && tapStart && e.type === "pointerup" && Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) < 8) {
+    const rect = canvas.getBoundingClientRect(), wx = camX - viewW / 2 + (e.clientX - rect.left) / scale, wy = camY - viewH / 2 + (e.clientY - rect.top) / scale;
+    if (distCells().get(hexKey(...hexAt(wx, wy)))) { const d = districtAt(wx, wy); districtPick.has(d) ? districtPick.delete(d) : districtPick.add(d); renderPanel(); }
+    tapStart = null;
+  } else if (picking && tapStart && e.type === "pointerup" && Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) < 8 && performance.now() - tapStart.t < 500) {
     const rect = canvas.getBoundingClientRect();
     const wx = camX - viewW / 2 + (e.clientX - rect.left) / scale, wy = camY - viewH / 2 + (e.clientY - rect.top) / scale;
     picking = false; $("pickbar").hidden = true; setBusiness(wx, wy);
-  } else if (!picking && tapStart && e.type === "pointerup" && (state === "idle" || state === "selfDrive") && Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) < 8 && performance.now() - tapStart.t < 400) {
+  } else if (!picking && !districtPick && tapStart && e.type === "pointerup" && (state === "idle" || state === "selfDrive") && Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) < 8 && performance.now() - tapStart.t < 400) {
     const rect = canvas.getBoundingClientRect();
     tapDrive(camX - viewW / 2 + (e.clientX - rect.left) / scale, camY - viewH / 2 + (e.clientY - rect.top) / scale);
   }
@@ -1505,6 +1561,7 @@ function idleHtml(searching) {   // машина и статус, под ним�
 }
 function renderPanel() {
   let html = "";
+  if (districtPick) { panel.innerHTML = districtPanelHtml(); shiftBtn.style.display = "none"; return; }
   const biz = business ? '<div class="bizchip"><span>По делам: ' + business.addr + " · " + (distTo(car.x, car.y, business) / 1000).toFixed(1) + " км</span><span class='bizbtns'>" +
     (state === "idle" ? '<button data-act="selfdrive">Поехать самому</button>' : "") + '<button data-act="bizoff">Выключить</button></span></div>' : "";
   if (state === "selfDrive") {
@@ -1536,6 +1593,9 @@ panel.addEventListener("click", e => {
     if (btn.dataset.choice !== undefined) return chooseAnswer(Number(btn.dataset.choice));
     if (btn.dataset.act === "closeResult") { lastRide = null; return renderPanel(); }
     if (btn.dataset.act === "kick") return kickOut();
+    if (btn.dataset.act === "dall") { DISTRICTS.forEach(d => districtPick.add(d.id)); return renderPanel(); }
+    if (btn.dataset.act === "dcancel") { endDistrictPick(); return renderPanel(); }
+    if (btn.dataset.act === "dsave" && districtPick.size) { districtSel = districtPick; endDistrictPick(); if (business) stopBusiness(); orders = []; previewId = null; spawnTimer = 1.5; lastClk = ""; saveGame(); return renderPanel(); }
     if (btn.dataset.act === "tledger") return showLedger();
     if (btn.dataset.act === "tmodes") return showModes();
     if (btn.dataset.act === "tgarage") return showGarage();
@@ -1698,6 +1758,7 @@ function pin(x, y, col, letter) {
 // подписи запоминаются в метрах карты и едут вместе с ней, поэтому при ускорении не мелькают
 let labelCache = null; const labelBorn = new Map();   // когда подпись впервые появилась - для плавного проявления
 function layoutLabels(vx, vy, sx, sy, surgeLabels, prev) {
+  if (districtPick) return { vx, vy, scale, t: performance.now(), shown: [], streets: [], surge: [] };   // при выборе районов подписи не мешают
   const streetsOut = [], surgeOut = [];
   const placed = [], used = new Set();
   const free = (x, y, w, h) => { if (x - w / 2 < 6 || x + w / 2 > cw - 6 || y - h / 2 < 92) return false;   // не у краёв и не под верхними плашками
@@ -1808,12 +1869,70 @@ function drawAmbient(sx, sy) {
     ctx.restore();
   }
 }
+// Районы на карте: соты по районам, граница района - жирная линия
+let distHex = null;
+let DIST_CELLS = null;   // соты, где есть дороги - из них состоят районы
+function distCells() {
+  if (DIST_CELLS) return DIST_CELLS;
+  DIST_CELLS = new Map(); const cnt = new Map();
+  for (let i = 0; i < N.length; i++) { const [q, r] = hexAt(N[i][0], N[i][1]), k = hexKey(q, r); cnt.set(k, (cnt.get(k) || 0) + 1); if (cnt.get(k) === 14) { const [x, y] = hexCenter(q, r); DIST_CELLS.set(k, { q, r, x, y }); } }
+  const nb = (x, y) => { let n = 0; for (let i = 0; i < 6; i++) { const a = (i + 1) * Math.PI / 3; if (DIST_CELLS.has(hexKey(...hexAt(x + Math.cos(a) * HEX_W, y + Math.sin(a) * HEX_W)))) n++; } return n; };
+  for (let pass = 0; pass < 2; pass++) {   // закрываем дыры внутри районов и убираем одиночные соты
+    const add = [], del = [];
+    for (const k of cnt.keys()) if (!DIST_CELLS.has(k)) { const r = Math.floor((k + 5000) / 10000), q = k - r * 10000, [x, y] = hexCenter(q, r); if (nb(x, y) >= 4) add.push({ k, q, r, x, y }); }
+    for (const [k, h] of DIST_CELLS) if (nb(h.x, h.y) <= 1) del.push(k);
+    for (const h of add) DIST_CELLS.set(h.k, { q: h.q, r: h.r, x: h.x, y: h.y }); for (const k of del) DIST_CELLS.delete(k);
+  }
+  return DIST_CELLS;
+}
+function buildDistrictHex() {
+  distHex = []; const cells = distCells();
+  for (const h of cells.values()) {
+    const d = districtAt(h.x, h.y), edges = [];
+    for (let i = 0; i < 6; i++) {   // сосед за i-й гранью: другой район или пусто - рисуем границу
+      const a = (i + 1) * Math.PI / 3, nx = h.x + Math.cos(a) * HEX_W, ny = h.y + Math.sin(a) * HEX_W, nh = cells.get(hexKey(...hexAt(nx, ny)));
+      if (!nh || districtAt(nh.x, nh.y) !== d) edges.push(i);
+    }
+    distHex.push({ h, d, edges });
+  }
+}
+function drawDistricts(sel, picking) {
+  if (!distHex) buildDistrictHex();
+  const hexPath = (h, r) => { for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + i * Math.PI / 3, px = h.x + Math.cos(a) * r, py = h.y + Math.sin(a) * r; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } ctx.closePath(); };
+  for (const on of [false, true]) {
+    if (!picking && !on) continue;
+    ctx.beginPath(); for (const o of distHex) if (sel.has(o.d) === on) hexPath(o.h, HEX_R);
+    ctx.fillStyle = on ? "rgba(30,31,35,.30)" : "rgba(124,92,230,.20)"; ctx.fill();
+    ctx.lineWidth = 0.6 / scale; ctx.strokeStyle = on ? "rgba(30,31,35,.35)" : "rgba(124,92,230,.35)"; ctx.stroke();
+  }
+  ctx.beginPath();
+  for (const o of distHex) for (const i of o.edges) {
+    if (!picking && !sel.has(o.d)) continue;
+    const a0 = Math.PI / 6 + i * Math.PI / 3, a1 = a0 + Math.PI / 3;
+    ctx.moveTo(o.h.x + Math.cos(a0) * HEX_R, o.h.y + Math.sin(a0) * HEX_R); ctx.lineTo(o.h.x + Math.cos(a1) * HEX_R, o.h.y + Math.sin(a1) * HEX_R);
+  }
+  ctx.lineWidth = (picking ? 2.4 : 1.6) / scale; ctx.strokeStyle = "#1E1F23"; ctx.lineJoin = "round"; ctx.stroke();
+}
+
+function drawDistrictLabels() {   // названия районов поверх дорог и машины
+  if (!districtPick || !distHex) return;
+  ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.font = "800 15px Inter, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+  for (const d of DISTRICTS) {
+    const hs = distHex.filter(o => o.d === d.id); if (!hs.length) continue;
+    const x = (hs.reduce((s, o) => s + o.h.x, 0) / hs.length - (camX - viewW / 2)) * scale, y = (hs.reduce((s, o) => s + o.h.y, 0) / hs.length - (camY - viewH / 2)) * scale;
+    const w = ctx.measureText(d.name).width + 22, on = districtPick.has(d.id);
+    ctx.fillStyle = on ? "#1E1F23" : "#fff"; ctx.shadowColor = "rgba(0,0,0,.2)"; ctx.shadowBlur = 6; ctx.beginPath(); ctx.roundRect(x - w / 2, y - 14, w, 28, 14); ctx.fill(); ctx.shadowColor = "transparent";
+    ctx.fillStyle = on ? "#fff" : "#1E1F23"; ctx.fillText(d.name, x, y + 0.5);
+  }
+  ctx.restore();
+}
 function draw() {
   const k = dpr * scale, vx = camX - viewW / 2, vy = camY - viewH / 2, sx = x => (x - vx) * scale, sy = y => (y - vy) * scale;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = MAP_BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.setTransform(k, 0, 0, k, -vx * k, -vy * k);   // дальше рисуем в метрах города
   drawBaseLayer(vx, vy);   // вода, зелень и дома - первыми, под дорогами
-  const surgeLabels = drawSurge(vx, vy);   // зоны повышенного спроса - поверх домов, под дорогами
+  const surgeLabels = districtPick ? [] : drawSurge(vx, vy);
+  if (districtPick || districtSel) drawDistricts(districtPick || districtSel, !!districtPick);   // зоны повышенного спроса - поверх домов, под дорогами
   const vis = [[], [], [], [], [], []];
   for (const e of D.edges) {   // отбираем только те дороги, что попадают в экран
     const a = N[e[0]], b = N[e[1]];
@@ -1898,6 +2017,7 @@ function draw() {
 }
 
 let lastTime = 0;
+const _drawMain = draw; draw = function () { _drawMain(); drawDistrictLabels(); };
 function frame(time) { const dt = Math.min((time - lastTime) / 1000, 0.05); lastTime = time; update(dt); tickAmbient(dt); updateCamera(dt, false); if (!freeCam) $("recenter").hidden = true; draw(); requestAnimationFrame(frame); }
 loadGame(); updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
 </script>
