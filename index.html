@@ -258,6 +258,12 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 #pause .askcard{padding-top:16px}#pause .mhead{position:absolute;right:14px;top:12px}#pause .mhead b{display:none}
 #pauseinfo,#pausenote{text-align:left!important;margin:0 44px 4px 2px;line-height:1.35}#pausenote:empty{display:none}
 #pause .pbtn{margin-top:8px;padding:11px 14px}
+
+#mapctl{top:calc(env(safe-area-inset-top,0px) + 150px)}
+.addr{align-items:flex-start;gap:12px}.addr .dotA,.addr .dotB,.addr .dotS{margin-top:6px}
+.addr b{line-height:1.25}.addr small{display:block;line-height:1.3;margin-top:2px;text-align:left}
+.sitem b{font-size:15px!important;font-weight:700!important;line-height:1.2}.sitem small{font-size:12.5px}
+.mbtn.dark{background:#1E1F23;color:#fff}
 </style></head>
 <body>
 <div id="app">
@@ -284,6 +290,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
     <aside class="mpanel">
       <div class="mhead"><b>Меню</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
       <div class="mstatus status off" id="mstatus"><span class="dot"></span><span id="statustext">Не на линии</span></div>
+      <button class="mbtn dark" id="offbtn" hidden></button>
       <div class="mstats">
         <div><span>Машина</span><b id="mcar"></b></div>
         <div><span>Накоплено</span><b id="mmoney">0 ₽</b></div>
@@ -823,7 +830,7 @@ function tickChain(dt) {
   const c = current;
   if (c.nextOffer) { c.nextOffer.ttl -= dt; const bar = $("bar-" + c.nextOffer.id); if (bar) bar.style.width = (c.nextOffer.ttl / ORDER_TTL * 100) + "%";
     if (c.nextOffer.ttl <= 0) { c.nextOffer = null; prioAdd(-5); renderPanel(); } return; }
-  if (c.chainChecked || c.next || !online || shiftOver || !c.rideLen || 1 - remainingLen() / c.rideLen < 0.65 || fuel < LOW_FUEL + 3) return;
+  if (c.chainChecked || c.next || !online || offAfter || shiftOver || !c.rideLen || 1 - remainingLen() / c.rideLen < 0.65 || fuel < LOW_FUEL + 3) return;
   c.chainChecked = true;
   const bx = N[c.to][0], by = N[c.to][1], hx = HEX_BASE.get(hexKey(...hexAt(bx, by)));
   if (Math.random() > 0.15 + 0.35 * (hx ? hx.base : 0) + 0.5 * (surgeAt(bx, by) - 1)) return;
@@ -971,9 +978,11 @@ function finishRide(reason) {
   if (fare > 0) floaters.push({ text: "+" + (fare - fee) + " ₽", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -20 });
   if (tip > 0) floaters.push({ text: "+" + tip + " ₽ чаевые", x: car.x, y: car.y, age: 0, color: "#b8860b", dy: 6 });
   lastRide = { name: c.name, cash: c.cash, offApp: c.offApp, fines: c.fineList || [], price: fare, fee, tip, stars, mood: c.mood, note: reason ? reason + (mult === 0 ? ", оплаты нет" : c.partial !== undefined ? ", оплата за проеханное" : "") : mult === 0 ? "Пассажир не заплатил" : "", wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
+  if (offAfter) { c.next = null; c.nextOffer = null; }
   const chained = c.next, pendingNext = !c.next && c.nextOffer;   // предложенный, но ещё не принятый следующий заказ
   current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); checkBusinessDone(); updateTop(); saveGame();
   if (chained) { chained.ttl = ORDER_TTL; orders = [chained]; acceptOrder(chained.id); return renderPanel(); }   // сразу едем к следующему клиенту
+  if (offAfter) { offAfter = false; online = false; orders = []; floaters.push({ text: "Вы ушли с линии", x: car.x, y: car.y, age: 0, color: "#1E1F23", dy: -40 }); }
   if (pendingNext && pendingNext.ttl > 0 && online) { orders = [pendingNext]; previewId = null; }   // неотвеченное предложение остаётся и ждёт решения
   renderPanel();
 }
@@ -1164,7 +1173,16 @@ $("modes").addEventListener("click", e => {
 });
 $("ratingpill").addEventListener("click", showModes);
 $("pickcancel").addEventListener("click", () => { picking = false; $("pickbar").hidden = true; });
-statusPill.addEventListener("click", () => { updateTop(); updateStatus(); $("mday").textContent = day; menuEl.hidden = false; });
+let offAfter = false;   // уйти с линии, как только закончится текущий заказ
+function updateOffBtn() {
+  const b = $("offbtn"); b.hidden = !online;
+  b.textContent = state === "idle" ? "Уйти с линии" : offAfter ? "Отменить: остаться на линии" : "Уйти с линии после заказа";
+}
+$("offbtn").addEventListener("click", () => {
+  if (state === "idle") { online = false; orders = []; previewId = null; offAfter = false; menuEl.hidden = true; return renderPanel(); }
+  offAfter = !offAfter; if (offAfter && current) { current.nextOffer = null; } updateOffBtn(); renderPanel();
+});
+statusPill.addEventListener("click", () => { updateOffBtn(); updateTop(); updateStatus(); $("mday").textContent = day; menuEl.hidden = false; });
 menuEl.addEventListener("click", e => { if (e.target.closest("[data-close]")) menuEl.hidden = true; });
 resetBtn.addEventListener("click", () => askConfirm("Сбросить весь прогресс?", "Деньги, рейтинг, поездки и истории пассажиров начнутся заново. Это нельзя отменить.", "Сбросить", resetGame, "alert"));
 // Своё окно подтверждения: стандартное окно браузера (confirm) на некоторых страницах запрещено и молча отвечает «нет»
@@ -1486,7 +1504,7 @@ function renderPanel() {
     node.choices.forEach((c, i) => { html += '<button class="choice" data-choice="' + i + '">' + c.text + "</button>"; });
     if (mood < 30 && !current.arrived) html += '<button class="choice irritated" data-choice="-1">' + IRRITATED[current.id % IRRITATED.length] + "</button>";
     html += "</div>";
-  } else html = ridePanelHtml() + (state === "toDropoff" ? chainHtml() : "");
+  } else html = ridePanelHtml() + (state === "toDropoff" ? chainHtml() : "") + (offAfter ? '<div class="chainok" style="background:#F1F2F4;color:#1E1F23">После этого заказа вы уйдёте с линии</div>' : "");
   panel.innerHTML = html; updateStatus();
 }
 panel.addEventListener("click", e => {
