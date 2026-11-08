@@ -2,6 +2,8 @@
 <html lang="ru"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Такси-игра</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--g:#22b455;--o:#f08a1c;--b:#2f6fed;--r:#e5484d;--ink:#1b1d22;--m:#6b7280;--c:#f3f4f6}
 *{box-sizing:border-box}
@@ -152,6 +154,86 @@ button{font-family:inherit}
 .dotS{flex:none;width:12px;height:12px;border-radius:50%;margin-top:5px;background:var(--o)}
 .stopinfo{margin-top:12px;font-size:16px;font-weight:600;color:#b36b00;background:#fff4e0;border-radius:12px;padding:10px}
 .kick{display:block;width:100%;margin-top:14px;padding:12px;border:none;border-radius:12px;background:#fde8e8;color:#b3261e;font-size:15px;cursor:pointer}
+
+/* ===== Оформление: белые карточки, мягкие тени, жёлтые и чёрные кнопки-таблетки, линейные иконки ===== */
+:root{--y:#FFD233;--yd:#F2C200;--dark:#1E1F23;--g:#1FAF55;--line:#ECEDF0;--c:#F3F4F6;--m:#7A8190;--ink:#16181D;--sh:0 8px 24px rgba(17,24,39,.10);--sh2:0 2px 10px rgba(17,24,39,.07)}
+body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.ico{width:22px;height:22px;flex:none}
+.pill{border-radius:16px;box-shadow:var(--sh);background:#fff;padding:8px 12px}
+#topbar{gap:8px;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 0}
+#menubtn{width:48px;height:48px;border-radius:16px}
+.burger{gap:4.5px}.burger i{width:19px;height:2.2px;border-radius:2px;background:var(--dark)}
+.money{font-weight:800;letter-spacing:-.2px}
+#ratingpill{padding:7px 12px;min-width:76px}
+.rtop{display:flex;align-items:center;justify-content:center;gap:5px}.rtop .star{width:17px;height:17px;fill:var(--y);stroke:#E3B000;stroke-width:1}
+#rating{font-size:17px;font-weight:800;color:var(--ink)}
+.prow{display:flex;align-items:center;gap:6px;margin-top:5px}.pbar{flex:1;height:5px;border-radius:3px;background:#E7E9EE;overflow:hidden;min-width:34px}
+.pbar i{display:block;height:100%;width:50%;background:#2F6FED;border-radius:3px;transition:width .4s}
+#prion{font-size:11px;font-weight:700;color:var(--m)}.prow.low .pbar i{background:#E5484D}.prow.high .pbar i{background:#1FAF55}
+#osm{top:calc(env(safe-area-inset-top,0px) + 70px);left:12px;border-radius:8px;background:rgba(255,255,255,.75)}
+#mapctl{position:absolute;z-index:2;right:12px;top:calc(env(safe-area-inset-top,0px) + 132px);display:flex;flex-direction:column;gap:10px}
+.mc{width:48px;height:48px;border:none;border-radius:16px;background:#fff;box-shadow:var(--sh);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dark)}
+.mc svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}.mc:active{transform:scale(.96)}
+#recenter[hidden]{display:flex}
+#ff{top:calc(env(safe-area-inset-top,0px) + 74px);right:12px;border-radius:14px;box-shadow:var(--sh);padding:7px 12px;font-weight:800}
+#sheet{border-radius:26px 26px 0 0;box-shadow:0 -8px 30px rgba(17,24,39,.14);padding:20px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.grab{width:44px;height:5px;border-radius:3px;background:#DDE0E5;margin:-10px auto 14px}
+/* главная кнопка: не на линии - чёрная, на линии - жёлтая */
+#shift{border-radius:30px;padding:16px;font-size:18px;font-weight:700;margin-top:10px;display:flex;flex-direction:column;align-items:center}
+#shift.off{background:var(--dark);color:#fff}#shift.on{background:var(--y);color:var(--dark)}
+#shift .sdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#1FD15F;margin-right:10px;vertical-align:1px}
+#shift small{font-size:12px;opacity:.75;margin-top:2px}
+/* карточки */
+.ocard,.chain{background:#fff;border:1.5px solid var(--line);box-shadow:var(--sh2);border-radius:22px;padding:14px}
+.ocard.sel{border-color:var(--yd)}.ocard.surge{background:#F4F7FF;border-color:#D5E0FF}.ocard.surge.sel{border-color:#2F6FED}
+.obar{height:5px;border-radius:3px;background:#EEF0F3;margin-top:12px}.obarfill{background:var(--yd)}
+.obtns{gap:10px;margin-top:12px}.obtns button{border-radius:28px;padding:14px;font-size:16px;font-weight:700}
+.skip{background:var(--c);color:var(--ink)}.obtns .take,.chain .obtns .take{background:var(--y);color:var(--dark)}
+.ocard.surge .obtns .take,.chain.surge .obtns .take{background:#2F6FED;color:#fff}.ocard.surge .obarfill,.chain.surge .obarfill{background:#2F6FED}
+.listhead{font-size:13px;font-weight:600;color:var(--m);margin:0 4px 10px}
+.addr b{font-weight:700}.dotA,.dotB,.dotS{width:12px;height:12px;border:3px solid #fff;box-shadow:0 0 0 1.5px currentColor;margin-top:4px}
+.dotA{color:#1FAF55}.dotB{color:#E5484D}.dotS{color:#F08A1C}
+.chip{border-radius:999px;padding:6px 12px;font-weight:700}
+.paychip{border-radius:999px;padding:5px 11px}
+.rprice{font-weight:800;color:var(--ink)}
+.kick{border-radius:28px;padding:14px;font-weight:600}
+.dialog{background:#fff;border:1.5px solid var(--line);border-radius:22px;box-shadow:var(--sh2);padding:16px}
+.said{font-size:17px;font-weight:500}
+.choice{border-radius:18px;padding:13px 14px;border:1.5px solid var(--line);font-weight:500}
+.choice:hover{background:#F7F8FA}
+/* итог поездки */
+.result{background:#fff;border:1.5px solid var(--line);box-shadow:var(--sh2);border-radius:22px;padding:14px 16px;margin-bottom:12px}
+.rtitle{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px}.rtitle i{width:10px;height:10px;border-radius:50%;background:var(--g)}
+.result .x{width:30px;height:30px;border-radius:50%;background:var(--c);font-size:18px}
+.rsum{display:flex;align-items:baseline;gap:10px;margin:8px 0 6px;flex-wrap:wrap}.rsum b{font-size:32px;font-weight:800;color:var(--g);letter-spacing:-.5px}.rsum span{font-size:13px;color:var(--m)}
+.rrow{display:flex;align-items:center;gap:12px;font-size:15px;margin-top:9px;color:var(--ink)}.rrow .ico{width:20px;height:20px;color:var(--dark)}.rrow.bad{color:#C9363B}.rrow.bad .ico{color:#C9363B}
+.stars{color:#F5A300}
+/* экран ожидания: машина, статус, плитки */
+.ihead{display:flex;align-items:center;gap:14px;margin:2px 2px 14px}
+.icar{flex:none;width:76px;height:56px;border-radius:18px;background:var(--c);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ihead b{display:block;font-size:19px;font-weight:800}.ihead small{display:block;color:var(--m);font-size:14px;margin-top:2px}
+.ihead .live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--g);margin-right:6px;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tile{border:none;background:var(--c);border-radius:18px;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit}
+.tile .ico{width:24px;height:24px;color:var(--dark)}.tile:active{transform:scale(.97)}
+/* окна */
+.askback,.mback{background:rgba(17,24,39,.35)}
+.askcard,#endcard{border-radius:28px;padding:22px 18px 16px;box-shadow:0 20px 50px rgba(17,24,39,.25)}
+.acenter{text-align:center}.acenter p{text-align:center!important}
+.askicon{width:64px;height:64px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;margin:-2px auto 12px}.askicon .ico{width:30px;height:30px;color:var(--dark)}
+.askcard b{font-size:20px;font-weight:800}
+.askbtns{flex-direction:column-reverse;gap:8px}.askbtns button{border-radius:28px;padding:15px;font-size:16px;font-weight:700}
+#askok{background:var(--y)!important;color:var(--dark)}#askno{background:var(--c)}
+.endbtn{border-radius:28px;padding:15px;font-weight:700}.endbtn.main{background:var(--y);color:var(--dark)}
+.mhead .x{background:var(--c)}
+.mode,.gcar,.clsbtn,.pbtn{border-radius:20px}.mode.on,.gcar.on,.clsbtn.on{border-color:var(--yd);background:#FFFBEA;color:var(--ink)}
+.sbuy{border-radius:22px;background:var(--y);color:var(--dark)}.sbuy.got{background:#E3F6EA;color:#16883F}
+.mbtn{border-radius:18px;background:var(--c);color:var(--ink)}
+.mpanel{border-radius:0 26px 26px 0}
+.bizchip{border-radius:20px}.bizchip button{border-radius:14px}
+#pickbar{border-radius:18px}
+.lrow b{font-weight:700}
 </style></head>
 <body>
 <div id="app">
@@ -161,13 +243,17 @@ button{font-family:inherit}
     <div class="pill" id="earn"><div class="money" id="money">0 ₽</div><div class="sub" id="clock"></div><i id="goalfill" hidden></i></div>
     <button class="pill" id="fuelpill" aria-label="Бак и настроение"><span class="frow"><svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="1" y="1.5" width="7.5" height="13" rx="1.2"/><path d="M2.8 5h4M8.5 6.5l2.6 1.6v5a1.2 1.2 0 0 0 2.4 0V5.5L11 3"/></svg><span><b id="fuelL">50 л</b><span class="fbar"><i id="fuelfill"></i></span></span></span>
       <span class="frow"><svg class="mface" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path id="mouth" d="M4.4 8.6q2.6 2.2 5.2 0"/></svg><span><b id="moodP">100%</b><span class="fbar"><i id="moodfill"></i></span></span></span></button>
-    <button class="pill" id="ratingpill" aria-label="Режим работы"><div id="rating">★ 5.00</div><div class="sub" id="modename"></div><div class="sub prio" id="prio">приоритет 50</div></button>
+    <button class="pill" id="ratingpill" aria-label="Режим работы"><div class="rtop"><svg class="star" viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.8 6.3.8-4.6 4.4 1.1 6.3L12 17.1 6.4 20.1l1.1-6.3L2.9 9.4l6.3-.8z"/></svg><b id="rating">5.00</b></div>
+      <div class="prow" id="prio" title="Приоритет"><span class="pbar"><i id="priofill"></i></span><span id="prion">50</span></div><span id="modename" hidden></span></button>
   </div>
   <div id="pickbar" hidden><span>Нажмите на карте, куда вам нужно</span><button id="pickcancel">Отмена</button></div>
   <div id="osm">© участники OpenStreetMap</div>
   <button id="ff" hidden>»&nbsp;×1</button>
-  <div id="zoom"><button id="zin" aria-label="Приблизить">+</button><button id="zout" aria-label="Отдалить">&minus;</button></div>
-  <button id="recenter" hidden title="Вернуться к машине" aria-label="Вернуться к машине"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
+  <div id="mapctl">
+    <button class="mc" id="zin" aria-label="Приблизить"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="mc" id="zout" aria-label="Отдалить"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+    <button class="mc" id="recenter" aria-label="Показать машину"><svg viewBox="0 0 24 24"><path d="M20 4 3.5 11l7 2.5L13 20.5z" stroke-linejoin="round"/></svg></button>
+  </div>
   <div id="sheet"><span class="grab"></span><div id="panel"></div><button id="shift" class="off"></button></div>
   <div id="menu" hidden>
     <div class="mback" data-close="1"></div>
@@ -198,7 +284,7 @@ button{font-family:inherit}
   <p class="lsub" id="pausenote"></p></div></div>
 <div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Гараж</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
-<div id="ask" hidden><div class="askback"></div><div class="askcard"><b id="asktitle"></b><p id="asktext"></p>
+<div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
 
@@ -585,8 +671,7 @@ function tapDrive(wx, wy) {   // короткое нажатие на карту
     if (state !== "idle" && state !== "selfDrive") return;
     if (canBiz) { setBusiness(x, y); driveSelf(business); }
     else { if (business) stopBusiness(); driveSelf({ node, x, y, addr }); }
-  });
-  $("askok").style.background = "#5b3fd0";
+  }, "nav");
 }
 function checkBusinessDone() { if (business && distTo(car.x, car.y, business) < 1000) stopBusiness("Вы на месте"); }
 let selfTarget = null;   // куда едем сами (точка «По делам» или просто выбранное место)
@@ -827,7 +912,7 @@ function kickOut() {
   askConfirm("Высадить пассажира?", note + " Если пассажир не нарушал правил, оценка пострадает.", "Высадить", () => {
     if (!current || state !== "toDropoff") return;
     current.stars = current.conflict ? 3 : 1; endRide("Вы высадили пассажира", true);
-  });
+  }, "alert");
 }
 function finishRide(reason) {
   const c = current, mult = c.payMult === undefined ? 1 : c.payMult, part = c.partial === undefined ? 1 : c.partial;
@@ -907,6 +992,26 @@ function showLedger() {
 }
 $("earn").addEventListener("click", showLedger);
 $("ledger").addEventListener("click", e => { if (e.target.closest("[data-close]")) $("ledger").hidden = true; });
+// Линейные иконки (24x24, обводка 2px)
+const ICON = {
+  wallet: '<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2.5"/><path d="M16 13.5h1.5"/>',
+  chart: '<path d="M5 19V13M10 19V9M15 19V11M20 19V5"/>',
+  car: '<path d="M5 16v-3.5l1.8-4.6A2 2 0 0 1 8.7 6.6h6.6a2 2 0 0 1 1.9 1.3L19 12.5V16"/><rect x="3.5" y="12" width="17" height="5" rx="1.6"/><path d="M6.5 17v1.8M17.5 17v1.8"/><circle cx="7.5" cy="14.5" r=".6"/><circle cx="16.5" cy="14.5" r=".6"/>',
+  bag: '<path d="M5.5 8h13l-1 12h-11z" stroke-linejoin="round"/><path d="M9 8V6.8a3 3 0 0 1 6 0V8"/>',
+  sliders: '<path d="M5 7h9M18 7h1M5 17h3M12 17h7"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+  star: '<path d="m12 3.5 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" stroke-linejoin="round"/>',
+  bolt: '<path d="M13 3 5.5 13.5H12L11 21l7.5-10.5H12z" stroke-linejoin="round"/>',
+  card: '<rect x="3.5" y="6" width="17" height="12" rx="2.5"/><path d="M3.5 10h17M7 14.5h3"/>',
+  cash: '<rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="12" cy="12" r="2.4"/><path d="M6.5 10v4M17.5 10v4"/>',
+  clock: '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>',
+  alert: '<path d="M12 4 2.8 19.5h18.4z" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.2v.3"/>',
+  briefcase: '<rect x="3.5" y="7.5" width="17" height="11.5" rx="2.5"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 12.5h17"/>',
+  nav: '<path d="M20 4 3.5 11l7 2.5L13 20.5z" stroke-linejoin="round"/>',
+  fuel: '<rect x="4.5" y="4" width="9" height="16" rx="1.5"/><path d="M6.5 8.5h5M13.5 10l3.2 2v5.5a1.5 1.5 0 0 0 3 0V8L17 5"/>',
+  coffee: '<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M9 3.5v2.5M12.5 3.5v2.5"/>',
+  pin: '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'
+};
+const ico = (name, cls) => '<svg class="ico' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' + ICON[name] + "</svg>";
 function carSvg(shape, w) {
   const body = {
     sedan: "M8 36 L10 27 Q12 23 21 22 L37 21 L49 12 Q53 10 59 10 L76 10 Q82 10 86 13 L98 21 L109 23 Q115 24 115 30 L115 36 Z",
@@ -993,10 +1098,10 @@ $("ratingpill").addEventListener("click", showModes);
 $("pickcancel").addEventListener("click", () => { picking = false; $("pickbar").hidden = true; });
 statusPill.addEventListener("click", () => { updateTop(); updateStatus(); $("mday").textContent = day; menuEl.hidden = false; });
 menuEl.addEventListener("click", e => { if (e.target.closest("[data-close]")) menuEl.hidden = true; });
-resetBtn.addEventListener("click", () => askConfirm("Сбросить весь прогресс?", "Деньги, рейтинг, поездки и истории пассажиров начнутся заново. Это нельзя отменить.", "Сбросить", resetGame));
+resetBtn.addEventListener("click", () => askConfirm("Сбросить весь прогресс?", "Деньги, рейтинг, поездки и истории пассажиров начнутся заново. Это нельзя отменить.", "Сбросить", resetGame, "alert"));
 // Своё окно подтверждения: стандартное окно браузера (confirm) на некоторых страницах запрещено и молча отвечает «нет»
-function askConfirm(title, text, okText, onOk) {
-  const el = $("ask"); $("asktitle").textContent = title; $("asktext").textContent = text; $("askok").textContent = okText;
+function askConfirm(title, text, okText, onOk, icon) {
+  const el = $("ask"); $("askicon").innerHTML = ico(icon || "briefcase"); $("asktitle").textContent = title; $("asktext").textContent = text; $("askok").textContent = okText;
   el.hidden = false; askCb = onOk; $("askok").style.background = "";
 }
 let askCb = null;
@@ -1215,7 +1320,7 @@ function goRefuel() {
     if (state !== "idle") return;
     orders = []; previewId = null; lastRide = null; fuelStop = { n: st.n, node: nodeNear(st.x, st.y), addr: addrNear(st.x, st.y) };
     route = findPath(carNode, fuelStop.node) || []; legScale = legSpeed(route, SOFT_PICK); state = "toFuel"; freeCam = false; renderPanel();
-  });
+  }, "fuel");
 }
 let fuelStop = null;
 function refuel() {   // на заправке: доливаем до полного и платим
@@ -1224,9 +1329,10 @@ function refuel() {   // на заправке: доливаем до полно
   state = "idle"; route = []; fuelStop = null; spawnTimer = 2; renderPanel();
 }
 function updateTop() {
-  $("prio").textContent = "приоритет " + Math.round(priority); $("prio").className = "sub prio" + (priority < 30 ? " low" : priority >= 70 ? " high" : "");
+  $("prion").textContent = Math.round(priority); $("priofill").style.width = priority + "%";
+  $("prio").className = "prow" + (priority < 30 ? " low" : priority >= 70 ? " high" : "");
   updateFuel();
-  moneyEl.textContent = money.toLocaleString("ru-RU") + " ₽"; moneyEl.style.color = money < 0 ? "#c9363b" : ""; ridesEl.textContent = ridesDone; ratingEl.textContent = "★ " + getRating().toFixed(2);
+  moneyEl.textContent = money.toLocaleString("ru-RU") + " ₽"; moneyEl.style.color = money < 0 ? "#c9363b" : ""; ridesEl.textContent = ridesDone; ratingEl.textContent = getRating().toFixed(2);
   goalText.textContent = fmtHM(onlineT) + " из " + fmtHM(onlineLimit());
   $("mcar").textContent = myCar().name + " · " + myTariff().name;
   $("mmoney").textContent = moneyEl.textContent; $("mshift").textContent = shiftMoney.toLocaleString("ru-RU") + " ₽";
@@ -1236,7 +1342,7 @@ function updateStatus() {
   statusPill.className = "pill status " + cls; $("mstatus").className = "mstatus status " + cls; statusText.textContent = !idle ? "В заказе" : online ? "На линии" : "Не на линии";
   $("ff").hidden = !(state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel" || state === "selfDrive" || state === "toCafe"); $("ff").textContent = "»\u00a0×" + ff;
   shiftBtn.style.display = idle ? "block" : "none"; if (state === "break") shiftBtn.style.display = "none"; shiftBtn.className = online ? "on" : "off";
-  shiftBtn.innerHTML = online ? "На линии<small>нажмите, чтобы закончить смену</small>" : "Катать<small>нажмите, чтобы выйти на линию</small>";
+  shiftBtn.innerHTML = online ? '<span><i class="sdot"></i>На линии</span><small>нажмите, чтобы закончить смену</small>' : '<span><i class="sdot" style="background:#9AA3B2"></i>Катать</span>';
 }
 $("ff").addEventListener("click", () => { ff = ff === 1 ? 2 : ff === 2 ? 4 : 1; updateStatus(); });
 shiftBtn.addEventListener("click", () => {
@@ -1249,11 +1355,13 @@ const starsStr = n => "★".repeat(n) + "☆".repeat(5 - n);
 function resultHtml() {
   if (!lastRide) return ""; const r = lastRide;
   const mood = r.note || (r.mood > 0 ? "Пассажир остался доволен" : r.mood < 0 ? "Пассажир остался недоволен" : "Спокойная поездка");
-  const fee = r.fee || 0, net = r.price - fee + r.tip;
-  return '<div class="result"><div class="rhead"><b>Поездка завершена</b><button class="x" data-act="closeResult">×</button></div><div class="rbig">+' + net +
-    ' ₽<small>заказ ' + r.price + " ₽" + (fee ? " − комиссия " + fee + " ₽" : r.price ? " без комиссии" : "") + (r.tip > 0 ? " + чаевые и доплаты " + r.tip + " ₽" : "") + '</small></div><div class="rline">' +
-    (r.stars > 0 ? 'Оценка: <span class="stars">' + starsStr(r.stars) + "</span>" : "Пассажир не оценил поездку") + '</div><div class="rline">' + mood + "</div>" +
-    (r.wait > 0 ? '<div class="rline">Заезд и ожидание: +' + r.wait + " ₽</div>" : "") + (r.price > 0 ? '<div class="rline">Оплата: ' + (r.offApp ? "наличными мимо приложения" : r.cash ? "наличными" : "картой") + "</div>" : "") + r.fines.map(f => '<div class="rline bad">' + f + "</div>").join("") + (r.blocked ? '<div class="rline bad">Этот пассажир больше не будет с вами ездить</div>' : "") + "</div>";
+  const fee = r.fee || 0, net = r.price - fee + r.tip, row = (icon, t, bad) => '<div class="rrow' + (bad ? " bad" : "") + '">' + ico(icon) + "<span>" + t + "</span></div>";
+  return '<div class="result"><div class="rhead"><span class="rtitle"><i></i>Поездка завершена</span><button class="x" data-act="closeResult" aria-label="Закрыть">×</button></div>' +
+    '<div class="rsum"><b>+' + net + " ₽</b><span>Заказ " + r.price + " ₽" + (fee ? " · Комиссия " + fee + " ₽" : r.price ? " · без комиссии" : "") + (r.tip > 0 ? " · Чаевые " + r.tip + " ₽" : "") + "</span></div>" +
+    row("star", r.stars > 0 ? 'Оценка <span class="stars">' + starsStr(r.stars) + "</span>" : "Пассажир не оценил поездку") + row("bolt", mood) +
+    (r.wait > 0 ? row("clock", "Заезд и ожидание: +" + r.wait + " ₽") : "") +
+    (r.price > 0 ? row(r.cash || r.offApp ? "cash" : "card", "Оплата: " + (r.offApp ? "наличными мимо приложения" : r.cash ? "наличными" : "картой")) : "") +
+    r.fines.map(f => row("alert", f, true)).join("") + (r.blocked ? row("alert", "Этот пассажир больше не будет с вами ездить", true) : "") + "</div>";
 }
 function orderCardHtml(o) {
   const sg = (o.cls && myCar().t !== "econ" ? '<span class="cbadge' + (o.cls === myCar().t ? " own" : "") + '">' + TARIFFS[o.cls].name + "</span>" : "") +
@@ -1280,6 +1388,12 @@ function chainHtml() {
     "</b><small>" + o.pickupKm.toFixed(1) + " км от места высадки</small></div></div>" + (modeNow() !== "classic" ? '<div class="addr"><i class="dotB"></i><div><b>' + (o.toAddr || addrOf(o.to)) + "</b><small>" + o.tripKm.toFixed(1) + " км</small></div></div>" : "") +
     '<div class="obar"><div class="obarfill" id="bar-' + o.id + '"></div></div><div class="obtns"><button class="skip" data-act="chainno">Пропустить</button><button class="take" data-act="chainyes">Принять</button></div></div>';
 }
+function idleHtml(searching) {   // машина и статус, под ними плитки: доход, режим, гараж, магазин
+  const c = myCar(), tile = (act, icon, t) => '<button class="tile" data-act="' + act + '">' + ico(icon) + t + "</button>";
+  return '<div class="ihead"><div class="icar">' + carSvg(c.shape, 70) + "</div><div><b>" + (searching ? "Свободные заказы" : c.name) + "</b><small>" +
+    (searching ? '<i class="live"></i>Ищем пассажиров…' : TARIFFS[c.t].name + " · " + MODE_NAME[modeNow()]) + "</small></div></div>" +
+    '<div class="tiles">' + tile("tledger", "wallet", "Доход") + tile("tmodes", "sliders", "Режим") + tile("tgarage", "car", "Гараж") + tile("tshop", "bag", "Магазин") + "</div>";
+}
 function renderPanel() {
   let html = "";
   const biz = business ? '<div class="bizchip"><span>По делам: ' + business.addr + " · " + (distTo(car.x, car.y, business) / 1000).toFixed(1) + " км</span><span class='bizbtns'>" +
@@ -1288,9 +1402,9 @@ function renderPanel() {
     html = biz + (orders.length ? '<div class="listhead">Заказ по пути</div>' + orders.map(orderCardHtml).join("") : '<div class="search"><span class="pulse"></span><div><b>' + (business ? "Едем по делам" : "Едем: " + (selfTarget ? selfTarget.addr : "")) + "</b><small>" + (online ? "Если появится заказ - предложим" : "Вы не на линии") + '</small></div></div><button class="fuelgo" data-act="stopself">Остановиться</button>');
   } else if (state === "idle") {
     html = biz + resultHtml();
-    if (!online) {}
+    if (!online) html += idleHtml(false);
     else if (fuel < LOW_FUEL) html += '<div class="offmsg"><b>Мало топлива</b><small>Заказы не приходят, пока не заправитесь</small><button class="fuelgo" data-act="refuel">Поехать на заправку</button></div>';
-    else if (!orders.length) html += '<div class="search"><span class="pulse"></span><div><b>Ищем заказы рядом</b><small>Чем выше рейтинг, тем чаще заказы</small></div></div>';
+    else if (!orders.length) html += idleHtml(true);
     else { html += '<div class="listhead">Новый заказ</div>'; for (const o of orders) html += orderCardHtml(o); }
   } else if (state === "break") {
     html = '<div class="search"><span class="pulse"></span><div><b>' + (breakKind === "lunch" ? "Обед" : "Перерыв") + '</b><small>20 минут, заказы не приходят</small></div></div><div class="obar"><div class="obarfill" id="breakt" style="width:0"></div></div>';
@@ -1313,6 +1427,10 @@ panel.addEventListener("click", e => {
     if (btn.dataset.choice !== undefined) return chooseAnswer(Number(btn.dataset.choice));
     if (btn.dataset.act === "closeResult") { lastRide = null; return renderPanel(); }
     if (btn.dataset.act === "kick") return kickOut();
+    if (btn.dataset.act === "tledger") return showLedger();
+    if (btn.dataset.act === "tmodes") return showModes();
+    if (btn.dataset.act === "tgarage") return showGarage();
+    if (btn.dataset.act === "tshop") return showShop();
     if (btn.dataset.act === "chainyes" && current && current.nextOffer) { current.next = current.nextOffer; current.nextOffer = null; return renderPanel(); }
     if (btn.dataset.act === "chainno" && current) { current.nextOffer = null; prioAdd(-5); return renderPanel(); }
     if (btn.dataset.act === "refuel") return goRefuel();
@@ -1438,7 +1556,7 @@ function glyph(name, x, y) {   // белый значок размером ок�
     case "cup": P(); c.moveTo(-3.5, -2.5); c.lineTo(2, -2.5); c.lineTo(1.4, 3); c.lineTo(-2.9, 3); c.closePath(); c.fill(); P(); c.arc(2.4, -0.3, 1.6, -1.4, 1.4); c.stroke(); break;
     case "fork": P(); c.moveTo(-2, -4); c.lineTo(-2, 4); c.moveTo(-3.4, -4); c.lineTo(-3.4, -1); c.lineTo(-0.6, -1); c.lineTo(-0.6, -4); c.moveTo(2.4, 4); c.lineTo(2.4, -4); c.quadraticCurveTo(4.2, -2, 2.4, 0.5); c.stroke(); break;
     case "bag": c.fillRect(-3.6, -1.6, 7.2, 5.6); P(); c.arc(0, -1.6, 2, Math.PI, 0); c.stroke(); break;
-    case "rub": c.font = "bold 10px sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("₽", 0, 0.5); break;
+    case "rub": c.font = "bold 10px Inter, sans-serif"; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("₽", 0, 0.5); break;
     case "fuel": c.fillRect(-3.5, -3.8, 4.6, 7.8); P(); c.moveTo(1.1, -1.5); c.lineTo(3.3, 0); c.lineTo(3.3, 3); c.stroke(); break;
     case "book": P(); c.moveTo(0, -2.5); c.lineTo(-4, -3.5); c.lineTo(-4, 3); c.lineTo(0, 4); c.lineTo(4, 3); c.lineTo(4, -3.5); c.closePath(); c.fill(); c.strokeStyle = PLACE_STYLE.other.col; c.lineWidth = 0.8; P(); c.moveTo(0, -2.5); c.lineTo(0, 4); c.stroke(); break;
     case "star": P(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 1.9 : 4.4; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.fill(); break;
@@ -1465,7 +1583,7 @@ function pin(x, y, col, letter) {
   ctx.save(); ctx.translate(x, y); ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(-16, -16, -14, -38, 0, -38); ctx.bezierCurveTo(14, -38, 16, -16, 0, 0);
   ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
   ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(0, -25, 8, 0, 7); ctx.fill();
-  ctx.fillStyle = col; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(letter, 0, -25); ctx.restore();
+  ctx.fillStyle = col; ctx.font = "bold 12px Inter, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(letter, 0, -25); ctx.restore();
 }
 // Раскладка подписей (улицы, места, коэффициенты спроса). Считаем её не каждый кадр, а когда карта заметно сдвинулась:
 // подписи запоминаются в метрах карты и едут вместе с ней, поэтому при ускорении не мелькают
@@ -1479,7 +1597,7 @@ function layoutLabels(vx, vy, sx, sy, surgeLabels, prev) {
   take(sx(car.x), sy(car.y), 70, 50);   // машину значками и подписями не закрываем
   // Места: идём от важных к мелким. Мелкое место показываем только вместе с подписью, иначе карта превращается в россыпь значков
   const shown = []; let labels = 0; const had = new Set();
-  ctx.font = "600 11px sans-serif";
+  ctx.font = "600 11px Inter, sans-serif";
   if (prev && prev.scale === scale) for (const [p, side] of prev.shown) {   // уже показанные места оставляем на своих местах
     if (p.x < vx || p.x > vx + viewW || p.y < vy || p.y > vy + viewH) continue;
     const x = sx(p.x), y = sy(p.y), r = p.major ? 19 : 17, w = ctx.measureText(p.n).width;
@@ -1488,7 +1606,7 @@ function layoutLabels(vx, vy, sx, sy, surgeLabels, prev) {
     shown.push([p, side]); had.add(p);
   }
   const placePois = major => {
-    ctx.font = "600 11px sans-serif";
+    ctx.font = "600 11px Inter, sans-serif";
     for (const p of POIS) {
       if (had.has(p)) continue;
       if (p.major !== major || p.x < vx || p.x > vx + viewW || p.y < vy || p.y > vy + viewH) continue;
@@ -1505,7 +1623,7 @@ function layoutLabels(vx, vy, sx, sy, surgeLabels, prev) {
     }
   };
   placePois(true);
-  ctx.font = "11px sans-serif";
+  ctx.font = "11px Inter, sans-serif";
   let streetLabels = 0;
   const wkey = (name, wx, wy) => name + ":" + Math.round(wx * scale / 260) + ":" + Math.round(wy * scale / 260);   // ключ в метрах карты - не зависит от сдвига экрана
   if (prev && prev.scale === scale && scale >= 0.12) for (const sl of prev.streets) {   // прежние названия улиц - на прежних местах
@@ -1543,6 +1661,43 @@ function layoutLabels(vx, vy, sx, sy, surgeLabels, prev) {
   }
   return { vx, vy, scale, t: performance.now(), shown, streets: streetsOut, surge: surgeOut };
 }
+// Другие такси в городе: едут по улицам вокруг игрока, просто для живости карты
+const amb = [];
+function spawnAmbient() {
+  const cx = Math.floor((camX + (Math.random() - 0.5) * viewW) / NCELL), cy = Math.floor((camY + (Math.random() - 0.5) * viewH) / NCELL);
+  const list = nodeGrid.get(cy * NCOLS + cx); if (!list || !list.length) return null;
+  const n = list[Math.floor(Math.random() * list.length)]; if (!adj[n].length) return null;
+  const e = adj[n][Math.floor(Math.random() * adj[n].length)];
+  return { a: n, b: e.to, t: Math.random(), len: e.len || 1, v: KMH[e.c] / 3.6 };
+}
+function tickAmbient(dt) {
+  if (scale < 0.1) return;
+  while (amb.length < 7) { const c = spawnAmbient(); if (!c) break; amb.push(c); }
+  for (let i = amb.length - 1; i >= 0; i--) {
+    const c = amb[i]; c.t += dt * c.v * TIME_SCALE * ff / c.len;
+    while (c.t >= 1) {
+      const opts = adj[c.b].filter(e => e.to !== c.a), e = (opts.length ? opts : adj[c.b])[Math.floor(Math.random() * (opts.length || adj[c.b].length))];
+      if (!e) { c.t = 1; break; }
+      c.t -= 1; c.a = c.b; c.b = e.to; c.len = e.len || 1; c.v = KMH[e.c] / 3.6;
+    }
+    const x = N[c.a][0] + (N[c.b][0] - N[c.a][0]) * Math.min(1, c.t), y = N[c.a][1] + (N[c.b][1] - N[c.a][1]) * Math.min(1, c.t);
+    if (Math.abs(x - camX) > viewW * 1.1 || Math.abs(y - camY) > viewH * 1.1) amb.splice(i, 1);   // уехало далеко - появится новое
+  }
+}
+function drawAmbient(sx, sy) {
+  if (scale < 0.1) return;
+  for (const c of amb) {
+    const ax = N[c.a][0], ay = N[c.a][1], bx = N[c.b][0], by = N[c.b][1], t = Math.min(1, c.t);
+    const x = sx(ax + (bx - ax) * t), y = sy(ay + (by - ay) * t);
+    if (x < -20 || y < -20 || x > cw + 20 || y > ch + 20) continue;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(Math.atan2(by - ay, bx - ax) + Math.PI / 2);
+    ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.beginPath(); ctx.roundRect(-5, -8, 11, 18, 3.5); ctx.fill();
+    ctx.fillStyle = "#FFD233"; ctx.strokeStyle = "#C99A00"; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(-5.5, -9, 11, 18, 3.5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#2E3A48"; ctx.fillRect(-3.8, -5.5, 7.6, 3.2); ctx.fillRect(-3.8, 3, 7.6, 2.4);
+    ctx.fillStyle = "#1E1F23"; ctx.fillRect(-2, -1.2, 4, 2);
+    ctx.restore();
+  }
+}
 function draw() {
   const k = dpr * scale, vx = camX - viewW / 2, vy = camY - viewH / 2, sx = x => (x - vx) * scale, sy = y => (y - vy) * scale;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = MAP_BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1568,25 +1723,25 @@ function draw() {
     ctx.strokeStyle = current && current.jam && state === "toDropoff" ? "rgba(214,60,60,.85)" : "rgba(47,111,237,.85)"; ctx.lineWidth = 6 / scale; ctx.stroke();
   }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);   // дальше рисуем в пикселях экрана: подписи, метки, машина
-  ctx.font = "11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+  ctx.font = "11px Inter, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
   // Подписи без наложений: каждая занимает прямоугольник, и новая не ставится, если пересекает уже занятое
   const LC = labelCache;
   if (!LC || LC.scale !== scale || Math.abs(LC.vx - vx) * scale > 140 || Math.abs(LC.vy - vy) * scale > 140 || performance.now() - LC.t > 4000)
     labelCache = layoutLabels(vx, vy, sx, sy, surgeLabels, LC);
   const now = performance.now(), fade = o => { let t = labelBorn.get(o); if (t === undefined) { t = now; labelBorn.set(o, t); } return Math.min(1, (now - t) / 350); };
   if (labelBorn.size > 4000) labelBorn.clear();
-  ctx.font = "11px sans-serif"; ctx.textAlign = "center"; ctx.lineWidth = 3;
+  ctx.font = "11px Inter, sans-serif"; ctx.textAlign = "center"; ctx.lineWidth = 3;
   for (const sl of labelCache.streets) {
     const [name, wx, wy, ang] = sl;
     ctx.save(); ctx.globalAlpha = fade(sl); ctx.translate(sx(wx), sy(wy)); ctx.rotate(ang); ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.strokeText(name, 0, 0);
     ctx.fillStyle = "#5b6370"; ctx.fillText(name, 0, 0); ctx.restore();
   }
-  ctx.font = "700 12px sans-serif"; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.fillStyle = "#2456c9";
+  ctx.font = "700 12px Inter, sans-serif"; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.fillStyle = "#2456c9";
   for (const [h] of labelCache.surge) { const hh = HEX_BASE.get(hexKey(h.q, h.r)), m = hh ? surgeMult(hexLevel(hh)) : 1; if (m <= 1) continue; const t = "×" + m.toFixed(1); ctx.strokeText(t, sx(h.x), sy(h.y)); ctx.fillText(t, sx(h.x), sy(h.y)); }
   const shown = labelCache.shown.filter(([p]) => sy(p.y) > 92).map(([p, side]) => [p, sx(p.x), sy(p.y), side]);
   for (const [p, x, y] of shown) { ctx.globalAlpha = fade(p); placeIcon(x, y, p.k, p.major); }
   ctx.globalAlpha = 1;
-  ctx.font = "600 11px sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.92)";
+  ctx.font = "600 11px Inter, sans-serif"; ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.92)";
   for (const [p, x, y, side] of shown) {   // подпись цветом категории, чуть темнее значка
     if (!side) continue;
     ctx.globalAlpha = fade(p); ctx.textAlign = side > 0 ? "left" : "right"; ctx.strokeText(p.n, x + side * 12, y);
@@ -1599,12 +1754,13 @@ function draw() {
     if (o) { A = o.from; if (modeNow() !== "classic") B = o.to; }   // в гибком режиме и «по делам» видно и конечную точку
   }
   else if (state === "toPickup" || state === "boarding") A = current.from; else if (state === "toDropoff") B = current.to; else if (state === "toStop" || state === "stopped") { B = current.to; S = current.stopNode; }
+  drawAmbient(sx, sy);
   if (dpsDay !== day) placeDps();
   if (scale >= 0.08) for (const p of dpsPosts) {   // пост ДПС: маленькая бело-синяя табличка
     const x = sx(p.x), y = sy(p.y); if (x < -30 || y < -30 || x > cw + 30 || y > ch + 30) continue;
     ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.fillRect(x - 15, y - 8, 31, 17); ctx.fillStyle = "#fff"; ctx.fillRect(x - 15, y - 9, 30, 16);
     ctx.strokeStyle = "#1f4fd1"; ctx.lineWidth = 2; ctx.strokeRect(x - 15, y - 9, 30, 16);
-    ctx.fillStyle = "#1f4fd1"; ctx.font = "800 9px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("ДПС", x, y - 0.5);
+    ctx.fillStyle = "#1f4fd1"; ctx.font = "800 9px Inter, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("ДПС", x, y - 0.5);
   }
   if (business) pin(sx(business.x), sy(business.y), "#5b3fd0", "Д");
   else if (state === "selfDrive" && selfTarget) pin(sx(selfTarget.x), sy(selfTarget.y), "#5b3fd0", "•");
@@ -1613,10 +1769,17 @@ function draw() {
   if (A !== null) pin(sx(N[A][0]), sy(N[A][1]), "#2fa84f", "A");
   if (B !== null) pin(sx(N[B][0]), sy(N[B][1]), "#e5484d", "B");
   if (S !== null) pin(sx(N[S][0]), sy(N[S][1]), "#f08a1c", "С");
-  ctx.save(); ctx.translate(sx(car.x), sy(car.y)); ctx.rotate(car.angle);   // машина
-  ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.fillRect(-12, -5, 25, 14); ctx.fillStyle = online ? "#f5c518" : "#9aa3b2"; ctx.fillRect(-12, -7, 24, 14);
-  ctx.lineWidth = 1.5; ctx.strokeStyle = "#333"; ctx.strokeRect(-12, -7, 24, 14); ctx.fillStyle = "#35465a"; ctx.fillRect(3, -5, 5, 10); ctx.fillStyle = "#333"; ctx.fillRect(-7, -2, 6, 4); ctx.restore();
-  ctx.font = "bold 20px sans-serif";
+  // Машина игрока - синяя стрелка навигатора с ореолом (серая, когда не на линии)
+  const mainCol = online ? "#2F6FED" : "#8A94A6", pulseR = 24 + 4 * Math.sin(performance.now() / 400);
+  ctx.save(); ctx.translate(sx(car.x), sy(car.y));
+  ctx.beginPath(); ctx.arc(0, 0, pulseR, 0, 7); ctx.fillStyle = online ? "rgba(47,111,237,.16)" : "rgba(138,148,166,.18)"; ctx.fill();
+  ctx.lineWidth = 1; ctx.strokeStyle = online ? "rgba(47,111,237,.28)" : "rgba(138,148,166,.3)"; ctx.stroke();
+  ctx.rotate(car.angle + Math.PI / 2);
+  ctx.beginPath(); ctx.moveTo(0, -14); ctx.lineTo(10, 11); ctx.lineTo(0, 5.5); ctx.lineTo(-10, 11); ctx.closePath();
+  ctx.shadowColor = "rgba(0,0,0,.25)"; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
+  ctx.fillStyle = mainCol; ctx.fill(); ctx.shadowColor = "transparent"; ctx.lineWidth = 2.5; ctx.strokeStyle = "#fff"; ctx.lineJoin = "round"; ctx.stroke();
+  ctx.restore();
+  ctx.font = "bold 20px Inter, sans-serif";
   for (const f of floaters) {
     ctx.globalAlpha = Math.max(0, 1 - f.age / 1.4); const x = clamp(sx(f.x), 70, cw - 70), y = sy(f.y) + f.dy - f.age * 30;
     ctx.lineWidth = 4; ctx.strokeStyle = "#fff"; ctx.strokeText(f.text, x, y); ctx.fillStyle = f.color; ctx.fillText(f.text, x, y);
@@ -1625,7 +1788,7 @@ function draw() {
 }
 
 let lastTime = 0;
-function frame(time) { const dt = Math.min((time - lastTime) / 1000, 0.05); lastTime = time; update(dt); updateCamera(dt, false); if (!freeCam) $("recenter").hidden = true; draw(); requestAnimationFrame(frame); }
+function frame(time) { const dt = Math.min((time - lastTime) / 1000, 0.05); lastTime = time; update(dt); tickAmbient(dt); updateCamera(dt, false); if (!freeCam) $("recenter").hidden = true; draw(); requestAnimationFrame(frame); }
 loadGame(); updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
 </script>
 </body></html>
