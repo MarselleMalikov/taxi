@@ -316,7 +316,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
         <div><span>Поездок</span><b id="rides">0</b></div>
       </div>
       <div class="mstats"><div><span>Смена</span><b id="mday">1</b></div></div>
-      <button class="mbtn" id="garagebtn">Гараж: выбрать машину и тариф</button>
+      <button class="mbtn" id="garagebtn">Гараж </button>
       <button class="mbtn" id="shopbtn">Магазин</button>
       <button class="mbtn" id="casinobtn">Казино</button>
       <button id="reset">Сбросить прогресс</button>
@@ -1092,7 +1092,7 @@ function carSvg(shape, w) {
 }
 function showGarage() {   // выбор машины и тарифа; сменить можно только до выхода на линию в этой смене (аренда уже оплачена)
   const locked = ledger.rent > 0;
-  let html = (locked ? '<p class="gnote">Сменить машину можно в начале следующей смены</p>' : "") +
+  let html = (locked ? '<p class="gnote">Сменить автомобиль возможно в начале следующей смены</p>' : "") +
     '<div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + '" data-cls="' + c + '"' + (clsAllowed(c) ? "" : " disabled") + ">" + TARIFFS[c].name + "</button>").join("") + "</div>";
   for (const t of ["econ", "comfort", "cplus"]) {
     html += '<div class="gtar"><b>' + TARIFFS[t].name + "</b></div>";
