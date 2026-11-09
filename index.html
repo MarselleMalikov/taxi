@@ -307,8 +307,9 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .chead .x{width:40px;height:40px;border:none;border-radius:50%;background:var(--c);font-size:22px;line-height:1;color:#4b5563;cursor:pointer}
 .cbal{background:var(--dark);color:#fff;border-radius:14px;padding:7px 12px;font-size:17px;font-weight:800;white-space:nowrap}
 .cbal small{display:block;font-size:12.5px;color:#C9CCD3}.cbal b{display:block;font-size:22px;font-weight:800;line-height:1.15}
-.rwheel{width:250px;margin:-12px auto -10px;transform:perspective(700px) rotateX(30deg);filter:drop-shadow(0 12px 14px rgba(40,20,5,.28))}.rwheel svg{display:block;width:100%}
-.ccard .cres{text-align:center!important;font-weight:600;font-size:15px;color:var(--m);min-height:20px;margin:0 0 2px!important;line-height:1.3!important}.ccard .cres.win{color:#16883F;font-weight:700}.ccard .cres.lose{color:#C9363B;font-weight:700}
+.rwheel{position:relative;width:260px;margin:-17px auto -15px;transform:perspective(700px) rotateX(30deg)}.rwheel svg{position:relative}
+.rglow{position:absolute;inset:4px;border-radius:50%;box-shadow:0 0 10px 3px rgba(70,110,255,.75),0 0 26px 8px rgba(150,70,255,.4),0 16px 18px rgba(60,10,10,.3)}.rwheel svg{display:block;width:100%}
+.ccard .cres{position:relative;top:7px;text-align:center!important;font-weight:600;font-size:15px;color:var(--m);min-height:20px;margin:0 0 2px!important;line-height:1.3!important}.ccard .cres.win{color:#16883F;font-weight:700}.ccard .cres.lose{color:#C9363B;font-weight:700}
 .ccard .gtar{margin:8px 2px 0}
 .cstep{display:flex;align-items:center;gap:8px;margin-top:8px}.cstep b{flex:1;text-align:center;font-size:22px;font-weight:800}
 .cstep button{width:52px;height:42px;border:none;border-radius:16px;background:var(--c);font-size:24px;font-weight:600;line-height:1;color:var(--ink);font-family:inherit;cursor:pointer}.cstep button:disabled{opacity:.4;cursor:default}
@@ -376,7 +377,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
   <p class="lsub" id="pausenote"></p></div></div>
 <div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
-<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Крутить рулетку</button></div></div>
+<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><svg id="rsvg" viewBox="-4 -4 208 208"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Крутить рулетку</button></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -1214,33 +1215,55 @@ const WHEEL = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,
 let wheelA = 0, ballA = 0, ballR = 71;
 const wpt = (r, a) => [(100 + r * Math.sin(a * Math.PI / 180)).toFixed(2), (100 - r * Math.cos(a * Math.PI / 180)).toFixed(2)];
 function buildWheel() {
-  let sect = "", nums = "", seps = "";
+  const sec = (r1, r2, a0, a1) => { const p = [wpt(r1, a0), wpt(r1, a1), wpt(r2, a1), wpt(r2, a0)]; return "M" + p[0] + "A" + r1 + " " + r1 + " 0 0 1 " + p[1] + "L" + p[2] + "A" + r2 + " " + r2 + " 0 0 0 " + p[3] + "Z"; };
+  let cells = "", pockets = "", nums = "", seps = "";
   WHEEL.forEach((n, i) => {
-    const a0 = i * WSTEP - WSTEP / 2, a1 = a0 + WSTEP, c = n === 0 ? "#1A9A4B" : RED.has(n) ? "#C8262B" : "#1E1F23";
-    const p = [wpt(92, a0), wpt(92, a1), wpt(64, a1), wpt(64, a0)];
-    sect += '<path d="M' + p[0] + "A92 92 0 0 1 " + p[1] + "L" + p[2] + "A64 64 0 0 0 " + p[3] + 'Z" fill="' + c + '"/>';
-    nums += '<text x="100" y="15.5" transform="rotate(' + (i * WSTEP).toFixed(2) + ' 100 100)">' + n + "</text>";
-    seps += '<path d="M' + wpt(92, a0) + "L" + wpt(64, a0) + '"/>';
+    const a0 = i * WSTEP - WSTEP / 2, a1 = a0 + WSTEP, k = n === 0 ? "g" : RED.has(n) ? "r" : "b";
+    cells += '<path d="' + sec(92, 78, a0, a1) + '" fill="url(#wc' + k + ')"/>';
+    pockets += '<path d="' + sec(78, 63, a0, a1) + '" fill="url(#wp' + k + ')"/>';
+    nums += '<text x="100" y="18.3" transform="rotate(' + (i * WSTEP).toFixed(2) + ' 100 100)">' + n + "</text>";
+    seps += '<path d="M' + wpt(92, a0) + "L" + wpt(63, a0) + '"/>';
   });
-  let cone = ""; for (let i = 0; i < 8; i++) cone += '<path d="M' + wpt(60, i * 45) + "L" + wpt(24, i * 45) + '"/>';
-  $("rsvg").innerHTML = '<defs><radialGradient id="rwood" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#A55F2C"/><stop offset="1" stop-color="#5A2A0F"/></radialGradient>' +
-    '<radialGradient id="rcone" cx=".45" cy=".4" r=".6"><stop offset="0" stop-color="#B9773F"/><stop offset="1" stop-color="#6B3615"/></radialGradient>' +
-    '<radialGradient id="rgold" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FFF1B8"/><stop offset=".55" stop-color="#E5B84A"/><stop offset="1" stop-color="#A97A1E"/></radialGradient>' +
+  let rays = "", arrows = "", balls = "";
+  for (let i = 0; i < 16; i++) rays += '<path d="M' + wpt(62, i * 22.5) + "L" + wpt(18, i * 22.5) + '"/>';
+  for (let i = 0; i < 4; i++) {   // четыре золотые стрелки и четыре плеча с шарами
+    const a = i * 90, b = a + 45;
+    arrows += '<path d="M' + wpt(61, a) + "L" + wpt(30, a + 6) + "L" + wpt(18, a) + "L" + wpt(30, a - 6) + 'Z"/>';
+    balls += '<path d="M' + wpt(17, b) + "L" + wpt(40, b) + '" stroke="url(#wgold)" stroke-width="4.5" stroke-linecap="round"/><circle cx="' + wpt(42, b)[0] + '" cy="' + wpt(42, b)[1] + '" r="5.2" fill="url(#wgoldb)" stroke="#8C5A12" stroke-width=".5"/>';
+  }
+  const gem = a => { const [x, y] = wpt(99, a); return '<g transform="translate(' + x + " " + y + ") rotate(" + a + ')"><path d="M0 -9 L7 0 L0 9 L-7 0Z" fill="url(#wgold)" stroke="#8C5A12" stroke-width=".6"/><path d="M0 -5.5 L4.3 0 L0 5.5 L-4.3 0Z" fill="url(#wgem)"/><path d="M-1.8 -2 L0 -4 L1.6 -2Z" fill="#fff" opacity=".7"/></g>'; };
+  $("rsvg").innerHTML = '<defs>' +
+    '<linearGradient id="wgold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF4C2"/><stop offset=".45" stop-color="#F2C24E"/><stop offset="1" stop-color="#9C6414"/></linearGradient>' +
+    '<radialGradient id="wgoldb" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#FFF8D6"/><stop offset=".5" stop-color="#EDB83E"/><stop offset="1" stop-color="#8C5A12"/></radialGradient>' +
+    '<radialGradient id="wgem" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FF8A95"/><stop offset=".5" stop-color="#E0182E"/><stop offset="1" stop-color="#6E0412"/></radialGradient>' +
+    '<radialGradient id="wcone" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#E8432A"/><stop offset=".55" stop-color="#B0170F"/><stop offset="1" stop-color="#5E0606"/></radialGradient>' +
+    '<radialGradient id="whub" cx=".45" cy=".35" r=".7"><stop offset="0" stop-color="#C8232A"/><stop offset="1" stop-color="#5A0408"/></radialGradient>' +
+    '<radialGradient id="wcr" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="92"><stop offset=".85" stop-color="#B10E12"/><stop offset="1" stop-color="#FF3A33"/></radialGradient>' +
+    '<radialGradient id="wcb" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="92"><stop offset=".85" stop-color="#0A0A0C"/><stop offset="1" stop-color="#2C2C30"/></radialGradient>' +
+    '<radialGradient id="wcg" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="92"><stop offset=".85" stop-color="#0E8A1E"/><stop offset="1" stop-color="#3BE04A"/></radialGradient>' +
+    '<radialGradient id="wpr" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="78"><stop offset=".81" stop-color="#7E0A0E"/><stop offset="1" stop-color="#E5221F"/></radialGradient>' +
+    '<radialGradient id="wpb" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="78"><stop offset=".81" stop-color="#050506"/><stop offset="1" stop-color="#26262A"/></radialGradient>' +
+    '<radialGradient id="wpg" gradientUnits="userSpaceOnUse" cx="100" cy="100" r="78"><stop offset=".81" stop-color="#0A6A16"/><stop offset="1" stop-color="#2FCF3E"/></radialGradient>' +
     '<radialGradient id="rball" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#C9CDD4"/></radialGradient></defs>' +
-    '<circle cx="100" cy="100" r="99" fill="url(#rwood)"/><circle cx="100" cy="100" r="95" fill="none" stroke="#D9AE4C" stroke-width="1.6"/>' +
-    '<g id="rrot"><circle cx="100" cy="100" r="92.5" fill="#3A1B0A"/>' + sect +
-    '<g fill="#fff" font-size="8.4" font-weight="700" text-anchor="middle" font-family="Inter,sans-serif">' + nums + "</g>" +
-    '<circle cx="100" cy="100" r="78" fill="none" stroke="#D9AE4C" stroke-width=".8"/>' +
-    '<circle cx="100" cy="100" r="77.6" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="13.2" transform="translate(0 0)"/>' +
-    '<g stroke="#D9AE4C" stroke-width=".7">' + seps + "</g>" +
-    '<circle cx="100" cy="100" r="64" fill="url(#rcone)" stroke="#D9AE4C" stroke-width="1.2"/>' +
-    '<g stroke="#D9AE4C" stroke-width="1" opacity=".7">' + cone + "</g>" +
-    '<g fill="url(#rgold)" stroke="#A97A1E" stroke-width=".5"><rect x="97.5" y="70" width="5" height="60" rx="2.5"/><rect x="70" y="97.5" width="60" height="5" rx="2.5"/>' +
-    '<circle cx="100" cy="70" r="4"/><circle cx="100" cy="130" r="4"/><circle cx="70" cy="100" r="4"/><circle cx="130" cy="100" r="4"/><circle cx="100" cy="100" r="15"/></g>' +
-    '<circle cx="100" cy="100" r="7" fill="url(#rgold)" stroke="#A97A1E" stroke-width=".5"/>' +
-    '<path id="rhl" class="rhl" fill="none" stroke="#FFE27A" stroke-width="2.4" stroke-linejoin="round" opacity="0"/></g>' +
-    '<g id="rhub" class="rhub" opacity="0"><circle cx="100" cy="100" r="17" stroke="#FFE27A" stroke-width="2"/><text x="100" y="106" text-anchor="middle" font-size="17" font-weight="800" fill="#fff" font-family="Inter,sans-serif"></text></g>' +
-    '<circle id="rballc" r="4.3" fill="url(#rball)" stroke="#9AA0AA" stroke-width=".4"/>';
+    // неподвижная чаша: золотой обод с рубинами
+    '<circle cx="100" cy="100" r="99.5" fill="url(#wgold)"/><circle cx="100" cy="100" r="96.5" fill="#4A0606" stroke="#7A3A08" stroke-width=".8"/>' +
+    '<circle cx="100" cy="100" r="94.6" fill="none" stroke="url(#wgold)" stroke-width="2.6"/>' +
+    // вращающаяся часть
+    '<g id="rrot">' + cells + pockets +
+    '<g stroke="url(#wgold)" stroke-width="1">' + seps + "</g>" +
+    '<circle cx="100" cy="100" r="78" fill="none" stroke="url(#wgold)" stroke-width="1.6"/>' +
+    '<g fill="#fff" font-size="9" font-weight="700" text-anchor="middle" font-family="Georgia,\'Times New Roman\',serif" style="paint-order:stroke" stroke="rgba(0,0,0,.35)" stroke-width=".6">' + nums + "</g>" +
+    '<path id="rhl" class="rhl" fill="rgba(255,236,140,.35)" stroke="#FFF1A8" stroke-width="3" stroke-linejoin="round" opacity="0"/>' +
+    '<circle cx="100" cy="100" r="63" fill="url(#wcone)" stroke="url(#wgold)" stroke-width="2.8"/>' +
+    '<g stroke="#FFC94D" stroke-width=".5" opacity=".45">' + rays + "</g>" +
+    '<circle cx="100" cy="100" r="54" fill="none" stroke="#F2C24E" stroke-width=".7" opacity=".7"/>' +
+    '<g fill="url(#wgold)" stroke="#8C5A12" stroke-width=".4">' + arrows + "</g>" + balls + "</g>" +
+    '<g transform="translate(0 0)">' + gem(0) + gem(90) + gem(180) + gem(270) + "</g>" +
+    // медальон в центре: корона и выпавший номер
+    '<g id="rhub"><circle cx="100" cy="100" r="18.5" fill="url(#whub)" stroke="url(#wgold)" stroke-width="2.8"/>' +
+    '<path d="M93.2 92.6 L94.6 87.2 L97.6 90 L100 85.6 L102.4 90 L105.4 87.2 L106.8 92.6Z" fill="url(#wgold)" stroke="#8C5A12" stroke-width=".3"/>' +
+    '<text id="rhubt" x="100" y="106.8" text-anchor="middle" font-size="14" font-weight="700" fill="url(#wgold)" font-family="Georgia,\'Times New Roman\',serif"></text></g>' +
+    '<circle id="rballc" r="4.4" fill="url(#rball)" stroke="#9AA0AA" stroke-width=".4"/>';
   drawWheel();
 }
 function drawWheel() {
@@ -1299,13 +1322,11 @@ function spin() {
     $("cres").className = "cres " + (win ? "win" : "lose"); showCasino();
   }
 }
-function markPocket(i, n) {   // подсветить выпавшую лунку и показать номер в центре колеса
-  const hl = $("rhl"), hub = $("rhub");
-  if (i < 0) { hl.setAttribute("opacity", 0); hub.setAttribute("opacity", 0); return; }
-  const a0 = i * WSTEP - WSTEP / 2, a1 = a0 + WSTEP, p = [wpt(92, a0), wpt(92, a1), wpt(64, a1), wpt(64, a0)];
-  hl.setAttribute("d", "M" + p[0] + "A92 92 0 0 1 " + p[1] + "L" + p[2] + "A64 64 0 0 0 " + p[3] + "Z"); hl.setAttribute("opacity", 1);
-  hub.querySelector("circle").setAttribute("fill", n === 0 ? "#1A9A4B" : RED.has(n) ? "#C8262B" : "#1E1F23");
-  hub.querySelector("text").textContent = n; hub.setAttribute("opacity", 1);
+function markPocket(i, n) {   // подсветить выпавшую лунку и показать номер в медальоне
+  const hl = $("rhl"), t = $("rhubt");
+  if (i < 0) { hl.setAttribute("opacity", 0); t.textContent = ""; return; }
+  hl.setAttribute("d", "M" + wpt(92, i * WSTEP - WSTEP / 2) + "A92 92 0 0 1 " + wpt(92, i * WSTEP + WSTEP / 2) + "L" + wpt(63, i * WSTEP + WSTEP / 2) + "A63 63 0 0 0 " + wpt(63, i * WSTEP - WSTEP / 2) + "Z");
+  hl.setAttribute("opacity", 1); t.textContent = n;
 }
 $("casinobtn").addEventListener("click", () => { $("cres").className = "cres"; showCasino(); });
 $("casino").addEventListener("click", e => {
