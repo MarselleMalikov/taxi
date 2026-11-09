@@ -397,6 +397,14 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .rparts{margin-top:4px;font-size:14px;color:var(--m);line-height:1.3}
 .rtags{margin-top:8px}.rtags i.good{background:#DDF5E5;color:#16883F}.rtags i.bad{background:#FDE7E7;color:#C9363B}.rtags .stars{letter-spacing:1px;color:#F5A300}
 .rbad{margin-top:6px;font-size:14px;font-weight:600;color:#C9363B;line-height:1.3}
+
+/* окно случайного события */
+#evt{position:fixed;inset:0;z-index:21;display:flex;align-items:center;justify-content:center;padding:16px}#evt[hidden]{display:none}
+#evt .askicon.blue{background:#E4EDFF;color:#2F6FED}#evt .askicon.red{background:#FDE7E7;color:#C9363B}#evt .askicon.green{background:#DDF5E5;color:#16883F}
+#evttitle{display:block;font-size:21px;line-height:1.2}#evttext{margin:6px 0 14px!important;text-align:center!important}
+.evtbtns{display:flex;flex-direction:column;gap:8px}
+.evtbtns button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:13px 14px;border:none;border-radius:24px;background:var(--c);color:var(--ink);font-family:inherit;font-size:16px;font-weight:700;cursor:pointer}
+.evtbtns button:first-child{background:var(--y);color:var(--dark)}.evtbtns small{font-size:13.5px;font-weight:500;color:#5A6070}
 </style></head>
 <body>
 <div id="app">
@@ -449,6 +457,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button></div></div>
 <div id="kef" hidden><div class="askback"></div><div class="askcard gcard kcard" id="kcard"><div class="khead"><button class="kround" data-k="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><b>Угадай где кэф?</b><button class="kround" data-k="info" aria-label="Правила"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></div><div class="krwrap" id="krules"><p class="krules">Выберите от 1 до 10 зон. Из 12 зон 10 окажутся с повышенным спросом и 2 пустыми. Если все ваши зоны с повышенным спросом, ставка умножается на коэффициент. Попалась пустая - ставка проиграна.</p></div><div class="kstats"><div><span>Выбрано зон</span><b id="ksel">0 из 10</b></div><i></i><div><span>Коэффициент</span><b id="kcoef">×1.00</b></div></div><svg id="kfield" viewBox="0 0 193.2 182.5"></svg><div class="khint"><svg class="ktrophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#FFD233" stroke="#E3A600" stroke-width="1.2"/><path d="M7 6H4.5v1.5A3 3 0 0 0 7.6 10.4M17 6h2.5v1.5a3 3 0 0 1-3.1 2.9" fill="none" stroke="#E3A600" stroke-width="1.6"/><path d="M10.5 13.5h3l.5 3.5h-4zM8 19.5h8v1.5H8z" fill="#FFD233" stroke="#E3A600" stroke-width="1"/></svg><span id="khint">Чем больше зон, тем выше коэффициент</span><em>10 зон<br><b>×66.00</b></em></div><div class="kbet"><button data-k="minus" aria-label="Меньше">−</button><b id="kbet"></b><button data-k="plus" aria-label="Больше">+</button><span id="kmoney"></span></div><div class="chips" id="kchips"></div><div class="kbtns"><button class="kgo" id="kgo"></button><button class="krand" id="krand">Случайно</button></div></div></div>
+<div id="evt" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="evticon"></div><b id="evttitle"></b><p id="evttext"></p><div class="evtbtns" id="evtbtns"></div></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -503,8 +512,8 @@ const CARS = [   // img - рисунок машины в папке cars/
 ];
 // Магазин: покупки для машины, которые остаются навсегда и помогают зарабатывать
 const SHOP = [
-  { id: "kit",    name: "Аптечка и огнетушитель", price: 1200, text: "На посту ДПС не будет штрафа за комплектацию." },
-  { id: "cam",    name: "Видеорегистратор",       price: 6000, text: "Спор с инспектором ДПС выигрываете по записи." },
+  { id: "kit",    name: "Аптечка и огнетушитель", price: 1200, text: "Проверка на посту ДПС проходит без задержки." },
+  { id: "cam",    name: "Видеорегистратор",       price: 6000, text: "Жалобы пассажиров не снижают приоритет: запись на вашей стороне." },
   { id: "charge", name: "Зарядки для пассажиров", price: 1500, text: "Пассажиры чаще оставляют чаевые." },
   { id: "water",  name: "Вода и салфетки в салоне", price: 1000, text: "Оценки 1-2 звезды ставят вдвое реже." },
   { id: "covers", name: "Чехлы на сиденья",       price: 3000, text: "Химчистка салона обходится на 70% дешевле." },
@@ -1110,6 +1119,10 @@ function chooseAnswer(i) {
   if (ch.stars !== undefined) current.stars = ch.stars;    // оценка пассажира (0 = не оценит)
   if (ch.stop) current.stopNow = ch.stop;                     // stop: после разговора машина остановится
   if (ch.gift) current.gift = (current.gift || 0) + ch.gift;   // gift: точная доплата или благодарность сверх цены
+  if (ch.giftR) current.gift = (current.gift || 0) + Math.round((ch.giftR[0] + Math.random() * (ch.giftR[1] - ch.giftR[0])) / 50) * 50;   // случайная благодарность
+  if (ch.rateHit) { const w = getRating(); rates.push(ch.rateHit); if (rates.length > 150) rates.shift(); updateTop(); toast("Жалоба на водителя", "В рейтинг ушла оценка " + ch.rateHit, "alert"); checkRating(w); }
+  if (ch.prio) { if (owns("cam")) floaters.push({ text: "запись регистратора помогла", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -30 }); else { prioAdd(ch.prio); toast("Жалоба в сервис", "Приоритет " + ch.prio, "alert"); } }
+  if (ch.kitDelay && !owns("kit")) { clock += ch.kitDelay * 60; moodAdd(-3); floaters.push({ text: "нет аптечки: +" + ch.kitDelay + " мин", x: car.x, y: car.y, age: 0, color: "#c9363b", dy: -30 }); }
   if (ch.delay) clock += ch.delay * 60;
   if (ch.moodD) moodAdd(ch.moodD);
   if (ch.cost) { spend("fines", ch.cost, ch.why || "расход"); (current.fineList = current.fineList || []).push((ch.why || "расход") + ": −" + ch.cost + " ₽"); }
@@ -1119,7 +1132,7 @@ function chooseAnswer(i) {
   if (ch.kitFine && !owns("kit")) fineSum += ch.kitFine;                 // без аптечки и огнетушителя - штраф
   if (ch.camFine) { if (owns("cam")) floaters.push({ text: "запись регистратора помогла", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -30 }); else fineSum += ch.camFine; }
   if (fineSum && owns("covers") && /химчистк/.test(ch.why || "")) fineSum = Math.round(fineSum * 0.3);   // с чехлами химчистка дешевле
-  if (fineSum) { moodAdd(-10); spend("fines", fineSum, "штраф"); (current.fineList = current.fineList || []).push((ch.why || "штраф") + ": −" + fineSum + " ₽"); }
+  if (fineSum) { moodAdd(/^штраф/.test(ch.why || "") ? -10 : -6); spend("fines", fineSum, /^штраф/.test(ch.why || "") ? "штраф" : "расход"); (current.fineList = current.fineList || []).push((ch.why || "штраф") + ": −" + fineSum + " ₽"); }
   if (ch.fast && state === "toDropoff") { legScale *= ch.fast; current.fast = true; current.jam = false; }   // fast: едем быстрее
   if (ch.slow && state === "toDropoff") { legScale /= ch.slow; current.jam = true; moodAdd(-4); }                         // slow: пробка, едем медленнее
   if (ch.offApp) { current.offApp = current.noFee = current.cash = true; current.stars = 0; }   // мимо приложения: без комиссии и без оценки
@@ -1276,6 +1289,9 @@ const ICON = {
   fuel: '<rect x="4.5" y="4" width="9" height="16" rx="1.5"/><path d="M6.5 8.5h5M13.5 10l3.2 2v5.5a1.5 1.5 0 0 0 3 0V8L17 5"/>',
   food: '<path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10M17 21V3c-2.2 1.2-3.5 3.6-3.5 7v3H17"/>',
   rain: '<path d="M7 15a4.5 4.5 0 0 1-.6-9A5.5 5.5 0 0 1 17 7.5a3.8 3.8 0 0 1 .5 7.5H7z"/><path d="M8 18.5l-1 2M12 18.5l-1 2M16 18.5l-1 2"/>',
+  tire: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3.5v5M12 15.5v5M3.5 12h5M15.5 12h5"/>',
+  crash: '<path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.5v.01"/>',
+  hand: '<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v8.5A6.5 6.5 0 0 1 10.5 21 5.5 5.5 0 0 1 5.6 18L3.6 14a1.5 1.5 0 0 1 2.6-1.5L8 15"/>',
   coffee: '<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M9 3.5v2.5M12.5 3.5v2.5"/>',
   pin: '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'
 };
@@ -1567,6 +1583,60 @@ function askConfirm(title, text, okText, onOk, icon) {
   const el = $("ask"); $("askicon").className = "askicon"; $("askicon").innerHTML = ico(icon || "briefcase"); $("asktitle").textContent = title; $("asktext").textContent = text; $("askok").textContent = okText;
   el.hidden = false; askCb = onOk; $("askok").style.background = "";
 }
+
+// ====== Случайные события вне разговора с пассажиром: прокол, ДТП впереди, кофе на заправке, голосующий ======
+// Окно с выбором; пока оно открыто, игра стоит. Каждый вариант - функция с последствиями
+let evt = null, hailCool = 0;
+const EVT_RATE = { tire: 0.05, crash: 0.07 };   // шанс в час езды: прокол - редко (раз в несколько смен), ДТП - чуть чаще
+function showEvt(e) {
+  evt = e; $("evticon").className = "askicon " + (e.color || ""); $("evticon").innerHTML = ico(e.icon);
+  $("evttitle").textContent = e.title; $("evttext").textContent = e.text;
+  $("evtbtns").innerHTML = e.choices.map((c, i) => '<button data-evt="' + i + '">' + c.t + (c.sub ? "<small>" + c.sub + "</small>" : "") + "</button>").join("");
+  $("evt").hidden = false;
+}
+$("evt").addEventListener("click", e => {
+  const b = e.target.closest("[data-evt]"); if (!b || !evt) return;
+  const c = evt.choices[+b.dataset.evt]; evt = null; $("evt").hidden = true; c.go(); updateTop(); saveGame(); renderPanel();
+});
+function evtWait(min) { clock += min * 60; if (online) onlineT += min * 60; }   // событие отнимает время смены
+function evtTire() {
+  showEvt({ icon: "tire", color: "red", title: "Прокол колеса", text: "Машина повела вправо - колесо спущено." + (current && state === "toDropoff" ? " Пассажир вздыхает." : ""), choices: [
+    { t: "Шиномонтаж", sub: "500 ₽ · 10 минут", go: () => { spend("fines", 500, "шиномонтаж"); evtWait(10); if (current) current.mood -= 1; } },
+    { t: "Поменять самому", sub: "бесплатно · 20 минут · настроение −5%", go: () => { evtWait(20); moodAdd(-5); if (current) { current.mood -= 1; current.stars = 4; } } }] });
+}
+function evtCrash() {
+  const pass = current && state === "toDropoff";
+  showEvt({ icon: "crash", color: "red", title: "ДТП впереди", text: "На обочине разбитая машина, водитель машет рукой." + (pass ? " Пассажир торопится." : ""), choices: [
+    { t: "Помочь", sub: "15 минут · настроение +10%", go: () => { evtWait(15); moodAdd(10); if (pass) { current.mood -= 1; current.stars = 4; }
+      if (Math.random() < 0.4) { const g = 500; money += g; ledger.tips += g; shiftMoney = shiftNet(); toast("Водитель отблагодарил", "+" + g + " ₽", "goal"); } else toast("Помогли дождаться ДПС", "Водитель сказал спасибо", "goal"); } },
+    { t: "Проехать мимо", sub: "ничего не меняется", go: () => {} }] });
+}
+function evtCoffee() {
+  showEvt({ icon: "coffee", color: "blue", title: "Кофе на заправке", text: "Пока заливается бак, пахнет свежим кофе.", choices: [
+    { t: "Взять кофе", sub: "150 ₽ · настроение +5%", go: () => { spend("fines", 150, "кофе"); moodAdd(5); } },
+    { t: "Не надо", sub: "", go: () => {} }] });
+}
+function evtHail() {
+  showEvt({ icon: "hand", color: "green", title: "Голосует пассажир", text: "Мужчина у дороги машет рукой: подвезёшь за наличные?", choices: [
+    { t: "Взять", sub: "наличные мимо приложения · без комиссии", go: () => {
+      let o = null; for (let k = 0; k < 6 && !o; k++) o = buildOrder(car.x, car.y, carNode, 30, 250);
+      if (!o) return toast("Пассажир передумал", "Уже поймал другую машину", "alert");
+      o.price -= o.surgeAdd || 0; o.surgeAdd = 0; o.surge = 1;   // цена без надбавки за спрос, зато без комиссии
+      o.offApp = o.noFee = o.cash = true; o.stars = 0; o.cls = "econ"; o.runner = Math.random() < 0.15; o.hail = true;   // может и не заплатить
+      orders = [o]; previewId = null; acceptOrder(o.id); } },
+    { t: "Проехать мимо", sub: "", go: () => {} }] });
+}
+function tickEvents(dt, gameDt) {   // вызывается каждый кадр
+  if (evt || dialogue || endingShown) return;
+  const moving = state === "toPickup" || state === "toDropoff" || state === "selfDrive" || state === "toFuel" || state === "toCafe";
+  if (moving && gameDt > 0) {
+    const h = gameDt / 3600;
+    if (Math.random() < EVT_RATE.tire * h) return evtTire();
+    if (Math.random() < EVT_RATE.crash * h) return evtCrash();
+  }
+  hailCool = Math.max(0, hailCool - dt);
+  if (online && state === "idle" && !orders.length && hailCool <= 0 && fuel >= LOW_FUEL && blockLeft() <= 0 && Math.random() < dt / 90) { hailCool = 60; return evtHail(); }   // примерно раз в полторы минуты простоя
+}
 let askCb = null;
 let toastT = 0;
 function toast(title, sub, icon) {   // короткое уведомление сверху, само исчезает
@@ -1585,9 +1655,10 @@ $("ask").addEventListener("click", e => {
 function update(dt) {
   for (let i = floaters.length - 1; i >= 0; i--) { floaters[i].age += dt; if (floaters[i].age > 1.4) floaters.splice(i, 1); }
   tickClock();
-  if (dialogue || endingShown) return;
+  if (dialogue || endingShown || evt) return;
   const clock0 = clock;
   updateInner(dt);
+  tickEvents(dt, clock - clock0);
   // время на линии и усталость считаем только пока водитель работает (не на перерыве и не вне линии)
   const worked = online && state !== "break" ? clock - clock0 : 0;
   if (!online && blockUntil && state === "idle") {   // блокировка: время идёт само и уходит из смены
@@ -1807,6 +1878,7 @@ function refuel() {   // на заправке: доливаем до полно
   const liters = Math.max(0, Math.round((TANK - fuel) * 10) / 10), cost = Math.round(liters * FUEL_PRICE);
   fuel = TANK; ledger.fuelL += liters; spend("fuel", cost, "бензин"); clock += 5 * 60;   // заправка занимает около 5 минут
   state = "idle"; route = []; fuelStop = null; spawnTimer = 2; renderPanel();
+  if (Math.random() < 0.5) setTimeout(evtCoffee, 400);
 }
 function placeControls() {   // кнопку ускорения и кнопки карты ставим под самой высокой плашкой - на любом телефоне
   const app = appEl.getBoundingClientRect(), bottom = Math.max(...["ratingpill", "fuelpill", "earn", "menubtn"].map(id => $(id).getBoundingClientRect().bottom)) - app.top;
