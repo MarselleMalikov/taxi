@@ -1,6 +1,6 @@
 // Бот играет одну смену в настоящей игре: тот же код, без отрисовки. Возвращает статистику смены.
 window.__runShift = function (cfg) {
-  const log = { fines: [], costs: [], events: {}, scenes: {}, declined: 0, accepted: 0, chainAcc: 0, breaks: 0, lunches: 0, refuels: 0, blocks: 0, cashLost: 0, ratingMin: 5 };
+  const log = { fines: [], costs: [], events: {}, scenes: {}, declined: 0, accepted: 0, chainAcc: 0, breaks: 0, lunches: 0, refuels: 0, blocks: 0, cashLost: 0, ratingMin: 5, distOn: 0, distMin: 0 };
   frame = function () {}; draw = function () {}; tickAmbient = function () {};
   try { localStorage.clear(); } catch (e) {}
   // свежее состояние игрока
@@ -17,13 +17,20 @@ window.__runShift = function (cfg) {
   const _sd = startDialogue; startDialogue = function (o, later) { _sd(o, later); const d = dialogue || (current && current.epilogue); if (d) { const id = Object.keys(SCENES).find(k => SCENES[k] === d.scene); log.scenes[id] = (log.scenes[id] || 0) + 1; } };
   shiftBtn.click();   // на линию: аренда списывается
   const startNet = shiftNet();
-  let ticks = 0, hadLunch = false;
+  let ticks = 0, hadLunch = false, nextCheck = 0;
   const pick = n => Math.floor(Math.random() * n);
   while (!endingShown && ticks < 900000) {
     ticks++;
     if (evt) { const c = evt.choices; $("evtbtns").querySelectorAll("[data-evt]")[pick(c.length)].click(); continue; }
     if (dialogue) { const node = dialogue.scene.nodes[dialogue.nodeId]; chooseAnswer(pick(node.choices.length)); continue; }
     if (!online && blockLeft() > 0) { log.blocks++; const left = blockLeft(); clock += left; onlineT += left; blockUntil = 0; online = true; spawnTimer = 1.5; continue; }
+    if (cfg.mode === "smart" && state === "idle" && online && clock >= nextCheck) {   // «Мой район» - только когда в районе машины есть повышенный спрос
+      nextCheck = clock + 15 * 60; const dId = districtAt(car.x, car.y), D = DISTRICTS.find(d => d.id === dId);
+      let hot = 0, all = 0; if (D) for (const h of HEX_BASE.values()) if (inPoly(h.x, h.y, D.pts)) { all++; if (hexSurge(h) > 1) hot++; }
+      const on = all > 0 && hot / all >= 0.3;
+      if (on && !(districtSel && districtSel.has(dId))) { districtSel = new Set([dId]); orders = []; log.distOn++; } else if (!on && districtSel) { districtSel = null; orders = []; }
+      if (districtSel) log.distMin += 15;
+    }
     if (state === "idle" && online) {
       if (fuel < 8) { log.refuels++; goRefuel(); continue; }
       if (mood < 35) { if (!hadLunch) { hadLunch = true; log.lunches++; takeBreak("lunch"); } else { log.breaks++; takeBreak("rest"); } continue; }

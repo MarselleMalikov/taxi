@@ -501,11 +501,11 @@ const TARIFFS = {
 const CARS = [   // img - рисунок машины в папке cars/
   { id: "granta",  t: "econ",    name: "Lada Granta",   rent: 1850, fuel: 0.066 },
   { id: "rio",     t: "econ",    name: "Kia Rio",       rent: 2000, fuel: 0.063 },
-  { id: "polo",    t: "comfort", name: "Volkswagen Polo", rent: 2450, fuel: 0.066 },
-  { id: "octavia", t: "comfort", name: "Skoda Octavia", rent: 2600, fuel: 0.069 },
-  { id: "tiggo4",  t: "cplus",   name: "Chery Tiggo 4", rent: 3500, fuel: 0.072, isNew: true },
-  { id: "optima",  t: "cplus",   name: "Kia K5",        rent: 3600, fuel: 0.077 },
-  { id: "camry",   t: "cplus",   name: "Toyota Camry",  rent: 3700, fuel: 0.078 }
+  { id: "polo",    t: "comfort", name: "Volkswagen Polo", rent: 2300, fuel: 0.066 },
+  { id: "octavia", t: "comfort", name: "Skoda Octavia", rent: 2450, fuel: 0.069 },
+  { id: "tiggo4",  t: "cplus",   name: "Chery Tiggo 4", rent: 2800, fuel: 0.072, isNew: true },
+  { id: "optima",  t: "cplus",   name: "Kia K5",        rent: 2900, fuel: 0.077 },
+  { id: "camry",   t: "cplus",   name: "Toyota Camry",  rent: 3000, fuel: 0.078 }
 ];
 // Магазин: покупки для машины, которые остаются навсегда и помогают зарабатывать
 const SHOP = [
@@ -1591,7 +1591,7 @@ function askConfirm(title, text, okText, onOk, icon) {
 // ====== Случайные события вне разговора с пассажиром: прокол, ДТП впереди, кофе на заправке, голосующий ======
 // Окно с выбором; пока оно открыто, игра стоит. Каждый вариант - функция с последствиями
 let evt = null, hailCool = 0;
-const EVT_RATE = { tire: 0.05, crash: 0.07 };   // шанс в час езды: прокол - редко (раз в несколько смен), ДТП - чуть чаще
+const EVT_RATE = { tire: 0.015, crash: 0.02 };   // шанс в час езды: прокол - редко (раз в несколько смен), ДТП - чуть чаще
 function showEvt(e) {
   evt = e; $("evticon").className = "askicon " + (e.color || ""); $("evticon").innerHTML = ico(e.icon);
   $("evttitle").textContent = e.title; $("evttext").textContent = e.text;

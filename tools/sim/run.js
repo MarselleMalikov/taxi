@@ -5,7 +5,7 @@ const N=+(process.env.N||15), bot=fs.readFileSync(__dirname+'/bot.js','utf8');
 const ALL=["kit","cam","charge","water","covers","thermos"];
 const jobs=[];
 for (const car of ["granta","rio","polo","octavia","tiggo4","optima","camry"]) for(let i=0;i<N;i++) jobs.push({car,mode:"classic",tag:"base"});
-for (const car of ["rio","octavia","camry"]) for (const mode of ["flex","district"]) for(let i=0;i<N;i++) jobs.push({car,mode,districts:["center"],tag:"mode"});
+for (const car of ["rio","octavia","camry"]) for (const mode of ["flex","smart"]) for(let i=0;i<N;i++) jobs.push({car,mode,districts:["center"],tag:"mode"});
 for(let i=0;i<N;i++) jobs.push({car:"rio",mode:"classic",owned:ALL,tag:"shop"});
 (async()=>{const b=await chromium.launch();const out=[];let k=0;
  await Promise.all([0,1,2,3].map(async w=>{const p=await b.newPage({viewport:{width:390,height:844}});p.on('pageerror',e=>console.log('ERR',e.message));
