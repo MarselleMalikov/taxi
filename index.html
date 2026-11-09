@@ -403,6 +403,16 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .evtbtns{display:flex;flex-direction:column;gap:8px}
 .evtbtns button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 14px;border:none;border-radius:24px;background:var(--c);color:var(--ink);font-family:inherit;font-size:17px;font-weight:700;line-height:1.2;cursor:pointer}
 .evtbtns button:first-child{background:var(--y);color:var(--dark)}.evtbtns small{font-size:15px;font-weight:500;line-height:1.2;color:#5A6070}.evtbtns small:empty{display:none}
+
+/* гараж: заголовок, ровные кнопки тарифов, без прокрутки */
+#garage .gcard{padding:16px 16px 14px!important;max-height:calc(100% - 24px)}
+#garage .mhead{position:static!important;margin-bottom:10px}#garage .mhead b{display:block;font-size:21px;font-weight:800}
+#garage .clsrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0}
+#garage .clsbtn{min-width:0;padding:8px 2px;font-size:15px!important;white-space:nowrap}
+#garage .gtar{margin:8px 2px 0}#garage .gtar b{font-size:17px}
+#garage .gcar{margin-top:5px;padding:2px 10px 2px 6px}#garage .gcar .carimg{width:84px}
+#garage .ginfo b{font-size:16px!important;line-height:1.2}#garage .ginfo em{font-size:15px!important;margin-top:0}
+.gcar.lock{opacity:.5}
 </style></head>
 <body>
 <div id="app">
@@ -449,7 +459,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 <div id="ledger" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Смена <span id="lday"></span></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="lrows"></div></div></div>
 <div id="modes" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Режим работы</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="modelist"></div></div></div>
 <div id="pause" hidden><div class="askback" data-close="1"></div><div class="askcard pcard"><div class="mhead"><b>Перерыв</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="ponline"><div class="potop"><span>На линии</span><b id="pon"></b></div><span class="pbar"><i id="ponbar"></i></span></div><button class="pact" id="prest"><span class="pico blue" id="prestico"></span><span class="ptxt"><span class="ptop"><b>Отдохнуть</b><span class="pprice">Бесплатно</span></span><span class="ptags"><i>20 мин</i><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path d="M4.4 8.6q2.6 2.2 5.2 0"/></svg><span id="presttag"></span></i></span></span></button><button class="pact" id="plunch"><span class="pico orange" id="plunchico"></span><span class="ptxt"><span class="ptop"><b>Пообедать</b><span class="pprice">350 ₽</span></span><span class="ptags"><i>20 мин</i><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path d="M4.4 8.6q2.6 2.2 5.2 0"/></svg>+20%</i></span></span></button><button class="pact" id="pfuel"><span class="pico green" id="pfuelico"></span><span class="ptxt"><span class="ptop"><b>Заправиться</b><span class="pprice" id="pfuelprice"></span></span><span class="ptags"><i id="pfueltag"></i></span></span></button><p class="pnote" id="pausenote"></p></div></div>
-<div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
+<div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Гараж</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button></div></div>
@@ -501,11 +511,11 @@ const TARIFFS = {
 const CARS = [   // img - рисунок машины в папке cars/
   { id: "granta",  t: "econ",    name: "Lada Granta",   rent: 1850, fuel: 0.066 },
   { id: "rio",     t: "econ",    name: "Kia Rio",       rent: 2000, fuel: 0.063 },
-  { id: "polo",    t: "comfort", name: "Volkswagen Polo", rent: 2300, fuel: 0.066 },
-  { id: "octavia", t: "comfort", name: "Skoda Octavia", rent: 2450, fuel: 0.069 },
-  { id: "tiggo4",  t: "cplus",   name: "Chery Tiggo 4", rent: 2800, fuel: 0.072, isNew: true },
-  { id: "optima",  t: "cplus",   name: "Kia K5",        rent: 2900, fuel: 0.077 },
-  { id: "camry",   t: "cplus",   name: "Toyota Camry",  rent: 3000, fuel: 0.078 }
+  { id: "polo",    t: "comfort", name: "Volkswagen Polo", rent: 2200, fuel: 0.063 },
+  { id: "octavia", t: "comfort", name: "Skoda Octavia", rent: 2350, fuel: 0.066 },
+  { id: "tiggo4",  t: "cplus",   name: "Chery Tiggo 4", rent: 2660, fuel: 0.072, isNew: true },
+  { id: "optima",  t: "cplus",   name: "Kia K5",        rent: 2760, fuel: 0.077 },
+  { id: "camry",   t: "cplus",   name: "Toyota Camry",  rent: 2850, fuel: 0.078 }
 ];
 // Магазин: покупки для машины, которые остаются навсегда и помогают зарабатывать
 const SHOP = [
@@ -1316,11 +1326,10 @@ function carSvg(shape, w) {
 function showGarage() {   // выбор машины и тарифа; сменить можно только до выхода на линию в этой смене (аренда уже оплачена)
   enforceRatingCls(false);
   const locked = ledger.rent > 0;
-  let html = (locked ? '<p class="gnote">Сменить автомобиль возможно в начале следующей смены</p>' : "") +
-    '<div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + '" data-cls="' + c + '"' + (clsAllowed(c) ? "" : " disabled") + ">" + TARIFFS[c].name + "</button>").join("") + "</div>";
+  let html = '<div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + '" data-cls="' + c + '"' + (clsAllowed(c) ? "" : " disabled") + ">" + TARIFFS[c].name + "</button>").join("") + "</div>";
   for (const t of ["econ", "comfort", "cplus"]) {
     html += '<div class="gtar"><b>' + TARIFFS[t].name + "</b></div>";
-    for (const c of CARS.filter(c => c.t === t)) html += '<button class="gcar' + (c.id === carId ? " on" : "") + '" data-car="' + c.id + '"' + (locked ? " disabled" : "") + ">" + carImg(c, 112) +
+    for (const c of CARS.filter(c => c.t === t)) html += '<button class="gcar' + (c.id === carId ? " on" : "") + (locked && c.id !== carId ? " lock" : "") + '" data-car="' + c.id + '">' + carImg(c, 112) +
       '<span class="ginfo"><b>' + c.name + "</b><em>" + c.rent.toLocaleString("ru-RU") + " ₽</em></span></button>";
   }
   $("garagelist").innerHTML = html; $("garage").hidden = false; menuEl.hidden = true;
@@ -1336,7 +1345,8 @@ $("garage").addEventListener("click", e => {
     if (TORDER.some(x => clsAllowed(x) && next[x])) { clsOn = next; orders = []; previewId = null; saveGame(); renderPanel(); }
     return showGarage();
   }
-  const b = e.target.closest("[data-car]"); if (!b || b.disabled || b.dataset.car === carId) return;
+  const b = e.target.closest("[data-car]"); if (!b || b.dataset.car === carId) return;
+  if (ledger.rent > 0) return toast("Сменить автомобиль нельзя", "Можно в начале следующей смены", "alert");
   const c = CARS.find(x => x.id === b.dataset.car);
   askConfirm("Выбрать " + c.name + "?", "Списание " + c.rent.toLocaleString("ru-RU") + " ₽ за смену", "Выбрать", () => {
     carId = c.id; carChosen = true; ensureCls(); enforceRatingCls(false); saveGame(); showGarage(); updateTop();
