@@ -1455,8 +1455,9 @@ function drawKef() {
     let fill = "url(#kw)", stroke = "#E1E4EA", mark = '<path d="M' + (c.x - 6) + " " + c.y + "h12M" + c.x + " " + (c.y - 6) + 'v12" stroke="#9AA1B2" stroke-width="3" stroke-linecap="round"/>', cls = "kz";
     if (sel && !open) { fill = "#FFD233"; stroke = "#E3B000"; mark = '<path d="M' + (c.x - 7) + " " + c.y + "l5 5 9-10" + '" fill="none" stroke="#1E1F23" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'; }
     if (open && !empty) { fill = "url(#kp)"; stroke = sel ? "#FFD233" : "#5A35CF"; mark = sel ? '<path d="M' + (c.x - 7) + " " + c.y + "l5 5 9-10" + '" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' : ""; cls += " kopen"; }
-    if (open && empty) { fill = "#E6E8ED"; stroke = sel ? "#E5484D" : "#D5D8DF"; mark = sel ? '<path d="M' + (c.x - 6) + " " + (c.y - 6) + "l12 12M" + (c.x + 6) + " " + (c.y - 6) + 'l-12 12" stroke="#E5484D" stroke-width="3" stroke-linecap="round"/>' : ""; cls += " kopen"; }
-    h += '<g class="' + cls + '" data-z="' + c.id + '" style="transform-origin:' + c.x + "px " + c.y + 'px"><polygon points="' + hexPts(c.x, c.y, 23.5) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (sel ? 2.4 : 1.2) + '" stroke-linejoin="round" filter="url(#ksh)"/>' + mark + "</g>";
+    if (open && empty) { fill = "#E6E8ED"; stroke = "#E5484D";   // пустая зона: красная рамка, крест - только у выбранной (из-за неё проигрыш)
+      mark = sel ? '<path d="M' + (c.x - 6) + " " + (c.y - 6) + "l12 12M" + (c.x + 6) + " " + (c.y - 6) + 'l-12 12" stroke="#E5484D" stroke-width="3" stroke-linecap="round"/>' : ""; cls += " kopen"; }
+    h += '<g class="' + cls + '" data-z="' + c.id + '" style="transform-origin:' + c.x + "px " + c.y + 'px"><polygon points="' + hexPts(c.x, c.y, 23.5) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (sel || (open && empty) ? 2.4 : 1.2) + '" stroke-linejoin="round" filter="url(#ksh)"/>' + mark + "</g>";
   }
   $("kfield").innerHTML = h;
 }
