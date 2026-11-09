@@ -362,6 +362,29 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .goalbar.done .gtop{color:#16883F;font-weight:600}.goalbar.done .gtop b{color:#16883F}
 .blockcard{padding:14px;border-radius:20px;background:#FDECEC}.btop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.btop span{font-size:17px;font-weight:700;color:#8E1F24}.btop b{font-size:20px;font-weight:800;color:#8E1F24;font-variant-numeric:tabular-nums}
 .blockcard small{display:block;margin-top:4px;font-size:15px;color:#8E1F24;opacity:.8;line-height:1.3}.blockcard .fuelgo{margin-top:12px;background:#fff;border-radius:28px;font-weight:700}
+
+/* выбор игры и «Угадай где кэф?» */
+#games,#kef{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#games[hidden],#kef[hidden]{display:none}
+#games .pcard .mhead{position:static}#games .pcard .mhead b{display:block;font-size:21px;font-weight:800}
+.pico.gthumb{background:none;overflow:hidden}.pico.gthumb img{width:46px;height:46px;display:block}.pico.purple{background:#EDE7FF;color:#6740E2}
+.kcard{padding:16px!important;max-width:400px}
+.khead{display:flex;align-items:center;gap:10px}.khead b{flex:1;font-size:21px;font-weight:800}
+.kround{flex:none;width:40px;height:40px;border:none;border-radius:50%;background:var(--c);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dark)}
+.kround svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.krules{margin:10px 2px 0!important;font-size:15px!important;line-height:1.35!important;color:var(--m)}
+.kstats{display:flex;align-items:center;margin-top:12px;padding:10px 6px;border-radius:20px;background:var(--c)}.kstats>div{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.kstats>i{width:1px;align-self:stretch;background:#D9DCE2}.kstats span{font-size:14px;color:var(--m);font-weight:500}.kstats b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+#kfield{display:block;width:100%;max-width:270px;margin:10px auto 4px;overflow:visible}
+.kz{cursor:pointer;transition:transform .12s}.kz:active{transform:scale(.94)}
+.kflip{animation:kflip .32s ease-out}@keyframes kflip{0%{transform:scaleX(.1)}100%{transform:scaleX(1)}}
+.khint{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:20px;background:var(--c);font-size:15px;line-height:1.3;color:var(--ink)}
+.ktrophy{flex:none;width:30px;height:30px}#khint{flex:1;min-width:0}#khint b{display:block;font-weight:800;font-size:17px}#khint .kwin{color:#16883F}#khint .klose{color:#C9363B}
+.khint em{flex:none;font-style:normal;text-align:center;font-size:13px;font-weight:600;line-height:1.2;padding:6px 10px;border-radius:14px;background:#FFF1C2;color:#5A4500}.khint em b{font-size:17px;font-weight:800;color:var(--ink)}
+.kbet{display:flex;align-items:center;gap:8px;margin-top:10px}.kbet b{font-size:20px;font-weight:800;min-width:92px;text-align:center}.kbet span{flex:1;text-align:right;font-size:14px;color:var(--m)}
+.kbet button{width:44px;height:40px;border:none;border-radius:14px;background:var(--c);font-size:22px;font-weight:600;line-height:1;color:var(--ink);font-family:inherit;cursor:pointer}.kbet button:disabled{opacity:.4}
+.kcard .chips{margin-top:8px}.kcard .chip2:disabled{opacity:.4}
+.kbtns{display:flex;gap:8px;margin-top:12px}.kgo{flex:1;padding:15px 10px;border:none;border-radius:28px;background:var(--y);color:var(--dark);font-size:17px;font-weight:800;font-family:inherit;cursor:pointer}.kgo:disabled{opacity:.5}
+.krand{flex:none;padding:15px 16px;border:none;border-radius:28px;background:var(--c);color:var(--ink);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}.krand:disabled{opacity:.5}
 </style></head>
 <body>
 <div id="app">
@@ -412,6 +435,8 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 <div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
+<div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button></div></div>
+<div id="kef" hidden><div class="askback"></div><div class="askcard gcard kcard" id="kcard"><div class="khead"><button class="kround" data-k="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><b>Угадай где кэф?</b><button class="kround" data-k="info" aria-label="Правила"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></div><p class="krules" id="krules" hidden>Выберите от 1 до 10 зон. Из 12 зон 10 окажутся фиолетовыми и 2 пустыми. Если все ваши зоны фиолетовые, ставка умножается на коэффициент. Попалась пустая - ставка проиграна. Коэффициент честный: чем меньше шанс, тем он выше.</p><div class="kstats"><div><span>Выбрано зон</span><b id="ksel">0 из 10</b></div><i></i><div><span>Коэффициент</span><b id="kcoef">×1.00</b></div></div><svg id="kfield" viewBox="0 0 193.2 182.5"></svg><div class="khint"><svg class="ktrophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#FFD233" stroke="#E3A600" stroke-width="1.2"/><path d="M7 6H4.5v1.5A3 3 0 0 0 7.6 10.4M17 6h2.5v1.5a3 3 0 0 1-3.1 2.9" fill="none" stroke="#E3A600" stroke-width="1.6"/><path d="M10.5 13.5h3l.5 3.5h-4zM8 19.5h8v1.5H8z" fill="#FFD233" stroke="#E3A600" stroke-width="1"/></svg><span id="khint">Чем больше зон, тем выше коэффициент</span><em>10 зон<br><b>×66.00</b></em></div><div class="kbet"><button data-k="minus" aria-label="Меньше">−</button><b id="kbet"></b><button data-k="plus" aria-label="Больше">+</button><span id="kmoney"></span></div><div class="chips" id="kchips"></div><div class="kbtns"><button class="kgo" id="kgo"></button><button class="krand" id="krand">Случайно</button></div></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -1380,7 +1405,13 @@ function spin() {
   }
 }
 function markPocket() {}
-$("casinobtn").addEventListener("click", () => { $("cres").className = "cres"; showCasino(); });
+$("casinobtn").addEventListener("click", () => { menuEl.hidden = true; $("games").hidden = false; });
+$("games").addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { $("games").hidden = true; return; }
+  const g = e.target.closest("[data-game]"); if (!g) return;
+  $("games").hidden = true;
+  if (g.dataset.game === "roulette") { $("cres").className = "cres"; showCasino(); } else showKef();
+});
 $("casino").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { if (!spinning) $("casino").hidden = true; return; }
   if (spinning) return;
@@ -1392,6 +1423,82 @@ $("casino").addEventListener("click", e => {
     return showCasino();
   }
   if (e.target.closest("#cspin")) spin();
+});
+// ====== «Угадай где кэф?»: 12 зон, после открытия 10 фиолетовые и 2 пустые ======
+// Игрок выбирает 1-10 зон; выигрыш, если все выбранные фиолетовые. Коэффициент честный: 1 / шанс выигрыша
+const KZ = 12, KEMPTY = 2, KMAX = 10;
+const KROWS = [[3, 1], [4, 0.5], [3, 1], [2, 1.5]];   // зон в ряду и сдвиг ряда (в ширинах зоны), как в образце
+const kChance = k => { let p = 1; for (let i = 0; i < k; i++) p *= (KZ - KEMPTY - i) / (KZ - i); return p; };
+const kCoef = k => k ? Math.floor(100 / kChance(k) + 1e-6) / 100 : 1;   // округляем вниз до копеек
+let kSel = new Set(), kBet = 500, kPhase = "pick", kEmpty = new Set(), kOpen = new Set(), kBusy = false, kLast = null;
+const KCELLS = []; { const R = 25, W = Math.sqrt(3) * R; let id = 0; KROWS.forEach(([n, off], row) => { for (let i = 0; i < n; i++) KCELLS.push({ id: id++, x: 10 + W * (i + off), y: 10 + R + row * 1.5 * R }); }); }
+const hexPts = (x, y, r) => { let p = ""; for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 90); p += (x + r * Math.cos(a)).toFixed(1) + "," + (y + r * Math.sin(a)).toFixed(1) + " "; } return p; };
+function drawKef() {
+  let h = '<defs><linearGradient id="kw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#EEF0F4"/></linearGradient>' +
+    '<linearGradient id="kp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A68F0"/><stop offset="1" stop-color="#6740E2"/></linearGradient>' +
+    '<filter id="ksh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1B2340" flood-opacity=".14"/></filter></defs>';
+  for (const c of KCELLS) {
+    const sel = kSel.has(c.id), open = kOpen.has(c.id), empty = kEmpty.has(c.id);
+    let fill = "url(#kw)", stroke = "#E1E4EA", mark = '<path d="M' + (c.x - 6) + " " + c.y + "h12M" + c.x + " " + (c.y - 6) + 'v12" stroke="#9AA1B2" stroke-width="3" stroke-linecap="round"/>', cls = "kz";
+    if (sel && !open) { fill = "#FFD233"; stroke = "#E3B000"; mark = '<path d="M' + (c.x - 7) + " " + c.y + "l5 5 9-10" + '" fill="none" stroke="#1E1F23" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'; }
+    if (open && !empty) { fill = "url(#kp)"; stroke = sel ? "#FFD233" : "#5A35CF"; mark = sel ? '<path d="M' + (c.x - 7) + " " + c.y + "l5 5 9-10" + '" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' : ""; cls += " kopen"; }
+    if (open && empty) { fill = "#E6E8ED"; stroke = sel ? "#E5484D" : "#D5D8DF"; mark = sel ? '<path d="M' + (c.x - 6) + " " + (c.y - 6) + "l12 12M" + (c.x + 6) + " " + (c.y - 6) + 'l-12 12" stroke="#E5484D" stroke-width="3" stroke-linecap="round"/>' : ""; cls += " kopen"; }
+    h += '<g class="' + cls + '" data-z="' + c.id + '" style="transform-origin:' + c.x + "px " + c.y + 'px"><polygon points="' + hexPts(c.x, c.y, 23.5) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (sel ? 2.4 : 1.2) + '" stroke-linejoin="round" filter="url(#ksh)"/>' + mark + "</g>";
+  }
+  $("kfield").innerHTML = h;
+}
+function showKef() {
+  kBet = Math.max(100, Math.min(kBet, Math.max(100, Math.floor(money / 100) * 100)));
+  const k = kSel.size, cost = kBet;
+  $("ksel").textContent = k + " из " + KMAX; $("kcoef").textContent = "×" + kCoef(k).toFixed(2);
+  $("khint").innerHTML = kPhase === "done" && kLast ? '<b class="' + (kLast.win ? "kwin" : "klose") + '">' + (kLast.win ? "Выигрыш +" + kLast.net.toLocaleString("ru-RU") + " ₽" : "Пустая зона") + "</b>" + (kLast.win ? "Все зоны с кэфом" : "Ставка " + kLast.bet.toLocaleString("ru-RU") + " ₽ сгорела")
+    : k ? "<b>Шанс " + Math.round(kChance(k) * 100) + "%</b>Выплата " + Math.floor(kBet * kCoef(k)).toLocaleString("ru-RU") + " ₽" : "Чем больше зон, тем выше коэффициент";
+  $("kbet").textContent = kBet.toLocaleString("ru-RU") + " ₽"; $("kmoney").textContent = "на счету " + money.toLocaleString("ru-RU") + " ₽";
+  $("kchips").innerHTML = [100, 500, 1000, 5000].map(v => '<button class="chip2' + (v === kBet ? " on" : "") + '" data-kchip="' + v + '"' + (kBusy || v > money ? " disabled" : "") + ">" + v.toLocaleString("ru-RU") + "</button>").join("");
+  $("kcard").querySelector('[data-k="minus"]').disabled = kBusy || kBet <= 100; $("kcard").querySelector('[data-k="plus"]').disabled = kBusy || kBet + 100 > money;
+  const go = $("kgo");
+  if (kPhase === "done") { go.textContent = "Ещё раз · " + kBet.toLocaleString("ru-RU") + " ₽"; go.disabled = kBusy || money < cost; $("krand").textContent = "Новый выбор"; }
+  else { go.textContent = k ? "Открыть зоны · " + kBet.toLocaleString("ru-RU") + " ₽" : "Выберите зоны"; go.disabled = kBusy || !k || money < cost; $("krand").textContent = "Случайно"; }
+  $("krand").disabled = kBusy;
+  drawKef(); menuEl.hidden = true; $("kef").hidden = false;
+}
+function kPlay() {
+  const k = kSel.size; if (kBusy || !k || money < kBet) return;
+  const bet = kBet, coef = kCoef(k); money -= bet; updateTop();
+  kEmpty = new Set(); const ids = [...Array(KZ).keys()];
+  for (let i = 0; i < KEMPTY; i++) kEmpty.add(ids.splice(Math.floor(Math.random() * ids.length), 1)[0]);   // 2 пустые зоны - случайно
+  kOpen = new Set(); kPhase = "reveal"; kBusy = true; showKef();
+  const order = [...kSel, ...KCELLS.map(c => c.id).filter(id => !kSel.has(id))];   // сначала открываем выбранные зоны
+  order.forEach((id, i) => setTimeout(() => {
+    kOpen.add(id); drawKef(); const g = $("kfield").querySelector('[data-z="' + id + '"]'); if (g) g.classList.add("kflip");
+    if (i === order.length - 1) setTimeout(done, 350);
+  }, 140 * i + (i >= k ? 250 : 0)));
+  function done() {
+    const win = [...kSel].every(id => !kEmpty.has(id)), pay = win ? Math.floor(bet * coef) : 0, net = pay - bet;
+    money += pay; ledger.casino = (ledger.casino || 0) + net;
+    if (net > 500) moodAdd(5); else if (net <= -500) moodAdd(-5);
+    kLast = { win, net, bet }; kPhase = "done"; kBusy = false; updateTop(); saveGame(); showKef();
+  }
+}
+$("kef").addEventListener("click", e => {
+  const b = e.target.closest("[data-k]"), z = e.target.closest("[data-z]"), ch = e.target.closest("[data-kchip]");
+  if (b && b.dataset.k === "back") { if (kBusy) return; $("kef").hidden = true; $("games").hidden = false; return; }
+  if (b && b.dataset.k === "info") { $("krules").hidden = !$("krules").hidden; return; }
+  if (kBusy) return;
+  if (b && (b.dataset.k === "minus" || b.dataset.k === "plus") && !b.disabled) { kBet += b.dataset.k === "plus" ? 100 : -100; return showKef(); }
+  if (ch && !ch.disabled) { kBet = +ch.dataset.kchip; return showKef(); }
+  if (z) {
+    if (kPhase === "done") { kPhase = "pick"; kOpen = new Set(); kEmpty = new Set(); }
+    const id = +z.dataset.z; if (kSel.has(id)) kSel.delete(id); else if (kSel.size < KMAX) kSel.add(id); else toast("Не больше " + KMAX + " зон", "Снимите одну, чтобы выбрать другую", "alert");
+    return showKef();
+  }
+  if (e.target.closest("#kgo")) { if (kPhase === "done") { kPhase = "pick"; kOpen = new Set(); } return kPlay(); }
+  if (e.target.closest("#krand")) {
+    if (kPhase === "done") { kPhase = "pick"; kOpen = new Set(); kEmpty = new Set(); kSel = new Set(); return showKef(); }
+    const n = kSel.size || 3, ids = [...Array(KZ).keys()]; kSel = new Set();
+    while (kSel.size < n) kSel.add(ids.splice(Math.floor(Math.random() * ids.length), 1)[0]);
+    return showKef();
+  }
 });
 $("shop").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("shop").hidden = true; return; }
