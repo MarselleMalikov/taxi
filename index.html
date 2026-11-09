@@ -301,6 +301,16 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .ginfo em{margin-top:1px}
 .askicon.askcar{width:auto;height:auto;border-radius:0;background:none;margin:-4px auto 10px}.askcar .carimg{width:200px;margin:0 auto}.gcar{padding:3px 10px 3px 6px}.gcar .carimg{width:96px}.gtar{margin:8px 2px 0}
 
+/* шкала шрифтов (DESIGN.md): подписи 15, основной текст 16-17, заголовки 18-21; верхние плашки и казино не трогаем */
+.lsub,.mode small,.pbtn small,.sitem small,.ginfo small,.gtar span,.msect small,.offmsg small,.search small,.addr small,.who,.rsum span,.ihead small,.dfee small,.ohint,.orate,.rname span,.ehead span,.chainok,#garage .gnote{font-size:15px!important;line-height:1.3!important}
+.listhead,.paychip,.chip,.sbadge,.bizchip,.mbtn+small{font-size:14px!important}
+.cbadge,#shift small{font-size:13px!important}
+.lrow b{font-size:17px}.lrow.total b{font-size:20px}
+.lrow,.askcard p,.mstatus,.mstats div,.choice,.rline,.rrow,#endcard .line,.kick,.mbtn,.sbuy,.clsbtn,.ginfo em{font-size:16px!important}
+.pbtn b,.mode b,.ginfo b,.msect b,.dfee b,.rtitle{font-size:17px!important}.sitem b{font-size:16px!important}.sbuy{min-width:84px}
+.said,.addr b,.search b,.lrow.total{font-size:18px!important}
+#asktitle,.mhead b{font-size:21px}.ihead b{font-size:20px}.tile{font-size:15px}
+.mode small,.sitem small,.ginfo small,.addr small{margin-top:2px}
 /* казино */
 .ccard{padding:16px 16px 16px!important}
 .chead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.chead>b{font-size:24px;font-weight:800;flex:1}.chead .crown{width:30px;height:30px}
@@ -323,6 +333,20 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .cspin{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:12px;padding:15px;border:none;border-radius:28px;background:var(--y);color:var(--dark);font-size:17px;font-weight:800;font-family:inherit;cursor:pointer}
 .cspin svg{width:20px;height:20px}.cspin:disabled{opacity:.5;cursor:default}
 .ccard .chip2:disabled{opacity:.4;cursor:default}
+
+/* окно «Перерыв» */
+#pause .pcard{padding:18px 16px 16px!important}#pause .pcard .mhead{position:static}#pause .pcard .mhead b{display:block;font-size:21px;font-weight:800}
+.ponline{margin:10px 0 4px;padding:12px 14px;border-radius:18px;background:var(--c)}
+.potop{display:flex;justify-content:space-between;align-items:baseline;line-height:1.2}.potop span{font-size:15px;color:var(--m);font-weight:600}.potop b{font-size:18px;font-weight:800}
+.ponline .pbar{display:block;height:6px;margin-top:9px;background:#E2E5EA}.ponline .pbar i{background:var(--dark)}
+.pact{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;padding:12px 14px 12px 12px;border:1.5px solid var(--line);border-radius:20px;background:#fff;box-shadow:var(--sh2);font-family:inherit;text-align:left;cursor:pointer;color:var(--ink)}
+.pact:active{transform:scale(.99)}.pact:disabled{opacity:.45;cursor:default;transform:none}
+.pico{flex:none;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center}.pico .ico{width:24px;height:24px}
+.pico.blue{background:#E4EDFF;color:#2F6FED}.pico.orange{background:#FFEBD6;color:#E07A12}.pico.green{background:#DDF5E5;color:#16883F}
+.ptxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}.ptop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.ptxt b{font-size:17px;font-weight:700;line-height:1.2}
+.ptags{display:flex;flex-wrap:wrap;gap:5px}.ptags i{display:flex;align-items:center;gap:4px;font-style:normal;font-size:13.5px;font-weight:600;line-height:1;padding:5px 8px;border-radius:999px;background:var(--c);color:#4B5260}
+.ptags svg{width:13px;height:13px}.pprice{flex:none;font-size:16px;font-weight:800;white-space:nowrap}#prest .pprice{color:#16883F}
+.pnote{margin:10px 2px 0!important;font-size:15px;color:#C9363B!important;text-align:left!important}.pnote:empty{display:none}
 </style></head>
 <body>
 <div id="app">
@@ -367,15 +391,10 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 </div>
 <div id="ledger" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Смена <span id="lday"></span></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="lrows"></div></div></div>
 <div id="modes" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Режим работы</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="modelist"></div></div></div>
-<div id="pause" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
-  <p class="lsub" id="pauseinfo"></p>
-  <button class="pbtn" id="prest"><b>Отдохнуть</b><small>20 минут · настроение +12% · бесплатно</small></button>
-  <button class="pbtn" id="plunch"><b>Пообедать</b><small>в ближайшем кафе · 20 минут · настроение +20% · 350 ₽</small></button>
-  <button class="pbtn" id="pfuel"><b>Заправиться</b><small>Ближайшая заправка, до полного бака</small></button>
-  <p class="lsub" id="pausenote"></p></div></div>
+<div id="pause" hidden><div class="askback" data-close="1"></div><div class="askcard pcard"><div class="mhead"><b>Перерыв</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="ponline"><div class="potop"><span>На линии</span><b id="pon"></b></div><span class="pbar"><i id="ponbar"></i></span></div><button class="pact" id="prest"><span class="pico blue" id="prestico"></span><span class="ptxt"><span class="ptop"><b>Отдохнуть</b><span class="pprice">Бесплатно</span></span><span class="ptags"><i>20 мин</i><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path d="M4.4 8.6q2.6 2.2 5.2 0"/></svg><span id="presttag"></span></i></span></span></button><button class="pact" id="plunch"><span class="pico orange" id="plunchico"></span><span class="ptxt"><span class="ptop"><b>Пообедать</b><span class="pprice">350 ₽</span></span><span class="ptags"><i>20 мин</i><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path d="M4.4 8.6q2.6 2.2 5.2 0"/></svg>+20%</i></span></span></button><button class="pact" id="pfuel"><span class="pico green" id="pfuelico"></span><span class="ptxt"><span class="ptop"><b>Заправиться</b><span class="pprice" id="pfuelprice"></span></span><span class="ptags"><i id="pfueltag"></i></span></span></button><p class="pnote" id="pausenote"></p></div></div>
 <div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
-<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Крутить рулетку</button></div></div>
+<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -1145,6 +1164,7 @@ const ICON = {
   briefcase: '<rect x="3.5" y="7.5" width="17" height="11.5" rx="2.5"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 12.5h17"/>',
   nav: '<path d="M20 4 3.5 11l7 2.5L13 20.5z" stroke-linejoin="round"/>',
   fuel: '<rect x="4.5" y="4" width="9" height="16" rx="1.5"/><path d="M6.5 8.5h5M13.5 10l3.2 2v5.5a1.5 1.5 0 0 0 3 0V8L17 5"/>',
+  food: '<path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10M17 21V3c-2.2 1.2-3.5 3.6-3.5 7v3H17"/>',
   coffee: '<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M9 3.5v2.5M12.5 3.5v2.5"/>',
   pin: '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'
 };
@@ -1188,10 +1208,14 @@ $("garage").addEventListener("click", e => {
   });
   $("askicon").className = "askicon askcar"; $("askicon").innerHTML = carImg(c, 200);   // вместо значка - рисунок машины
 });
-function showPause() {   // окно «Пауза»: перерыв, обед, заправка
-  const left = MAX_BREAKS - breaks, idle = state === "idle";
-  $("pauseinfo").textContent = "Настроение " + Math.round(mood) + "% · на линии " + fmtHM(onlineT) + " из " + fmtHM(onlineLimit()) + " · в баке " + Math.round(fuel) + " л";
-  $("prest").disabled = $("plunch").disabled = !idle || left <= 0; $("pfuel").disabled = !idle;
+function showPause() {   // окно «Перерыв»: отдых, обед, заправка
+  const left = MAX_BREAKS - breaks, idle = state === "idle", lim = onlineLimit(), need = Math.max(0, TANK - fuel);
+  $("pon").textContent = fmtHM(onlineT) + " из " + fmtHM(lim); $("ponbar").style.width = Math.min(100, onlineT / lim * 100) + "%";
+  $("prestico").innerHTML = ico("coffee"); $("plunchico").innerHTML = ico("food"); $("pfuelico").innerHTML = ico("fuel");
+  $("presttag").textContent = "+" + (owns("thermos") ? 18 : 12) + "%";
+  $("pfueltag").textContent = need < 1 ? "бак полный" : "+" + Math.round(need) + " л";
+  $("pfuelprice").textContent = need < 1 ? "" : "≈ " + (Math.round(need * FUEL_PRICE / 10) * 10).toLocaleString("ru-RU") + " ₽";
+  $("prest").disabled = $("plunch").disabled = !idle || left <= 0; $("pfuel").disabled = !idle || need < 1;
   $("pausenote").textContent = !idle ? "Сначала завершите заказ." : "";
   $("pause").hidden = false;
 }
@@ -1206,7 +1230,7 @@ function showShop() {
 $("shopbtn").addEventListener("click", showShop);
 // ====== Казино: рулетка (0-36). Деньги меняются на счету, но в заработок за смену не идут ======
 const RED = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
-let betSize = 500, betKind = "red", spinning = false;
+let betSize = 500, spinning = false; const betKinds = new Set(["red"]);   // можно сразу цвет, чётность и зеро
 const numCls = n => n === 0 ? "green" : RED.has(n) ? "red" : "black";
 // Колесо: настоящий порядок номеров европейской рулетки, рисуем в SVG
 const WHEEL = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26], WSTEP = 360 / 37;
@@ -1229,16 +1253,19 @@ function showCasino() {
   $("cbal").textContent = money.toLocaleString("ru-RU") + " ₽";
   $("cbet").textContent = betSize.toLocaleString("ru-RU") + " ₽";
   $("chips").innerHTML = [100, 500, 1000, 5000].map(v => '<button class="chip2' + (v === betSize ? " on" : "") + '" data-chip="' + v + '"' + (spinning || v > money ? " disabled" : "") + ">" + v.toLocaleString("ru-RU") + "</button>").join("");
-  for (const b of document.querySelectorAll(".ccard .bet")) { b.classList.toggle("on", b.dataset.bet === betKind); b.disabled = spinning; }
+  for (const b of document.querySelectorAll(".ccard .bet")) { b.classList.toggle("on", betKinds.has(b.dataset.bet)); b.disabled = spinning; }
   for (const b of document.querySelectorAll("[data-step]")) b.disabled = spinning || (b.dataset.step < 0 ? betSize <= 100 : betSize + 100 > money);
-  $("cspin").disabled = spinning || money < betSize;
+  const total = betSize * betKinds.size;
+  $("cspin").disabled = spinning || !betKinds.size || money < total;
+  $("cspinlbl").textContent = "Крутить рулетку" + (betKinds.size > 1 ? " · " + total.toLocaleString("ru-RU") + " ₽" : "");
   if (!spinning && !$("cres").className.match(/win|lose/)) $("cres").textContent = money < 100 ? "Недостаточно денег для ставки" : "Сделайте ставку и испытайте удачу";
   menuEl.hidden = true; $("casino").hidden = false;
 }
 let spinRaf = 0;
 function spin() {
-  if (spinning || money < betSize) return;
-  const bet = betSize, kind = betKind; money -= bet; spinning = true; updateTop();
+  const kinds = [...betKinds], bet = betSize, total = bet * kinds.length;
+  if (spinning || !kinds.length || money < total) return;
+  money -= total; spinning = true; updateTop();
   $("cres").textContent = "Ставки сделаны"; $("cres").className = "cres"; markPocket(-1); showCasino();
   const n = Math.floor(Math.random() * 37), idx = WHEEL.indexOf(n);
   // Колесо разгоняется и долго плавно тормозит. Шарик бежит по борту навстречу, теряет скорость,
@@ -1264,13 +1291,14 @@ function spin() {
     if (t < T) spinRaf = requestAnimationFrame(frame); else { wheelA %= 360; ballA = wheelA + Rf; drawWheel(); }
   })(t0);
   function done() {
-    const win = kind === "zero" ? n === 0 : n === 0 ? false : kind === "red" ? RED.has(n) : kind === "black" ? !RED.has(n) : kind === "even" ? n % 2 === 0 : n % 2 === 1;
-    const pay = win ? bet * (kind === "zero" ? 36 : 2) : 0;
-    money += pay; ledger.casino = (ledger.casino || 0) + pay - bet;
-    if (pay - bet > 500) moodAdd(5); else if (!win && bet >= 500) moodAdd(-5);   // крупный выигрыш радует, крупный проигрыш расстраивает
+    const wins = k => k === "zero" ? n === 0 : n === 0 ? false : k === "red" ? RED.has(n) : k === "black" ? !RED.has(n) : k === "even" ? n % 2 === 0 : n % 2 === 1;
+    const pay = kinds.reduce((sum, k) => sum + (wins(k) ? bet * (k === "zero" ? 36 : 2) : 0), 0), net = pay - total;
+    money += pay; ledger.casino = (ledger.casino || 0) + net;
+    if (net > 500) moodAdd(5); else if (net <= -500) moodAdd(-5);   // крупный выигрыш радует, крупный проигрыш расстраивает
     spinning = false; updateTop(); saveGame(); markPocket(idx, n);
-    const what = n === 0 ? "зеро" : n + ", " + (RED.has(n) ? "красное" : "чёрное");
-    $("cres").textContent = "Выпало " + what + ". " + (win ? "Выигрыш +" + pay.toLocaleString("ru-RU") : "Проигрыш −" + bet.toLocaleString("ru-RU")) + " ₽";
+    const what = n === 0 ? "зеро" : n + ", " + (RED.has(n) ? "красное" : "чёрное") + ", " + (n % 2 ? "нечёт" : "чёт");
+    const win = net > 0;
+    $("cres").textContent = "Выпало " + what + ". " + (net > 0 ? "Выигрыш +" + net.toLocaleString("ru-RU") + " ₽" : net < 0 ? "Проигрыш −" + (-net).toLocaleString("ru-RU") + " ₽" : "Ставка вернулась");
     $("cres").className = "cres " + (win ? "win" : "lose"); showCasino();
   }
 }
@@ -1281,7 +1309,11 @@ $("casino").addEventListener("click", e => {
   if (spinning) return;
   const c = e.target.closest("[data-chip]"); if (c && !c.disabled) { betSize = +c.dataset.chip; return showCasino(); }
   const st = e.target.closest("[data-step]"); if (st && !st.disabled) { betSize = clampBet(betSize + 100 * st.dataset.step); return showCasino(); }
-  const b = e.target.closest("[data-bet]"); if (b) { betKind = b.dataset.bet; return showCasino(); }
+  const b = e.target.closest("[data-bet]"); if (b) {   // повторное нажатие снимает выбор; красное/чёрное и чёт/нечёт взаимоисключают друг друга
+    const k = b.dataset.bet, pair = { red: "black", black: "red", even: "odd", odd: "even" }[k];
+    if (betKinds.has(k)) betKinds.delete(k); else { betKinds.add(k); if (pair) betKinds.delete(pair); }
+    return showCasino();
+  }
   if (e.target.closest("#cspin")) spin();
 });
 $("shop").addEventListener("click", e => {
