@@ -298,7 +298,8 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 
 #garage .gcard{padding-top:50px}#garage .mhead{top:12px;right:12px}
 #garage .gnote{margin:0 2px 8px}#garage .clsrow{margin:0}
-.ginfo em{margin-top:1px}.gcar{padding:3px 10px 3px 6px}.gcar .carimg{width:96px}.gtar{margin:8px 2px 0}
+.ginfo em{margin-top:1px}
+.askicon.askcar{width:auto;height:auto;border-radius:0;background:none;margin:-4px auto 10px}.askcar .carimg{width:200px;margin:0 auto}.gcar{padding:3px 10px 3px 6px}.gcar .carimg{width:96px}.gtar{margin:8px 2px 0}
 </style></head>
 <body>
 <div id="app">
@@ -409,7 +410,7 @@ const CARS = [   // img - рисунок машины в папке cars/
   { id: "polo",    t: "comfort", name: "Volkswagen Polo", rent: 2450, fuel: 0.066 },
   { id: "octavia", t: "comfort", name: "Skoda Octavia", rent: 2600, fuel: 0.069 },
   { id: "tiggo4",  t: "cplus",   name: "Chery Tiggo 4", rent: 3500, fuel: 0.072, isNew: true },
-  { id: "optima",  t: "cplus",   name: "Kia Optima",    rent: 3600, fuel: 0.077 },
+  { id: "optima",  t: "cplus",   name: "Kia K5",        rent: 3600, fuel: 0.077 },
   { id: "camry",   t: "cplus",   name: "Toyota Camry",  rent: 3700, fuel: 0.078 }
 ];
 // Магазин: покупки для машины, которые остаются навсегда и помогают зарабатывать
@@ -1165,8 +1166,12 @@ $("garage").addEventListener("click", e => {
     if (TORDER.some(x => clsAllowed(x) && next[x])) { clsOn = next; orders = []; previewId = null; saveGame(); renderPanel(); }
     return showGarage();
   }
-  const b = e.target.closest("[data-car]"); if (!b || b.disabled) return;
-  carId = b.dataset.car; carChosen = true; ensureCls(); saveGame(); showGarage(); updateTop();
+  const b = e.target.closest("[data-car]"); if (!b || b.disabled || b.dataset.car === carId) return;
+  const c = CARS.find(x => x.id === b.dataset.car);
+  askConfirm("Выбрать " + c.name + "?", "Списание " + c.rent.toLocaleString("ru-RU") + " ₽ за смену", "Выбрать", () => {
+    carId = c.id; carChosen = true; ensureCls(); saveGame(); showGarage(); updateTop();
+  });
+  $("askicon").className = "askicon askcar"; $("askicon").innerHTML = carImg(c, 200);   // вместо значка - рисунок машины
 });
 function showPause() {   // окно «Пауза»: перерыв, обед, заправка
   const left = MAX_BREAKS - breaks, idle = state === "idle";
@@ -1267,7 +1272,7 @@ menuEl.addEventListener("click", e => { if (e.target.closest("[data-close]")) me
 resetBtn.addEventListener("click", () => askConfirm("Сбросить весь прогресс?", "Деньги, рейтинг, поездки и истории пассажиров начнутся заново. Это нельзя отменить.", "Сбросить", resetGame, "alert"));
 // Своё окно подтверждения: стандартное окно браузера (confirm) на некоторых страницах запрещено и молча отвечает «нет»
 function askConfirm(title, text, okText, onOk, icon) {
-  const el = $("ask"); $("askicon").innerHTML = ico(icon || "briefcase"); $("asktitle").textContent = title; $("asktext").textContent = text; $("askok").textContent = okText;
+  const el = $("ask"); $("askicon").className = "askicon"; $("askicon").innerHTML = ico(icon || "briefcase"); $("asktitle").textContent = title; $("asktext").textContent = text; $("askok").textContent = okText;
   el.hidden = false; askCb = onOk; $("askok").style.background = "";
 }
 let askCb = null;
