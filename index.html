@@ -40,7 +40,7 @@ button{font-family:inherit}
 .grab{display:block;width:40px;height:4px;border-radius:2px;background:#d5d8df;margin:-8px auto 12px}
 #ledger{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#ledger[hidden]{display:none}
 .lrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eceef1;font-size:15px}.lrow span{color:var(--m)}
-.lrow.minus b{color:#c9363b}.lrow.total{border-bottom:none;font-size:17px;padding-top:12px}.lrow.total span{color:var(--ink);font-weight:600}.lsub,.mode small,.askcard p,.ginfo small,.msect small{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.lrow.minus b{color:#c9363b}.lrow.total{border-bottom:none;font-size:17px;padding-top:12px}.lrow.total span{color:var(--ink);font-weight:600}.lsub,.mode small,.askcard p,.ginfo small,.msect small{text-align:left;hyphens:none;-webkit-hyphens:none}
 .lsub{font-size:13px;color:var(--m);margin-top:6px}
 #modes{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#modes[hidden]{display:none}
 .mode{display:block;width:100%;text-align:left;margin-top:10px;padding:12px 14px;border:2px solid #eceef1;border-radius:14px;background:#fff;font-family:inherit;cursor:pointer}
@@ -300,6 +300,28 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 #garage .gnote{margin:0 2px 8px}#garage .clsrow{margin:0}
 .ginfo em{margin-top:1px}
 .askicon.askcar{width:auto;height:auto;border-radius:0;background:none;margin:-4px auto 10px}.askcar .carimg{width:200px;margin:0 auto}.gcar{padding:3px 10px 3px 6px}.gcar .carimg{width:96px}.gtar{margin:8px 2px 0}
+
+/* казино */
+.ccard{padding:16px 16px 16px!important}
+.chead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.chead b{font-size:24px;font-weight:800;flex:1}.chead .crown{width:30px;height:30px}
+.chead .x{width:40px;height:40px;border:none;border-radius:50%;background:var(--c);font-size:22px;line-height:1;color:#4b5563;cursor:pointer}
+.cbal{display:flex;align-items:center;gap:12px;background:var(--dark);color:#fff;border-radius:20px;padding:12px 16px}.cbal .ico{width:30px;height:30px}
+.cbal small{display:block;font-size:12.5px;color:#C9CCD3}.cbal b{display:block;font-size:22px;font-weight:800;line-height:1.15}
+.rwheel{width:224px;margin:-10px auto -8px;transform:perspective(700px) rotateX(30deg);filter:drop-shadow(0 12px 14px rgba(40,20,5,.28))}.rwheel svg{display:block;width:100%}
+.ccard .cres{text-align:center!important;font-weight:600;font-size:15px;color:var(--m);min-height:20px;margin:0 0 2px!important;line-height:1.3!important}.ccard .cres.win{color:#16883F;font-weight:700}.ccard .cres.lose{color:#C9363B;font-weight:700}
+.ccard .gtar{margin:2px 2px 0}
+.cstep{display:flex;align-items:center;gap:8px;margin-top:8px}.cstep b{flex:1;text-align:center;font-size:22px;font-weight:800}
+.cstep button{width:52px;height:42px;border:none;border-radius:16px;background:var(--c);font-size:24px;font-weight:600;line-height:1;color:var(--ink);font-family:inherit;cursor:pointer}.cstep button:disabled{opacity:.4;cursor:default}
+.ccard .chips{margin-top:8px}.ccard .chip2{padding:9px 2px;font-size:14px}
+.ccard .bets{margin-top:10px}.ccard .bet{justify-content:flex-start;gap:10px;padding:8px 12px;border:2px solid transparent;border-radius:18px;text-align:left;background:#F3F4F6}
+.ccard .bet .suit{width:24px;height:24px;flex:none}.ccard .bet span{display:flex;flex-direction:column}.ccard .bet b{font-size:16px;font-weight:700;color:var(--ink)}.ccard .bet small{font-size:12.5px;font-weight:500;color:var(--m)}
+.ccard .bet.red{background:#FDE7E7}.ccard .bet.red b{color:#C42E2E}.ccard .bet.black{background:var(--dark)}.ccard .bet.black b{color:#fff}.ccard .bet.black small{color:#A9AEB8}
+.ccard .bet.zero{background:#E3F6EA}.ccard .bet.zero b{flex:1;color:#16883F}.ccard .bet.zero small{color:#16883F;font-weight:600}
+.z0{font-style:normal;width:30px;height:30px;border-radius:50%;background:#1FAF55;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none}
+.ccard .bet.on{border-color:var(--yd);box-shadow:0 0 0 2px var(--yd)}
+.cspin{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:12px;padding:15px;border:none;border-radius:28px;background:var(--y);color:var(--dark);font-size:17px;font-weight:800;font-family:inherit;cursor:pointer}
+.cspin svg{width:20px;height:20px}.cspin:disabled{opacity:.5;cursor:default}
+.ccard .chip2:disabled{opacity:.4;cursor:default}
 </style></head>
 <body>
 <div id="app">
@@ -352,15 +374,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
   <p class="lsub" id="pausenote"></p></div></div>
 <div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
-<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
-  <div class="wheel"><div class="wnum" id="wnum">?</div><div class="whist" id="whist"></div></div>
-  <p class="lsub" id="cbal" style="text-align:left"></p>
-  <div class="gtar"><b>Ставка</b></div><div class="chips" id="chips"></div>
-  <div class="bets">
-    <button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button>
-    <button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button>
-    <button class="bet zero" data-bet="zero"><b>Зеро</b><small>×36</small></button></div>
-  <p class="cres" id="cres"></p></div></div>
+<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="cbal"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#FFD233" stroke-width="2" stroke-linejoin="round"><path d="M4 7.5h14a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 7.5V6a2 2 0 0 1 2-2h10v3.5"/><path d="M15.5 13.8h4.5"/></svg><div><small>Ваш баланс</small><b id="cbal"></b></div></div><div class="rwheel"><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><svg class="suit" viewBox="0 0 24 24"><path d="M12 2.5 20 12l-8 9.5L4 12z" fill="#D63A3A"/></svg><span><b>Красное</b><small>Выплата ×2</small></span></button><button class="bet black" data-bet="black"><svg class="suit" viewBox="0 0 24 24"><path d="M12 2.5C9 7 4 9.5 4 13.5a4 4 0 0 0 6.6 3L9.5 21.5h5l-1.1-5a4 4 0 0 0 6.6-3c0-4-5-6.5-8-11z" fill="#fff"/></svg><span><b>Чёрное</b><small>Выплата ×2</small></span></button><button class="bet" data-bet="even"><svg class="suit" viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 0-3.4 6.1A4 4 0 1 0 10.8 16L9.5 21.5h5L13.2 16a4 4 0 1 0 2.2-6.9A4 4 0 0 0 12 3z" fill="#1E1F23"/></svg><span><b>Чёт</b><small>Выплата ×2</small></span></button><button class="bet" data-bet="odd"><svg class="suit" viewBox="0 0 24 24"><path d="M12 20.5S3.5 15 3.5 9.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 8.5 2.2C20.5 15 12 20.5 12 20.5z" fill="#D63A3A"/></svg><span><b>Нечёт</b><small>Выплата ×2</small></span></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>Выплата ×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Крутить рулетку</button></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -1191,36 +1205,93 @@ function showShop() {
 $("shopbtn").addEventListener("click", showShop);
 // ====== Казино: рулетка (0-36). Деньги меняются на счету, но в заработок за смену не идут ======
 const RED = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
-let betSize = 500, spinning = false; const rouHist = [];
+let betSize = 500, betKind = "red", spinning = false;
 const numCls = n => n === 0 ? "green" : RED.has(n) ? "red" : "black";
+// Колесо: настоящий порядок номеров европейской рулетки, рисуем в SVG
+const WHEEL = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26], WSTEP = 360 / 37;
+let wheelA = 0, ballA = 0, ballR = 71;
+const wpt = (r, a) => [(100 + r * Math.sin(a * Math.PI / 180)).toFixed(2), (100 - r * Math.cos(a * Math.PI / 180)).toFixed(2)];
+function buildWheel() {
+  let sect = "", nums = "", seps = "";
+  WHEEL.forEach((n, i) => {
+    const a0 = i * WSTEP - WSTEP / 2, a1 = a0 + WSTEP, c = n === 0 ? "#1A9A4B" : RED.has(n) ? "#C8262B" : "#1E1F23";
+    const p = [wpt(92, a0), wpt(92, a1), wpt(64, a1), wpt(64, a0)];
+    sect += '<path d="M' + p[0] + "A92 92 0 0 1 " + p[1] + "L" + p[2] + "A64 64 0 0 0 " + p[3] + 'Z" fill="' + c + '"/>';
+    nums += '<text x="100" y="15.5" transform="rotate(' + (i * WSTEP).toFixed(2) + ' 100 100)">' + n + "</text>";
+    seps += '<path d="M' + wpt(92, a0) + "L" + wpt(64, a0) + '"/>';
+  });
+  let cone = ""; for (let i = 0; i < 8; i++) cone += '<path d="M' + wpt(60, i * 45) + "L" + wpt(24, i * 45) + '"/>';
+  $("rsvg").innerHTML = '<defs><radialGradient id="rwood" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#A55F2C"/><stop offset="1" stop-color="#5A2A0F"/></radialGradient>' +
+    '<radialGradient id="rcone" cx=".45" cy=".4" r=".6"><stop offset="0" stop-color="#B9773F"/><stop offset="1" stop-color="#6B3615"/></radialGradient>' +
+    '<radialGradient id="rgold" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FFF1B8"/><stop offset=".55" stop-color="#E5B84A"/><stop offset="1" stop-color="#A97A1E"/></radialGradient>' +
+    '<radialGradient id="rball" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#C9CDD4"/></radialGradient></defs>' +
+    '<circle cx="100" cy="100" r="99" fill="url(#rwood)"/><circle cx="100" cy="100" r="95" fill="none" stroke="#D9AE4C" stroke-width="1.6"/>' +
+    '<g id="rrot"><circle cx="100" cy="100" r="92.5" fill="#3A1B0A"/>' + sect +
+    '<g fill="#fff" font-size="8.4" font-weight="700" text-anchor="middle" font-family="Inter,sans-serif">' + nums + "</g>" +
+    '<circle cx="100" cy="100" r="78" fill="none" stroke="#D9AE4C" stroke-width=".8"/>' +
+    '<circle cx="100" cy="100" r="77.6" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="13.2" transform="translate(0 0)"/>' +
+    '<g stroke="#D9AE4C" stroke-width=".7">' + seps + "</g>" +
+    '<circle cx="100" cy="100" r="64" fill="url(#rcone)" stroke="#D9AE4C" stroke-width="1.2"/>' +
+    '<g stroke="#D9AE4C" stroke-width="1" opacity=".7">' + cone + "</g>" +
+    '<g fill="url(#rgold)" stroke="#A97A1E" stroke-width=".5"><rect x="97.5" y="70" width="5" height="60" rx="2.5"/><rect x="70" y="97.5" width="60" height="5" rx="2.5"/>' +
+    '<circle cx="100" cy="70" r="4"/><circle cx="100" cy="130" r="4"/><circle cx="70" cy="100" r="4"/><circle cx="130" cy="100" r="4"/><circle cx="100" cy="100" r="15"/></g>' +
+    '<circle cx="100" cy="100" r="7" fill="url(#rgold)" stroke="#A97A1E" stroke-width=".5"/></g>' +
+    '<circle id="rballc" r="4.3" fill="url(#rball)" stroke="#9AA0AA" stroke-width=".4"/>';
+  drawWheel();
+}
+function drawWheel() {
+  $("rrot").setAttribute("transform", "rotate(" + wheelA.toFixed(2) + " 100 100)");
+  const [x, y] = wpt(ballR, ballA); $("rballc").setAttribute("cx", x); $("rballc").setAttribute("cy", y);
+}
+const clampBet = v => Math.max(100, Math.min(v, Math.max(100, Math.floor(money / 100) * 100)));
 function showCasino() {
-  $("cbal").textContent = "На счету " + money.toLocaleString("ru-RU") + " ₽" + (ledger.casino ? " · за смену в казино " + (ledger.casino > 0 ? "+" : "−") + Math.abs(ledger.casino).toLocaleString("ru-RU") + " ₽" : "");
-  $("chips").innerHTML = [100, 500, 1000, 5000].map(v => '<button class="chip2' + (v === betSize ? " on" : "") + '" data-chip="' + v + '">' + v.toLocaleString("ru-RU") + "</button>").join("");
-  for (const b of document.querySelectorAll(".bet")) b.disabled = spinning || money < betSize;
-  $("whist").innerHTML = rouHist.map(n => '<i class="' + numCls(n) + '">' + n + "</i>").join("");
+  if (!$("rrot")) buildWheel();
+  if (!spinning) betSize = clampBet(betSize);
+  $("cbal").textContent = money.toLocaleString("ru-RU") + " ₽";
+  $("cbet").textContent = betSize.toLocaleString("ru-RU") + " ₽";
+  $("chips").innerHTML = [100, 500, 1000, 5000].map(v => '<button class="chip2' + (v === betSize ? " on" : "") + '" data-chip="' + v + '"' + (spinning || v > money ? " disabled" : "") + ">" + v.toLocaleString("ru-RU") + "</button>").join("");
+  for (const b of document.querySelectorAll(".ccard .bet")) { b.classList.toggle("on", b.dataset.bet === betKind); b.disabled = spinning; }
+  for (const b of document.querySelectorAll("[data-step]")) b.disabled = spinning || (b.dataset.step < 0 ? betSize <= 100 : betSize + 100 > money);
+  $("cspin").disabled = spinning || money < betSize;
+  if (!spinning && !$("cres").className.match(/win|lose/)) $("cres").textContent = money < 100 ? "Недостаточно денег для ставки" : "Сделайте ставку и испытайте удачу";
   menuEl.hidden = true; $("casino").hidden = false;
 }
-function spin(kind) {
+function spin() {
   if (spinning || money < betSize) return;
-  const bet = betSize; money -= bet; spinning = true; updateTop(); showCasino();
-  const w = $("wnum"); w.classList.add("spin"); $("cres").textContent = ""; $("cres").className = "cres";
-  let k = 0; const iv = setInterval(() => { const n = Math.floor(Math.random() * 37); w.textContent = n; w.className = "wnum spin " + numCls(n); if (++k > 14) done(); }, 90);
+  const bet = betSize, kind = betKind; money -= bet; spinning = true; updateTop();
+  $("cres").textContent = "Колесо крутится…"; $("cres").className = "cres"; showCasino();
+  const n = Math.floor(Math.random() * 37), idx = WHEEL.indexOf(n);
+  const w0 = wheelA, w1 = wheelA + 720 + Math.random() * 360;          // колесо по часовой
+  const target = w1 + idx * WSTEP, d = (((ballA - target) % 360) + 360) % 360;
+  const b0 = ballA, b1 = ballA - 1440 - d, T = 4600, t0 = performance.now();   // шарик против часовой и падает в лунку с номером
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  (function frame(now) {
+    const t = Math.min(1, (now - t0) / T), e = ease(t);
+    wheelA = w0 + (w1 - w0) * e; ballA = b0 + (b1 - b0) * e;
+    ballR = t < .55 ? 88 : t < .8 ? 88 - 17 * ease((t - .55) / .25) + Math.sin((t - .55) * 60) * 2 * (1 - (t - .55) / .25) : 71;
+    drawWheel();
+    if (t < 1) return requestAnimationFrame(frame);
+    wheelA %= 360; ballA = ((ballA % 360) + 360) % 360; done();
+  })(t0);
   function done() {
-    clearInterval(iv); const n = Math.floor(Math.random() * 37);
     const win = kind === "zero" ? n === 0 : n === 0 ? false : kind === "red" ? RED.has(n) : kind === "black" ? !RED.has(n) : kind === "even" ? n % 2 === 0 : n % 2 === 1;
     const pay = win ? bet * (kind === "zero" ? 36 : 2) : 0;
     money += pay; ledger.casino = (ledger.casino || 0) + pay - bet;
     if (pay - bet > 500) moodAdd(5); else if (!win && bet >= 500) moodAdd(-5);   // крупный выигрыш радует, крупный проигрыш расстраивает
-    w.textContent = n; w.className = "wnum " + numCls(n); rouHist.unshift(n); if (rouHist.length > 8) rouHist.pop();
-    spinning = false; updateTop(); saveGame(); showCasino();
-    $("cres").textContent = win ? "Выигрыш +" + pay.toLocaleString("ru-RU") + " ₽" : "Проигрыш −" + bet.toLocaleString("ru-RU") + " ₽"; $("cres").className = "cres " + (win ? "win" : "lose");
+    spinning = false; updateTop(); saveGame();
+    const what = n === 0 ? "зеро" : n + ", " + (RED.has(n) ? "красное" : "чёрное");
+    $("cres").textContent = "Выпало " + what + ". " + (win ? "Выигрыш +" + pay.toLocaleString("ru-RU") : "Проигрыш −" + bet.toLocaleString("ru-RU")) + " ₽";
+    $("cres").className = "cres " + (win ? "win" : "lose"); showCasino();
   }
 }
-$("casinobtn").addEventListener("click", showCasino);
+$("casinobtn").addEventListener("click", () => { $("cres").className = "cres"; showCasino(); });
 $("casino").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { if (!spinning) $("casino").hidden = true; return; }
-  const c = e.target.closest("[data-chip]"); if (c) { betSize = +c.dataset.chip; return showCasino(); }
-  const b = e.target.closest("[data-bet]"); if (b && !b.disabled) spin(b.dataset.bet);
+  if (spinning) return;
+  const c = e.target.closest("[data-chip]"); if (c && !c.disabled) { betSize = +c.dataset.chip; return showCasino(); }
+  const st = e.target.closest("[data-step]"); if (st && !st.disabled) { betSize = clampBet(betSize + 100 * st.dataset.step); return showCasino(); }
+  const b = e.target.closest("[data-bet]"); if (b) { betKind = b.dataset.bet; return showCasino(); }
+  if (e.target.closest("#cspin")) spin();
 });
 $("shop").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("shop").hidden = true; return; }
