@@ -303,25 +303,27 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 
 /* казино */
 .ccard{padding:16px 16px 16px!important}
-.chead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.chead b{font-size:24px;font-weight:800;flex:1}.chead .crown{width:30px;height:30px}
+.chead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.chead>b{font-size:24px;font-weight:800;flex:1}.chead .crown{width:30px;height:30px}
 .chead .x{width:40px;height:40px;border:none;border-radius:50%;background:var(--c);font-size:22px;line-height:1;color:#4b5563;cursor:pointer}
-.cbal{display:flex;align-items:center;gap:12px;background:var(--dark);color:#fff;border-radius:20px;padding:12px 16px}.cbal .ico{width:30px;height:30px}
+.cbal{background:var(--dark);color:#fff;border-radius:14px;padding:7px 12px;font-size:17px;font-weight:800;white-space:nowrap}
 .cbal small{display:block;font-size:12.5px;color:#C9CCD3}.cbal b{display:block;font-size:22px;font-weight:800;line-height:1.15}
-.rwheel{width:224px;margin:-10px auto -8px;transform:perspective(700px) rotateX(30deg);filter:drop-shadow(0 12px 14px rgba(40,20,5,.28))}.rwheel svg{display:block;width:100%}
+.rwheel{width:250px;margin:-12px auto -10px;transform:perspective(700px) rotateX(30deg);filter:drop-shadow(0 12px 14px rgba(40,20,5,.28))}.rwheel svg{display:block;width:100%}
 .ccard .cres{text-align:center!important;font-weight:600;font-size:15px;color:var(--m);min-height:20px;margin:0 0 2px!important;line-height:1.3!important}.ccard .cres.win{color:#16883F;font-weight:700}.ccard .cres.lose{color:#C9363B;font-weight:700}
-.ccard .gtar{margin:2px 2px 0}
+.ccard .gtar{margin:8px 2px 0}
 .cstep{display:flex;align-items:center;gap:8px;margin-top:8px}.cstep b{flex:1;text-align:center;font-size:22px;font-weight:800}
 .cstep button{width:52px;height:42px;border:none;border-radius:16px;background:var(--c);font-size:24px;font-weight:600;line-height:1;color:var(--ink);font-family:inherit;cursor:pointer}.cstep button:disabled{opacity:.4;cursor:default}
 .ccard .chips{margin-top:8px}.ccard .chip2{padding:9px 2px;font-size:14px}
-.ccard .bets{margin-top:10px}.ccard .bet{justify-content:flex-start;gap:10px;padding:8px 12px;border:2px solid transparent;border-radius:18px;text-align:left;background:#F3F4F6}
-.ccard .bet .suit{width:24px;height:24px;flex:none}.ccard .bet span{display:flex;flex-direction:column}.ccard .bet b{font-size:16px;font-weight:700;color:var(--ink)}.ccard .bet small{font-size:12.5px;font-weight:500;color:var(--m)}
+.ccard .bets{margin-top:10px}.ccard .bet{justify-content:space-between;gap:8px;padding:0 14px;height:46px;border:2px solid transparent;border-radius:16px;background:#F3F4F6}
+.ccard .bet b{font-size:16px;font-weight:700;color:var(--ink)}.ccard .bet small{font-size:14px;font-weight:600;color:var(--m)}
 .ccard .bet.red{background:#FDE7E7}.ccard .bet.red b{color:#C42E2E}.ccard .bet.black{background:var(--dark)}.ccard .bet.black b{color:#fff}.ccard .bet.black small{color:#A9AEB8}
-.ccard .bet.zero{background:#E3F6EA}.ccard .bet.zero b{flex:1;color:#16883F}.ccard .bet.zero small{color:#16883F;font-weight:600}
-.z0{font-style:normal;width:30px;height:30px;border-radius:50%;background:#1FAF55;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none}
+.ccard .bet.zero{justify-content:flex-start;background:#E3F6EA}.ccard .bet.zero b{flex:1;text-align:left;color:#16883F}.ccard .bet.zero small{color:#16883F}
+.z0{font-style:normal;width:26px;height:26px;border-radius:50%;background:#1FAF55;color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
 .ccard .bet.on{border-color:var(--yd);box-shadow:0 0 0 2px var(--yd)}
 .cspin{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:12px;padding:15px;border:none;border-radius:28px;background:var(--y);color:var(--dark);font-size:17px;font-weight:800;font-family:inherit;cursor:pointer}
 .cspin svg{width:20px;height:20px}.cspin:disabled{opacity:.5;cursor:default}
 .ccard .chip2:disabled{opacity:.4;cursor:default}
+.rhl{animation:rglow 1s ease-in-out infinite alternate}@keyframes rglow{from{stroke-opacity:1}to{stroke-opacity:.35}}
+.rhub{transition:opacity .3s}
 </style></head>
 <body>
 <div id="app">
@@ -374,7 +376,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
   <p class="lsub" id="pausenote"></p></div></div>
 <div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
-<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="cbal"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#FFD233" stroke-width="2" stroke-linejoin="round"><path d="M4 7.5h14a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 7.5V6a2 2 0 0 1 2-2h10v3.5"/><path d="M15.5 13.8h4.5"/></svg><div><small>Ваш баланс</small><b id="cbal"></b></div></div><div class="rwheel"><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><svg class="suit" viewBox="0 0 24 24"><path d="M12 2.5 20 12l-8 9.5L4 12z" fill="#D63A3A"/></svg><span><b>Красное</b><small>Выплата ×2</small></span></button><button class="bet black" data-bet="black"><svg class="suit" viewBox="0 0 24 24"><path d="M12 2.5C9 7 4 9.5 4 13.5a4 4 0 0 0 6.6 3L9.5 21.5h5l-1.1-5a4 4 0 0 0 6.6-3c0-4-5-6.5-8-11z" fill="#fff"/></svg><span><b>Чёрное</b><small>Выплата ×2</small></span></button><button class="bet" data-bet="even"><svg class="suit" viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 0-3.4 6.1A4 4 0 1 0 10.8 16L9.5 21.5h5L13.2 16a4 4 0 1 0 2.2-6.9A4 4 0 0 0 12 3z" fill="#1E1F23"/></svg><span><b>Чёт</b><small>Выплата ×2</small></span></button><button class="bet" data-bet="odd"><svg class="suit" viewBox="0 0 24 24"><path d="M12 20.5S3.5 15 3.5 9.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 8.5 2.2C20.5 15 12 20.5 12 20.5z" fill="#D63A3A"/></svg><span><b>Нечёт</b><small>Выплата ×2</small></span></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>Выплата ×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Крутить рулетку</button></div></div>
+<div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>Крутить рулетку</button></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -1235,7 +1237,9 @@ function buildWheel() {
     '<g stroke="#D9AE4C" stroke-width="1" opacity=".7">' + cone + "</g>" +
     '<g fill="url(#rgold)" stroke="#A97A1E" stroke-width=".5"><rect x="97.5" y="70" width="5" height="60" rx="2.5"/><rect x="70" y="97.5" width="60" height="5" rx="2.5"/>' +
     '<circle cx="100" cy="70" r="4"/><circle cx="100" cy="130" r="4"/><circle cx="70" cy="100" r="4"/><circle cx="130" cy="100" r="4"/><circle cx="100" cy="100" r="15"/></g>' +
-    '<circle cx="100" cy="100" r="7" fill="url(#rgold)" stroke="#A97A1E" stroke-width=".5"/></g>' +
+    '<circle cx="100" cy="100" r="7" fill="url(#rgold)" stroke="#A97A1E" stroke-width=".5"/>' +
+    '<path id="rhl" class="rhl" fill="none" stroke="#FFE27A" stroke-width="2.4" stroke-linejoin="round" opacity="0"/></g>' +
+    '<g id="rhub" class="rhub" opacity="0"><circle cx="100" cy="100" r="17" stroke="#FFE27A" stroke-width="2"/><text x="100" y="106" text-anchor="middle" font-size="17" font-weight="800" fill="#fff" font-family="Inter,sans-serif"></text></g>' +
     '<circle id="rballc" r="4.3" fill="url(#rball)" stroke="#9AA0AA" stroke-width=".4"/>';
   drawWheel();
 }
@@ -1256,33 +1260,52 @@ function showCasino() {
   if (!spinning && !$("cres").className.match(/win|lose/)) $("cres").textContent = money < 100 ? "Недостаточно денег для ставки" : "Сделайте ставку и испытайте удачу";
   menuEl.hidden = true; $("casino").hidden = false;
 }
+let spinRaf = 0;
 function spin() {
   if (spinning || money < betSize) return;
   const bet = betSize, kind = betKind; money -= bet; spinning = true; updateTop();
-  $("cres").textContent = "Колесо крутится…"; $("cres").className = "cres"; showCasino();
+  $("cres").textContent = "Ставки сделаны"; $("cres").className = "cres"; markPocket(-1); showCasino();
   const n = Math.floor(Math.random() * 37), idx = WHEEL.indexOf(n);
-  const w0 = wheelA, w1 = wheelA + 720 + Math.random() * 360;          // колесо по часовой
-  const target = w1 + idx * WSTEP, d = (((ballA - target) % 360) + 360) % 360;
-  const b0 = ballA, b1 = ballA - 1440 - d, T = 4600, t0 = performance.now();   // шарик против часовой и падает в лунку с номером
-  const ease = t => 1 - Math.pow(1 - t, 3);
+  // Колесо разгоняется и долго плавно тормозит. Шарик бежит по борту навстречу, теряет скорость,
+  // скатывается вниз, прыгает по перегородкам и застревает в лунке - дальше едет вместе с колесом
+  const T = 9.5, TL = 6.2, TD = 3.4;                         // всё вращение, шарик в лунке, шарик падает с борта (секунды)
+  const W0 = wheelA, w0 = 150 + Math.random() * 40;          // стартовая скорость колеса, градусов в секунду
+  const Wt = t => W0 + w0 * Math.min(t, T) - w0 * Math.min(t, T) ** 2 / (2 * T);
+  const R0 = ballA - wheelA, Rf = idx * WSTEP, D = 360 * 7 + ((((R0 - Rf) % 360) + 360) % 360);   // путь шарика относительно колеса
+  const Rt = t => { const s = Math.min(1, t / TL); return Rf + D * Math.pow(1 - s, 3.2); };
+  const t0 = performance.now(); let shown = false;
+  cancelAnimationFrame(spinRaf);
   (function frame(now) {
-    const t = Math.min(1, (now - t0) / T), e = ease(t);
-    wheelA = w0 + (w1 - w0) * e; ballA = b0 + (b1 - b0) * e;
-    ballR = t < .55 ? 88 : t < .8 ? 88 - 17 * ease((t - .55) / .25) + Math.sin((t - .55) * 60) * 2 * (1 - (t - .55) / .25) : 71;
-    drawWheel();
-    if (t < 1) return requestAnimationFrame(frame);
-    wheelA %= 360; ballA = ((ballA % 360) + 360) % 360; done();
+    const t = (now - t0) / 1000;
+    wheelA = Wt(t); let R = Rt(t);
+    if (t < TD) ballR = 88 - Math.sin(t * 9) * .5;
+    else if (t < TL) {                                       // падение и прыжки по перегородкам
+      const s = (t - TD) / (TL - TD);
+      ballR = 71 + 17 * Math.pow(1 - s, 1.6) * Math.abs(Math.cos(s * 4.5 * Math.PI));
+      R += 7 * (1 - s) * Math.sin(s * 22);
+    } else ballR = 71;
+    ballA = wheelA + R; drawWheel();
+    if (!shown && t >= TL + .3) { shown = true; ballA = wheelA + Rf; done(); }
+    if (t < T) spinRaf = requestAnimationFrame(frame); else { wheelA %= 360; ballA = wheelA + Rf; drawWheel(); }
   })(t0);
   function done() {
     const win = kind === "zero" ? n === 0 : n === 0 ? false : kind === "red" ? RED.has(n) : kind === "black" ? !RED.has(n) : kind === "even" ? n % 2 === 0 : n % 2 === 1;
     const pay = win ? bet * (kind === "zero" ? 36 : 2) : 0;
     money += pay; ledger.casino = (ledger.casino || 0) + pay - bet;
     if (pay - bet > 500) moodAdd(5); else if (!win && bet >= 500) moodAdd(-5);   // крупный выигрыш радует, крупный проигрыш расстраивает
-    spinning = false; updateTop(); saveGame();
+    spinning = false; updateTop(); saveGame(); markPocket(idx, n);
     const what = n === 0 ? "зеро" : n + ", " + (RED.has(n) ? "красное" : "чёрное");
     $("cres").textContent = "Выпало " + what + ". " + (win ? "Выигрыш +" + pay.toLocaleString("ru-RU") : "Проигрыш −" + bet.toLocaleString("ru-RU")) + " ₽";
     $("cres").className = "cres " + (win ? "win" : "lose"); showCasino();
   }
+}
+function markPocket(i, n) {   // подсветить выпавшую лунку и показать номер в центре колеса
+  const hl = $("rhl"), hub = $("rhub");
+  if (i < 0) { hl.setAttribute("opacity", 0); hub.setAttribute("opacity", 0); return; }
+  const a0 = i * WSTEP - WSTEP / 2, a1 = a0 + WSTEP, p = [wpt(92, a0), wpt(92, a1), wpt(64, a1), wpt(64, a0)];
+  hl.setAttribute("d", "M" + p[0] + "A92 92 0 0 1 " + p[1] + "L" + p[2] + "A64 64 0 0 0 " + p[3] + "Z"); hl.setAttribute("opacity", 1);
+  hub.querySelector("circle").setAttribute("fill", n === 0 ? "#1A9A4B" : RED.has(n) ? "#C8262B" : "#1E1F23");
+  hub.querySelector("text").textContent = n; hub.setAttribute("opacity", 1);
 }
 $("casinobtn").addEventListener("click", () => { $("cres").className = "cres"; showCasino(); });
 $("casino").addEventListener("click", e => {
