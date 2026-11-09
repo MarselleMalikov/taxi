@@ -388,6 +388,15 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .kcard .chips{margin-top:8px}.kcard .chip2:disabled{opacity:.4}
 .kbtns{display:flex;gap:8px;margin-top:12px}.kgo{flex:1;padding:15px 10px;border:none;border-radius:28px;background:var(--y);color:var(--dark);font-size:17px;font-weight:800;font-family:inherit;cursor:pointer}.kgo:disabled{opacity:.5}
 .krand{flex:none;padding:15px 16px;border:none;border-radius:28px;background:var(--c);color:var(--ink);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}.krand:disabled{opacity:.5}
+
+/* компактный итог поездки */
+.rmini{padding:12px 14px!important;margin-bottom:10px!important}
+.rmini .rhead{display:flex;align-items:center;gap:10px}.rmini .rtitle{flex:1;font-size:16px!important}
+.rnet{font-size:22px;font-weight:800;color:var(--g);font-variant-numeric:tabular-nums;white-space:nowrap}.rnet.zero{color:#C9363B}
+.rmini .x{flex:none;width:30px;height:30px}
+.rparts{margin-top:4px;font-size:14px;color:var(--m);line-height:1.3}
+.rtags{margin-top:8px}.rtags i.good{background:#DDF5E5;color:#16883F}.rtags i.bad{background:#FDE7E7;color:#C9363B}.rtags .stars{letter-spacing:1px;color:#F5A300}
+.rbad{margin-top:6px;font-size:14px;font-weight:600;color:#C9363B;line-height:1.3}
 </style></head>
 <body>
 <div id="app">
@@ -773,7 +782,7 @@ let carNode = nearest(xs[xs.length >> 1], ys[ys.length >> 1]);
 const car = { x: N[carNode][0], y: N[carNode][1], angle: 0 };
 let route = [];
 
-function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority, rain, goalRides, blockUntil, clsAutoOff })); } catch (e) {} }
+function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority, rain, goalRides, blockUntil, clsAutoOff, carNode })); } catch (e) {} }
 // Детализация смены: всё, что пришло и ушло
 const newLedger = () => ({ fares: 0, tips: 0, fee: 0, rent: 0, fuel: 0, fuelL: 0, fines: 0, km: 0, bonus: 0 });
 // ====== Дождь: примерно раз в 2-3 смены, на 1-3 часа; спрос по всему городу x1.4, машина едет как обычно ======
@@ -837,6 +846,7 @@ function loadGame() {
     Object.assign(affection, d.affection); Object.assign(storyStep, d.storyStep); Object.assign(met, d.met); Object.assign(seen, d.seen); goalReached = !!d.goalReached;
     clock = d.clock || 0; day = d.day || 1; shiftMoney = d.shiftMoney || 0; shiftRides = d.shiftRides || 0; shiftOver = !!d.shiftOver;
     fuel = d.fuel === undefined ? TANK : d.fuel; businessUses = d.businessUses || 0; mood = d.mood === undefined ? 100 : d.mood; breaks = d.breaks || 0; onlineT = d.onlineT || 0; carId = d.carId || "rio"; owned = d.owned || {}; priority = d.priority === undefined ? PRIO_MAX : Math.min(PRIO_MAX, d.priority); if (d.clsOn) clsOn = Object.assign(clsOn, d.clsOn); ensureCls(); carChosen = !!d.carChosen; districtSel = Array.isArray(d.districtSel) && d.districtSel.filter(x => DISTRICTS.some(z => z.id === x)).length ? new Set(d.districtSel.filter(x => DISTRICTS.some(z => z.id === x))) : null; workMode = d.workMode === "flex" ? "flex" : "classic"; ledger = Object.assign(newLedger(), d.ledger || {});
+    if (d.carNode >= 0 && d.carNode < N.length) { carNode = d.carNode; car.x = N[carNode][0]; car.y = N[carNode][1]; }   // машина там, где её оставили
     rain = d.rain === undefined ? rollRain() : d.rain; goalRides = d.goalRides || 0; blockUntil = d.blockUntil || 0; clsAutoOff = d.clsAutoOff || {};
   } catch (e) {}
 }
@@ -1454,7 +1464,7 @@ function showKef() {
   kBet = Math.max(100, Math.min(kBet, Math.max(100, Math.floor(money / 100) * 100)));
   const k = kSel.size, cost = kBet;
   $("ksel").textContent = k + " из " + KMAX; $("kcoef").textContent = "×" + kCoef(k).toFixed(2);
-  $("khint").innerHTML = kPhase === "done" && kLast ? '<b class="' + (kLast.win ? "kwin" : "klose") + '">' + (kLast.win ? "Выигрыш +" + kLast.net.toLocaleString("ru-RU") + " ₽" : "Пустая зона") + "</b>" + (kLast.win ? "Все зоны с кэфом" : "Ставка " + kLast.bet.toLocaleString("ru-RU") + " ₽ сгорела")
+  $("khint").innerHTML = kPhase === "done" && kLast ? '<b class="' + (kLast.win ? "kwin" : "klose") + '">' + (kLast.win ? "Выигрыш +" + kLast.net.toLocaleString("ru-RU") + " ₽" : "Пустая зона") + "</b>" + (kLast.win ? "Все зоны с кэфом" : "Ставка " + kLast.bet.toLocaleString("ru-RU") + " ₽ сгорела") + (kLast.mood ? " · настроение " + (kLast.mood > 0 ? "+" : "−") + Math.abs(kLast.mood) + "%" : "")
     : k ? "<b>Шанс " + Math.round(kChance(k) * 100) + "%</b>Выплата " + Math.floor(kBet * kCoef(k)).toLocaleString("ru-RU") + " ₽" : "Чем больше зон, тем выше коэффициент";
   $("kbet").textContent = kBet.toLocaleString("ru-RU") + " ₽"; $("kmoney").textContent = "на счету " + money.toLocaleString("ru-RU") + " ₽";
   $("kchips").innerHTML = [100, 500, 1000, 5000].map(v => '<button class="chip2' + (v === kBet ? " on" : "") + '" data-kchip="' + v + '"' + (kBusy || v > money ? " disabled" : "") + ">" + v.toLocaleString("ru-RU") + "</button>").join("");
@@ -1480,7 +1490,7 @@ function kPlay() {
     const win = [...kSel].every(id => !kEmpty.has(id)), pay = win ? Math.floor(bet * coef) : 0, net = pay - bet;
     money += pay; ledger.casino = (ledger.casino || 0) + net;
     if (net > 500) moodAdd(5); else if (net <= -500) moodAdd(-5);
-    kLast = { win, net, bet }; kPhase = "done"; kBusy = false; updateTop(); saveGame(); showKef();
+    kLast = { win, net, bet, mood: net > 500 ? 5 : net <= -500 ? -5 : 0 }; kPhase = "done"; kBusy = false; updateTop(); saveGame(); showKef();
   }
 }
 $("kef").addEventListener("click", e => {
@@ -1827,16 +1837,16 @@ shiftBtn.addEventListener("click", () => {
   menuEl.hidden = true; renderPanel();
 });
 const starsStr = n => "★".repeat(n) + "☆".repeat(5 - n);
-function resultHtml() {
+function resultHtml() {   // итог поездки: компактная карточка - сумма, расклад, метки
   if (!lastRide) return ""; const r = lastRide;
-  const mood = r.note || (r.mood > 0 ? "Пассажир остался доволен" : r.mood < 0 ? "Пассажир остался недоволен" : "Спокойная поездка");
-  const fee = r.fee || 0, net = r.price - fee + r.tip, row = (icon, t, bad) => '<div class="rrow' + (bad ? " bad" : "") + '">' + ico(icon) + "<span>" + t + "</span></div>";
-  return '<div class="result"><div class="rhead"><span class="rtitle"><i></i>Поездка завершена</span><button class="x" data-act="closeResult" aria-label="Закрыть">×</button></div>' +
-    '<div class="rsum"><b>+' + net + " ₽</b><span>Заказ " + r.price + " ₽" + (fee ? " · Комиссия " + fee + " ₽" : r.price ? " · без комиссии" : "") + (r.tip > 0 ? " · Чаевые " + r.tip + " ₽" : "") + "</span></div>" +
-    row("star", r.stars > 0 ? 'Оценка <span class="stars">' + starsStr(r.stars) + "</span>" : "Пассажир не оценил поездку") + row("bolt", mood) +
-    (r.wait > 0 ? row("clock", "Заезд и ожидание: +" + r.wait + " ₽") : "") +
-    (r.price > 0 ? row(r.cash || r.offApp ? "cash" : "card", "Оплата: " + (r.offApp ? "наличными мимо приложения" : r.cash ? "наличными" : "картой")) : "") +
-    r.fines.map(f => row("alert", f, true)).join("") + (r.blocked ? row("alert", "Этот пассажир больше не будет с вами ездить", true) : "") + "</div>";
+  const fee = r.fee || 0, net = r.price - fee + r.tip, tag = (t, cls) => '<i' + (cls ? ' class="' + cls + '"' : "") + ">" + t + "</i>";
+  const parts = ["Заказ " + r.price + " ₽"]; if (fee) parts.push("комиссия " + fee + " ₽"); else if (r.price) parts.push("без комиссии"); if (r.tip > 0) parts.push("чаевые " + r.tip + " ₽"); if (r.wait > 0) parts.push("заезд и ожидание " + r.wait + " ₽");
+  const tags = (r.stars > 0 ? tag('<span class="stars">' + starsStr(r.stars) + "</span>") : tag("без оценки")) +
+    (r.price > 0 ? tag(r.offApp ? "наличные мимо приложения" : r.cash ? "наличные" : "картой") : "") +
+    (!r.note ? tag(r.mood > 0 ? "доволен" : r.mood < 0 ? "недоволен" : "спокойно", r.mood > 0 ? "good" : r.mood < 0 ? "bad" : "") : "");
+  const bad = [r.note, ...r.fines, r.blocked ? "Этот пассажир больше не будет с вами ездить" : ""].filter(Boolean).map(t => '<div class="rbad">' + t + "</div>").join("");
+  return '<div class="result rmini"><div class="rhead"><span class="rtitle"><i></i>Поездка завершена</span><b class="rnet' + (net <= 0 ? " zero" : "") + '">' + (net > 0 ? "+" : "") + net + ' ₽</b><button class="x" data-act="closeResult" aria-label="Закрыть">×</button></div>' +
+    '<div class="rparts">' + parts.join(" · ") + '</div><div class="ptags rtags">' + tags + "</div>" + bad + "</div>";
 }
 function orderCardHtml(o) {
   const sg = (o.cls && myCar().t !== "econ" ? '<span class="cbadge' + (o.cls === myCar().t ? " own" : "") + '">' + TARIFFS[o.cls].name + "</span>" : "") +
@@ -2363,6 +2373,9 @@ function drawRain() {
 }
 
 function frame(time) { const dt = Math.min((time - lastTime) / 1000, 0.05); lastTime = time; update(dt); tickAmbient(dt); updateCamera(dt, false); if (!freeCam) $("recenter").hidden = true; draw(); requestAnimationFrame(frame); }
-loadGame(); updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
+loadGame(); camX = car.x; camY = car.y; updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
+// при сворачивании и закрытии сохраняем, чтобы машина осталась на месте
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveGame(); }); window.addEventListener("pagehide", saveGame);
+setInterval(() => { if (state !== "idle" || online) saveGame(); }, 5000);
 </script>
 </body></html>
