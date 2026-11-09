@@ -354,8 +354,6 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .tico{flex:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}.tico .ico{width:22px;height:22px}
 .tico.red{background:#FDE7E7;color:#C9363B}.tico.blue{background:#E4EDFF;color:#2F6FED}.tico.green{background:#DDF5E5;color:#16883F}
 .ttxt{display:flex;flex-direction:column;gap:2px;min-width:0}.ttxt b{font-size:16px;font-weight:700;line-height:1.2}.ttxt small{font-size:14px;color:var(--m);line-height:1.25}
-#rainchip{position:absolute;z-index:2;left:12px;display:flex;align-items:center;gap:6px;padding:6px 11px 6px 8px;border-radius:999px;background:#fff;box-shadow:var(--sh);font-size:14px;font-weight:700;color:#2456C9}
-#rainchip .ico{width:18px;height:18px}
 .goalbar{margin:12px 2px 0;padding:10px 12px;border-radius:16px;background:var(--c)}
 .gtop{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:15px;color:var(--m);line-height:1.2}.gtop b{color:var(--ink);font-weight:700}.gtop em{font-style:normal;font-weight:800;color:#16883F}
 .gline{display:block;height:6px;margin-top:8px;border-radius:3px;background:#E2E5EA;overflow:hidden}.gline i{display:block;height:100%;background:var(--g);border-radius:3px;transition:width .4s}
@@ -401,10 +399,10 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 /* окно случайного события */
 #evt{position:fixed;inset:0;z-index:21;display:flex;align-items:center;justify-content:center;padding:16px}#evt[hidden]{display:none}
 #evt .askicon.blue{background:#E4EDFF;color:#2F6FED}#evt .askicon.red{background:#FDE7E7;color:#C9363B}#evt .askicon.green{background:#DDF5E5;color:#16883F}
-#evttitle{display:block;font-size:21px;line-height:1.2}#evttext{margin:6px 0 14px!important;text-align:center!important}
+#evttitle{display:block;font-size:21px;line-height:1.2}#evttext{margin:6px 0 14px!important;text-align:center!important;line-height:1.3!important}
 .evtbtns{display:flex;flex-direction:column;gap:8px}
-.evtbtns button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:13px 14px;border:none;border-radius:24px;background:var(--c);color:var(--ink);font-family:inherit;font-size:16px;font-weight:700;cursor:pointer}
-.evtbtns button:first-child{background:var(--y);color:var(--dark)}.evtbtns small{font-size:13.5px;font-weight:500;color:#5A6070}
+.evtbtns button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 14px;border:none;border-radius:24px;background:var(--c);color:var(--ink);font-family:inherit;font-size:17px;font-weight:700;line-height:1.2;cursor:pointer}
+.evtbtns button:first-child{background:var(--y);color:var(--dark)}.evtbtns small{font-size:15px;font-weight:500;line-height:1.2;color:#5A6070}.evtbtns small:empty{display:none}
 </style></head>
 <body>
 <div id="app">
@@ -418,7 +416,6 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
       <div class="prow" id="prio" title="Приоритет"><span class="pbar"><i id="priofill"></i></span><span id="prion">50</span></div><span id="modename" hidden></span></button>
   </div>
   <div id="toast" hidden><span class="tico" id="tico"></span><span class="ttxt"><b id="ttitle"></b><small id="tsub"></small></span></div>
-  <div id="rainchip" hidden></div>
   <div id="pickbar" hidden><span>Нажмите на карте, куда вам нужно</span><button id="pickcancel">Отмена</button></div>
   <div id="osm">© участники OpenStreetMap</div>
   <button id="ff" hidden>»&nbsp;×1</button>
@@ -664,16 +661,23 @@ function hexLevel(h) {   // уровень спроса 0..1 сейчас
 }
 // Коэффициент цены: 1.0 - обычная цена. 2.0 почти не бывает: только в самый пик и на короткую поездку утром
 function surgeMult(level) { const m = 1 + 0.8 * Math.pow(level, 2.4); return m < 1.1 ? 1 : Math.round(m * 10) / 10; }
-function surgeHex(x, y) { const [q, r] = hexAt(x, y), h = HEX_BASE.get(hexKey(q, r)); return h ? surgeMult(hexLevel(h)) : 1; }
-const RAIN_CAP = 2.5;   // с дождём коэффициент не выше этого
-function surgeAt(x, y) { const m = surgeHex(x, y) * rainK(); return m < 1.1 ? 1 : Math.min(RAIN_CAP, Math.round(m * 10) / 10); }
+// В дождь у каждой зоны своя надбавка: где спроса не было - x1.2..1.5, где уже был - ещё +0.3..0.5. Не выше x2.5
+const RAIN_CAP = 2.5;
+function hexSurge(h) {
+  const m = surgeMult(hexLevel(h)), lv = Math.min(1, rainLevel() * 1.5); if (!lv) return m;
+  if (h.rr === undefined) h.rr = Math.random();
+  const add = (m > 1 ? 0.3 + 0.2 * h.rr : 0.2 + 0.3 * h.rr) * lv;
+  return Math.min(RAIN_CAP, Math.round((m + add) * 10) / 10);
+}
+function surgeHex(x, y) { const [q, r] = hexAt(x, y), h = HEX_BASE.get(hexKey(q, r)); return h ? hexSurge(h) : 1; }
+function surgeAt(x, y) { const m = surgeHex(x, y); return m < 1.1 ? 1 : m; }
 function orderSurge(x, y, tripKm) {
-  const k = rainK(), fin = v => { v = 1 + (v - 1) * (tripKm > 10 ? 0.6 : 1); return v < 1.1 ? 1 : Math.min(RAIN_CAP, Math.round(v * 10) / 10); };
-  let m = surgeHex(x, y); if (m <= 1) return k > 1 ? fin(k) : 1;
+  const fin = v => { v = 1 + (v - 1) * (tripKm > 10 ? 0.6 : 1); return v < 1.1 ? 1 : Math.min(RAIN_CAP, Math.round(v * 10) / 10); };
+  let m = surgeHex(x, y); if (m <= 1) return 1;
+  if (rainLevel() > 0) return fin(m);                                              // дождь: коэффициент зоны уже с надбавкой
   const h = hourNow();
   if (h < 11 && tripKm < 5 && rushFactor(h) > 0.8) m = Math.min(2, m + 0.15);   // утром короткие поездки дорожают сильнее
   else m = Math.min(1.8, m);
-  if (k > 1) return fin(m * k);                                                   // дождь: спрос выше по всему городу
   if (tripKm > 10) m = 1 + (m - 1) * 0.6;                                          // на дальних поездках надбавка меньше
   return Math.round(m * 10) / 10;
 }
@@ -685,7 +689,7 @@ function drawSurge(vx, vy) {   // рисуем шестиугольники сп
   const byColor = new Map(), labels = [];
   for (let r = r0; r <= r1; r++) for (let q = q0; q <= q1; q++) {
     const h = HEX_BASE.get(hexKey(q, r)); if (!h) continue;
-    const m = surgeMult(hexLevel(h)), col = surgeColor(m); if (!col) continue;
+    const m = hexSurge(h), col = surgeColor(m); if (!col) continue;
     if (!byColor.has(col)) byColor.set(col, []); byColor.get(col).push(h); labels.push([h, m]);
   }
   for (const [col, list] of byColor) {
@@ -1609,7 +1613,7 @@ function evtCrash() {
   showEvt({ icon: "crash", color: "red", title: "ДТП впереди", text: "На обочине разбитая машина, водитель машет рукой." + (pass ? " Пассажир торопится." : ""), choices: [
     { t: "Помочь", sub: "15 минут · настроение +10%", go: () => { evtWait(15); moodAdd(10); if (pass) { current.mood -= 1; current.stars = 4; }
       if (Math.random() < 0.4) { const g = 500; money += g; ledger.tips += g; shiftMoney = shiftNet(); toast("Водитель отблагодарил", "+" + g + " ₽", "goal"); } else toast("Помогли дождаться ДПС", "Водитель сказал спасибо", "goal"); } },
-    { t: "Проехать мимо", sub: "ничего не меняется", go: () => {} }] });
+    { t: "Проехать мимо", sub: "", go: () => {} }] });
 }
 function evtCoffee() {
   showEvt({ icon: "coffee", color: "blue", title: "Кофе на заправке", text: "Пока заливается бак, пахнет свежим кофе.", choices: [
@@ -1665,7 +1669,7 @@ function update(dt) {
     const was = blockLeft(); onlineT += clock - clock0;
     if (was > 0 && blockLeft() <= 0) { blockUntil = 0; toast("Доступ к заказам открыт", "Можно выходить на линию", "star"); saveGame(); renderPanel(); }
   }
-  if (rain && rainShown === 0 && rainLevel() > 0) { rainShown = 1; toast("Начался дождь", "Спрос ×" + RAIN_K + " по всему городу до " + clockTxt(rain.end), "rain"); }
+  if (rain && rainShown === 0 && rainLevel() > 0) { rainShown = 1; toast("Начался дождь", "Спрос вырос по всему городу до " + clockTxt(rain.end), "rain"); }
   if (worked > 0) { onlineT += worked; mood = clamp(mood - worked / 3600 * MOOD_PER_HOUR, 0, 100); updateMood(); }
   if (!shiftOver && (online || blockLeft() > 0) && (mood <= MOOD_END || onlineT >= onlineLimit())) {
     shiftOver = true; shiftEndWhy = mood <= MOOD_END ? "Вы слишком устали, на сегодня хватит" : "Необходимо отдохнуть";
@@ -1882,7 +1886,7 @@ function refuel() {   // на заправке: доливаем до полно
 }
 function placeControls() {   // кнопку ускорения и кнопки карты ставим под самой высокой плашкой - на любом телефоне
   const app = appEl.getBoundingClientRect(), bottom = Math.max(...["ratingpill", "fuelpill", "earn", "menubtn"].map(id => $(id).getBoundingClientRect().bottom)) - app.top;
-  $("ff").style.top = (bottom + 10) + "px"; $("toast").style.top = (bottom + 10) + "px"; $("rainchip").style.top = (bottom + 30) + "px"; $("osm").style.top = (bottom + 6) + "px"; $("mapctl").style.top = (bottom + 58) + "px";
+  $("ff").style.top = (bottom + 10) + "px"; $("toast").style.top = (bottom + 10) + "px"; $("osm").style.top = (bottom + 6) + "px"; $("mapctl").style.top = (bottom + 58) + "px";
 }
 window.addEventListener("resize", placeControls); setTimeout(placeControls, 50); if (document.fonts) document.fonts.ready.then(placeControls);
 function updateTop() {
@@ -2363,7 +2367,7 @@ function draw() {
     ctx.fillStyle = "#5b6370"; ctx.fillText(name, 0, 0); ctx.restore();
   }
   ctx.font = "700 12px Inter, sans-serif"; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.fillStyle = "#2456c9";
-  for (const [h] of labelCache.surge) { const hh = HEX_BASE.get(hexKey(h.q, h.r)), m = hh ? surgeMult(hexLevel(hh)) : 1; if (m <= 1) continue; const t = "×" + m.toFixed(1); ctx.strokeText(t, sx(h.x), sy(h.y)); ctx.fillText(t, sx(h.x), sy(h.y)); }
+  for (const [h] of labelCache.surge) { const hh = HEX_BASE.get(hexKey(h.q, h.r)), m = hh ? hexSurge(hh) : 1; if (m <= 1) continue; const t = "×" + m.toFixed(1); ctx.strokeText(t, sx(h.x), sy(h.y)); ctx.fillText(t, sx(h.x), sy(h.y)); }
   const shown = labelCache.shown.filter(([p]) => sy(p.y) > 92).map(([p, side]) => [p, sx(p.x), sy(p.y), side]);
   for (const [p, x, y] of shown) { ctx.globalAlpha = fade(p); placeIcon(x, y, p.k, p.major); }
   ctx.globalAlpha = 1;
@@ -2418,9 +2422,7 @@ let lastTime = 0;
 // ====== Дождь на карте: потемнение, косые струи разной длины и круги от капель на земле ======
 const drops = [], ripples = []; let rainT = 0;
 function drawRain() {
-  const lv = rainLevel(), chip = $("rainchip");
-  const on = lv > 0 && !endingShown; if (chip.hidden === on) chip.hidden = !on;
-  if (on && chip.dataset.t !== clockTxt(rain.end)) { chip.dataset.t = clockTxt(rain.end); chip.innerHTML = ico("rain") + "Дождь · спрос ×" + RAIN_K + " до " + clockTxt(rain.end); }
+  const lv = rainLevel();
   if (lv <= 0) { drops.length = 0; ripples.length = 0; return; }
   const now = performance.now(), dt = Math.min(0.05, (now - (rainT || now)) / 1000); rainT = now;
   ctx.fillStyle = "rgba(36,56,92," + (0.16 * lv).toFixed(3) + ")"; ctx.fillRect(0, 0, cw, ch);   // небо затянуло - карта темнее и синее
