@@ -1724,7 +1724,7 @@ $("casino").addEventListener("click", e => {
 // ====== Биржа TaxiCoin: свечной график, стакан, лонг и шорт с плечом. Цена - случайное блуждание без перекоса ======
 const TX = { price: 1000, candles: [], cur: null, tick: 0, timer: 0, sum: 1000, lev: 5, pos: null, open0: 1000, last: null, vol: 1 };
 const TX_LEVS = [1, 2, 5, 10, 25], TX_FEE = 0.001, TX_TICKS = 10, TX_KEEP = 36;   // комиссия 0.1% от объёма на вход и на выход; свеча = 10 тиков по 0.15 с
-const TX_SPREAD = 0.0008, TX_FUND = 0.00025;   // спред: покупка дороже, продажа дешевле; плата за удержание - 0.025% объёма за каждую свечу
+const TX_SPREAD = 0.0008, TX_FUND = 0.0006;   // спред: покупка дороже, продажа дешевле; плата за удержание - 0.06% объёма за каждую свечу
 function txStep() {   // новый тик цены: обычный шум, иногда резкий скачок; цена не уходит ниже 50 ₽
   if (Math.random() < 0.004) TX.vol = Math.random() < 0.3 ? 2.5 : 1;   // периоды штиля и бури
   const jump = Math.random() < 0.02 ? (Math.random() - 0.5) * 0.05 : 0;
@@ -1781,7 +1781,7 @@ function txCtl() {
     $("tctl").innerHTML = '<div class="tlab">Сумма</div><div class="kbet"><button data-t2="minus" aria-label="Меньше">−</button><b>' + fmtR(TX.sum) + '</b><button data-t2="plus" aria-label="Больше">+</button>' +
       '<span>×' + TX.lev + " = " + fmtR(TX.sum * TX.lev) + '</span></div><div class="chips">' + [1000, 5000, 10000, 50000].map(v => '<button class="chip2' + (v === TX.sum ? " on" : "") + '" data-tsum="' + v + '"' + (v > money ? " disabled" : "") + ">" + v.toLocaleString("ru-RU") + "</button>").join("") + "</div>" +
       '<div class="tlab">Плечо</div><div class="chips">' + TX_LEVS.map(v => '<button class="chip2' + (v === TX.lev ? " on" : "") + '" data-tlev="' + v + '">×' + v + "</button>").join("") + "</div>" +
-'<p class="tnote">Комиссия 0,1% · спред 0,08% · удержание 0,025% за свечу</p>' +
+'<p class="tnote">Комиссия 0,1% · спред 0,08% · удержание 0,06% за свечу</p>' +
       '<div class="tbtns"><button class="tlong" data-t2="long"' + (money < TX.sum ? " disabled" : "") + '>Лонг<small>цена вырастет</small></button><button class="tshort" data-t2="short"' + (money < TX.sum ? " disabled" : "") + ">Шорт<small>цена упадёт</small></button></div>";
   }
   txHead();
