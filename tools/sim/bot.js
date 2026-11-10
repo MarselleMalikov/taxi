@@ -4,6 +4,8 @@ window.__runShift = function (cfg) {
   frame = function () {}; draw = function () {}; tickAmbient = function () {};
   try { localStorage.clear(); } catch (e) {}
   // свежее состояние игрока
+  M = newMeta(); M.open = { comfort: true, cplus: true };   // в прогонах все тарифы открыты
+  if (cfg.own) { const sc = salonCar(cfg.car + (cfg.year || 2021)); M.own = { model: cfg.car, year: sc.year, price: sc.price, debt: sc.price * 0.8, pay: sc.pay, km: 0, toKm: TO_KM, since: 0, overdueAt: null }; M.drive = "own"; }
   money = 0; rates = Array(150).fill(cfg.rating || 5); carId = cfg.car; carChosen = true; owned = {}; for (const k of cfg.owned || []) owned[k] = true;
   clsOn = { econ: true, comfort: true, cplus: true }; ensureCls();
   workMode = cfg.mode === "flex" ? "flex" : "classic"; districtSel = cfg.mode === "district" ? new Set(cfg.districts) : null;
