@@ -14,15 +14,15 @@ window.__career = function (cfg) {
   const _spend = spend; spend = function (k, a, l) { if (l === "ремонт") log.broke++; if (l === "ТО") log.to++; return _spend(k, a, l); };
   for (let s = 0; s < (cfg.max || 600); s++) {
     // перед сменой: покупка, когда открыт тариф и хватает на взнос с запасом
-    if (!M.own && tariffOpen(tcls) && money >= Math.round(target.price * DOWN) + 15000) {
+    if (!M.cars.length && tariffOpen(tcls) && money >= Math.round(target.price * DOWN) + 15000) {
       const down = Math.round(target.price * DOWN); money -= down;
-      M.own = { model: target.model, year: target.year, price: target.price, debt: target.price - down, pay: target.pay, km: 0, toKm: TO_KM, since: M.careerShifts, overdueAt: null };
-      M.drive = "own"; carId = target.model; log.boughtShift = s; log.boughtReal = log.real;
+      M.cars.push({ uid: M.carSeq++, model: target.model, price: target.price, debt: target.price - down, pay: target.pay, km: 0, toKm: TO_KM, toSkip: false, since: M.careerShifts, overdueAt: null, rented: false, gbo: false });
+      M.drive = "own"; M.driveUid = M.cars[0].uid; carId = target.model; log.boughtShift = s; log.boughtReal = log.real;
     }
-    if (M.own && M.own.debt > 0 && cfg.early && money - 20000 >= M.own.debt) { money -= M.own.debt; M.own.debt = 0; log.earlyPaid = true; }
-    if (M.own && M.own.debt <= 0 && log.paidShift == null) { log.paidShift = s; log.paidReal = log.real; if (cfg.stop) break; }
-    if (!M.own && log.boughtShift != null) log.repo++;
-    if (!M.own) { carId = tariffOpen(tcls) ? target.model : (tariffOpen("comfort") ? "polo" : "rio"); M.drive = "rent"; }
+    const oc = M.cars[0]; if (oc && oc.debt > 0 && cfg.early && money - 20000 >= oc.debt) { money -= oc.debt; oc.debt = 0; log.earlyPaid = true; }
+    if (M.cars[0] && M.cars[0].debt <= 0 && log.paidShift == null) { log.paidShift = s; log.paidReal = log.real; if (cfg.stop) break; }
+    if (!M.cars.length && log.boughtShift != null) log.repo++;
+    if (!M.cars.length) { carId = tariffOpen(tcls) ? target.model : (tariffOpen("comfort") ? "polo" : "rio"); M.drive = "rent"; }
     ensureCls(); clsOn = { econ: true, comfort: true, cplus: true }; ensureCls();
     // смена
     shiftBtn.click(); ff = cfg.ff; let ticks = 0, hadLunch = false;

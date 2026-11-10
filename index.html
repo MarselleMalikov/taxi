@@ -500,6 +500,22 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .msound input{flex:1;min-width:0;accent-color:#1E1F23}.msound input:disabled{opacity:.35}
 .swt{flex:none;position:relative;width:48px;height:28px;border:none;border-radius:14px;background:#C9CDD5;cursor:pointer;transition:background .2s}.swt i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
 .swt.on{background:var(--g)}.swt.on i{transform:translateX(20px)}
+
+/* дом, гараж, ГБО, кресло, VIP */
+#home{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#home[hidden]{display:none}
+.hcard{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:var(--c)}.hcard .pico{width:44px;height:44px}
+.hcar{margin-top:8px;padding:8px 12px 12px;border:1.5px solid var(--line);border-radius:20px}.htop{display:flex;align-items:center;gap:10px}.htop .carimg{width:84px}
+.htop .ctxt b{font-size:16px}.htop .ctxt small{margin-top:3px;line-height:1.3!important}
+.hst{display:inline-block;margin-top:3px;font-style:normal;font-size:13px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--c);color:#4B5260}.hst.on{background:#FFF1C2;color:#5A4500}.hst.rent{background:#DDF5E5;color:#16883F}
+.hbtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hbtns button{flex:1 1 auto;padding:9px 12px;border:none;border-radius:16px;background:var(--c);font-family:inherit;font-size:14.5px;font-weight:700;color:var(--ink);cursor:pointer;white-space:nowrap}
+.hbtns button:first-child{background:var(--y);color:var(--dark)}.hbtns button:disabled{opacity:.4;cursor:default}
+#fuelpill.gbo #fuelfill{background:#2F6FED}
+.kbadge{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:4px 9px;border-radius:999px;background:#FFF1C2;color:#5A4500;margin-left:auto;margin-right:6px}.kbadge .ico{width:15px;height:15px}.kbadge+.abadge,.kbadge+.sbadge{margin-left:0}
+.paychip.kid{background:#FFF1C2;color:#5A4500;margin-right:6px}
+.optrow{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:18px;background:#fff;font-family:inherit;text-align:left;cursor:pointer;color:var(--ink)}
+.optrow>.ico{width:24px;height:24px;flex:none}.optrow span{flex:1}.optrow b{display:block;font-size:16px}.optrow small{display:block;font-size:14px;color:var(--m)}.optrow.on{border-color:var(--yd);background:#FFFBEA}
+.optrow .swt{display:block}.ctag.vip{background:#FFF1C2;color:#5A4500}
+.sown{font-style:normal;font-size:12.5px;font-weight:600;color:#16883F;margin-left:4px}
 </style></head>
 <body>
 <div id="app">
@@ -530,7 +546,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
       <div class="mstatus status off" id="mstatus"><span class="dot"></span><span id="statustext">Не на линии</span></div>
       <button class="mbtn dark" id="offbtn" hidden></button>
       <div class="msound"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><b>Звук</b><input type="range" id="sndvol" min="0" max="100" aria-label="Громкость"><button class="swt" id="sndon" aria-label="Звук вкл/выкл"><i></i></button></div>
-      <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Таксопарк</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Казино</button><button class="mtile" id="achbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="trophy"></svg></span>Достижения</button></div>
+      <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Таксопарк</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Казино</button><button class="mtile" id="homebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="home"></svg></span>Дом</button></div>
       <div class="mstats">
         <div><span>Машина</span><b id="mcar"></b></div>
         <div><span>За смену</span><b id="mshift">0 ₽</b></div>
@@ -552,6 +568,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 <div id="skills" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Навыки</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="skilllist"></div></div></div>
 <div id="phone" hidden><div class="askback" data-close="1"></div><div class="smart"><div class="sscreen"><div class="sbar"><b class="sclock"></b><span class="island"></span><span class="sicons"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="25" y="4" width="2" height="4" rx="1" opacity=".4"/></svg></span></div><div class="sapp" id="phonelist"></div><button class="shome" data-close="1" aria-label="Закрыть"></button></div></div></div>
 <div id="call" hidden><div class="askback"></div><div class="smart"><div class="sscreen dark"><div class="sbar"><b class="sclock"></b><span class="island"></span><span class="sicons"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="25" y="4" width="2" height="4" rx="1" opacity=".4"/></svg></span></div><div class="callbox" id="callbox"></div><span class="shome"></span></div></div></div>
+<div id="home" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Дом</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="homelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button></div></div>
@@ -616,6 +633,7 @@ const SHOP = [
   { id: "charge", name: "Зарядки для пассажиров", price: 1500, text: "Пассажиры чаще оставляют чаевые." },
   { id: "water",  name: "Вода и салфетки в салоне", price: 1000, text: "Оценки 1-2 звезды ставят вдвое реже." },
   { id: "covers", name: "Чехлы на сиденья",       price: 3000, text: "Химчистка салона обходится на 70% дешевле." },
+  { id: "seat",   name: "Детское кресло",         price: 2500, text: "Заказы с детьми: на 10-15% дороже. Включается в «Тарифы и режимы»." },
   { id: "thermos", name: "Термос с кофе",          price: 900,  text: "Отдых поднимает настроение на 18% вместо 12%." }
 ];
 let owned = {};
@@ -1052,7 +1070,8 @@ function loadGame() {
     if (d.carNode >= 0 && d.carNode < N.length) { carNode = MAIN[d.carNode] ? d.carNode : nearest(N[d.carNode][0], N[d.carNode][1]); car.x = N[carNode][0]; car.y = N[carNode][1]; }   // из тупика - на ближайшую нормальную дорогу   // машина там, где её оставили
     if (d.meta) { M = Object.assign(newMeta(), d.meta); M.skills = Object.assign(newMeta().skills, d.meta.skills); M.open = Object.assign(newMeta().open, d.meta.open); }
     else { M.careerShifts = Math.max(0, day - 1); checkUnlock(true); M.pointsSeen = pointsInfo().earned; }   // старое сохранение: стаж по номеру смены
-    if (driveOwn()) carId = M.own.model; else M.drive = "rent";
+    if (M.own) { M.cars = [Object.assign({ uid: M.carSeq++, rented: false, gbo: false }, M.own)]; if (M.drive === "own") M.driveUid = M.cars[0].uid; delete M.own; }   // старое сохранение: одна машина
+    if (driveOwn()) carId = curOwn().model; else M.drive = "rent";
     if (!tariffOpen(myCar().t)) { carId = "rio"; M.drive = "rent"; }   // тариф машины ещё не открыт
     rain = d.rain === undefined ? rollRain() : d.rain; goalRides = d.goalRides || 0; blockUntil = d.blockUntil || 0; clsAutoOff = d.clsAutoOff || {};
   } catch (e) {}
@@ -1238,6 +1257,7 @@ function buildOrder(cx, cy, cnode, pmin, pmax) {
   o.airport = airport;
   o.surge = orderSurge(N[from][0], N[from][1], st.km);            // повышенный спрос в точке подачи
   o.price = Math.round(basePrice * o.surge / 10) * 10; o.surgeAdd = o.price - basePrice;   // надбавка к обычной цене
+  if (seatReady() && Math.random() < 0.21) { o.child = true; o.price = Math.round(o.price * (1.1 + Math.random() * 0.05) / 10) * 10; }   // с ребёнком: +10-15%
   o.runner = o.cash && Math.random() < runnerChance(rating);   // не заплатить может только тот, кто платит наличными
   return o;
 }
@@ -1521,6 +1541,8 @@ const ICON = {
   phone: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
   dice: '<rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="9" cy="9" r=".8" fill="currentColor"/><circle cx="15" cy="15" r=".8" fill="currentColor"/><circle cx="15" cy="9" r=".8" fill="currentColor"/><circle cx="9" cy="15" r=".8" fill="currentColor"/>',
   trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M10.5 13h3l.5 4h-4zM8 20h8"/>',
+  home: '<path d="M4 11 12 4l8 7M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>',
+  seat: '<path d="M8 4h5a3 3 0 0 1 3 3v6H9a3 3 0 0 1-3-3V6a2 2 0 0 1 2-2z"/><path d="M9 13l-2 6h11l-2-6M10 8h4"/>',
   coffee: '<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M9 3.5v2.5M12.5 3.5v2.5"/>',
   pin: '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'
 };
@@ -1767,6 +1789,7 @@ function showModes() {   // тарифы заказов и режим работ
   const card = (id, title, extra, text, dis) => '<button class="mode' + (id === "business" ? " biz" : "") + (m === id ? " on" : "") + '" data-mode="' + id + '"' + (dis ? " disabled" : "") + "><b>" + title + "<i>" + extra + "</i></b><small>" + text + "</small></button>";
   $("modelist").innerHTML =
     '<div class="mlabel">Тарифы заказов</div><div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + (clsAllowed(c) ? "" : " dim") + '" data-cls="' + c + '">' + TARIFFS[c].name + "</button>").join("") + "</div>" +
+    '<div class="mlabel">Опции</div><button class="optrow' + (seatReady() ? " on" : "") + '" data-opt="seat">' + ico("seat") + '<span><b>Детское кресло</b><small>' + (owns("seat") ? "заказы с детьми +10-15%" : "купите в магазине") + '</small></span><i class="swt' + (seatReady() ? " on" : "") + '"><i></i></i></button>' +
     '<div class="mlabel">Режим работы</div>' +
     card("classic", "Классический", "комиссия 25%", "Куда ехать, узнаете после посадки") +
     card("flex", "Гибкий", "+5% комиссии", "Конечная точка видна сразу") +
@@ -1776,6 +1799,10 @@ function showModes() {   // тарифы заказов и режим работ
 }
 $("modes").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("modes").hidden = true; return; }
+  if (e.target.closest('[data-opt="seat"]')) {
+    if (!owns("seat")) return toast("Нет детского кресла", "Купите в магазине", "alert");
+    M.seatOn = !M.seatOn; orders = orders.filter(o => !o.child || M.seatOn); saveGame(); renderPanel(); return showModes();
+  }
   const cb = e.target.closest("[data-cls]");
   if (cb) {   // включить/выключить тариф заказов; хотя бы один должен остаться
     const c = cb.dataset.cls;
@@ -1931,7 +1958,7 @@ function updateInner(dt) {
       // Разговор бывает не всегда: чаще пассажир едет молча. Постоянные пассажиры со своей историей говорят всегда
       const r = +current.rating, g = route.reduce((a, s) => a + s.t, 0) / 60;   // длительность поездки в игровых минутах
       const story = current.passenger.scenes && (storyStep[current.name] || 0) < current.passenger.scenes.length;
-      current.talkAt = []; current.talkIdx = 0;
+      current.talkAt = []; current.talkIdx = 0; current.sickAt = current.child && Math.random() < 0.35 ? 0.25 + Math.random() * 0.45 : null;   // ребёнка может укачать
       if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
       if (g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
       renderPanel();
@@ -1943,6 +1970,10 @@ function updateInner(dt) {
     if (w) w.textContent = stopT < FREE_WAIT ? "Бесплатное ожидание: ещё " + Math.ceil(FREE_WAIT - stopT) + " с" : "Платное ожидание: +" + fee + " ₽";
     if (stopT >= stopDur) { current.waitFee = (current.waitFee || 0) + fee; startLeg(current.to, "toDropoff"); current.rideLen = remainingLen(); }
   } else {
+    if (state === "toDropoff" && current.sickAt && 1 - remainingLen() / current.rideLen >= current.sickAt) {   // укачало: остановка на 5-7 секунд
+      current.sickAt = null; current.stopNode = carNode; current.stopAddr = addrNear(car.x, car.y) || addrOf(carNode); current.stopLabel = "ребёнка укачало";
+      state = "stopped"; stopT = 0; stopDur = 5 + Math.random() * 2; route = []; toast("Ребёнка укачало", "Остановились подышать", "alert"); renderPanel(); return;
+    }
     if (state === "toDropoff" && current.talkIdx < current.talkAt.length && 1 - remainingLen() / current.rideLen >= current.talkAt[current.talkIdx]) {
       startDialogue(current, current.talkIdx > 0); current.talkIdx++; renderPanel(); if (dialogue) return;   // разговор по ходу поездки
     }
@@ -1953,7 +1984,7 @@ function updateInner(dt) {
     while (t > 0 && route.length) {
       const s = route[0], dx = N[s.n][0] - car.x, dy = N[s.n][1] - car.y, d = Math.hypot(dx, dy), v = KMH[s.c] / 3.6 * legScale;
       if (d > 0.01) car.angle = Math.atan2(dy, dx);
-      const moved = Math.min(d, v * t); ledger.km += moved / 1000; checkDps(); fuel = Math.max(0, fuel - moved / 1000 * myCar().fuel * (1 - SK("eco"))); if (driveOwn()) M.own.km += moved / 1000;   // бензин тратится по километражу
+      const moved = Math.min(d, v * t); ledger.km += moved / 1000; checkDps(); fuel = Math.max(0, fuel - moved / 1000 * myCar().fuel * (1 - SK("eco")) * (gboOn() ? 0.5 : 1)); if (driveOwn()) curOwn().km += moved / 1000;   // бензин тратится по километражу
       if (d <= v * t) { car.x = N[s.n][0]; car.y = N[s.n][1]; t -= d / v; carNode = s.n; route.shift(); }
       else { car.x += dx / d * v * t; car.y += dy / d * v * t; t = 0; }
     }
@@ -2077,7 +2108,7 @@ function updateMood() {
 }
 function updateFuel() {
   $("fuelL").textContent = Math.round(fuel) + " л"; $("fuelfill").style.width = (fuel / TANK * 100) + "%";
-  $("fuelpill").classList.toggle("low", fuel < LOW_FUEL * 2);
+  $("fuelpill").classList.toggle("low", fuel < LOW_FUEL * 2); $("fuelpill").classList.toggle("gbo", typeof gboOn === "function" && gboOn());
 }
 function nearestFuel() {   // ближайшая заправка по прямой
   let best = null, bd = 1e18;
@@ -2127,7 +2158,7 @@ function updateTop() {
   updateFuel();
   moneyEl.textContent = money.toLocaleString("ru-RU") + " ₽"; moneyEl.style.color = money < 0 ? "#c9363b" : ""; ridesEl.textContent = ridesDone; ratingEl.textContent = getRating().toFixed(2);
   goalText.textContent = fmtHM(onlineT) + " из " + fmtHM(onlineLimit());
-  $("mcar").textContent = myCar().name + (typeof driveOwn === "function" && driveOwn() ? " · своя" : "") + " · " + myTariff().name;
+  $("mcar").textContent = myCar().name + (typeof driveOwn === "function" && driveOwn() ? " · своя" + (curOwn().gbo ? " · ГБО" : "") : "") + " · " + myTariff().name;
   $("mmoney").textContent = moneyEl.textContent; $("mshift").textContent = shiftMoney.toLocaleString("ru-RU") + " ₽";
 }
 function updateStatus() {
@@ -2159,7 +2190,7 @@ function resultHtml() {   // итог поездки: компактная ка�
 }
 function orderCardHtml(o) {
   const sg = (o.cls && myCar().t !== "econ" ? '<span class="cbadge' + (o.cls === myCar().t ? " own" : "") + '">' + TARIFFS[o.cls].name + "</span>" : "") +
-    (o.airport ? '<span class="abadge">Аэропорт</span>' : "") + (o.surgeAdd > 0 ? '<span class="sbadge">Спрос +' + o.surgeAdd + " ₽</span>" : "");   // полную цену не показываем, только надбавку
+    (o.child ? '<span class="kbadge">' + ico("seat") + "Детское кресло</span>" : "") + (o.airport ? '<span class="abadge">Аэропорт</span>' : "") + (o.surgeAdd > 0 ? '<span class="sbadge">Спрос +' + o.surgeAdd + " ₽</span>" : "");   // полную цену не показываем, только надбавку
   return '<div class="ocard' + (o.id === previewId ? " sel" : "") + (o.surgeAdd > 0 ? " surge" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate' + (+o.rating < 4.6 ? " low" : "") + '">★ ' + o.rating + "</span>" + sg + '</div><div class="addr"><i class="dotA"></i><div><b>' + (o.fromAddr || addrOf(o.from)) + "</b><small>" + (o.fromPlace ? o.fromPlace.n + " · " : "") + "до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
     ' мин</small></div></div>' + (modeNow() !== "classic" ? '<div class="addr"><i class="dotB"></i><div><b>' + (o.toAddr || addrOf(o.to)) + "</b><small>" + (o.place ? o.place.n + " · " : "") + o.tripKm.toFixed(1) + " км</small></div></div>" : "") + '<div class="ohide"></div><div class="obar"><div class="obarfill" id="bar-' + o.id +
     '"></div></div><div class="obtns"><button class="skip" data-act="decline" data-id="' + o.id + '">Пропустить</button><button class="take" data-act="accept" data-id="' + o.id + '">Принять</button></div></div>';
@@ -2170,7 +2201,7 @@ function ridePanelHtml() {
   const S = current.stopNode === undefined ? "" : '<div class="addr"><i class="dotS"></i><div><b>' + (current.stopAddr || addrOf(current.stopNode)) + "</b><small>" + current.stopLabel + "</small></div></div>";
   const chip = state === "toPickup" ? '<span class="chip">Едем к клиенту</span>' : state === "boarding" ? '<span class="chip green">' + (current.late > 0 ? "Пассажир опаздывает…" : "Пассажир садится…") + "</span>" : state === "toStop" ? '<span class="chip">Заезд: ' + current.stopLabel + "</span>" : state === "stopped" ? '<span class="chip">Ждём: ' + current.stopLabel + "</span>" : current.jam ? '<span class="chip red">Пробка</span>' : current.fast ? '<span class="chip green">Объезд</span>' : '<span class="chip green">В пути</span>';
   const known = state !== "toPickup";   // цену и способ оплаты узнаём, только когда приехали к клиенту
-  const pay = (known ? '<span class="paychip">' + (current.cash ? "Наличные" : "Карта") + "</span>" : "") + (current.surgeAdd > 0 ? '<span class="paychip blue">Повышенный спрос +' + current.surgeAdd + " ₽</span>" : "");
+  const pay = (current.child ? '<span class="paychip kid">Детское кресло</span>' : "") + (known ? '<span class="paychip">' + (current.cash ? "Наличные" : "Карта") + "</span>" : "") + (current.surgeAdd > 0 ? '<span class="paychip blue">Повышенный спрос +' + current.surgeAdd + " ₽</span>" : "");
   return '<div class="ridehead">' + chip + '<span class="rprice" id="rprice">' + (known ? liveFare() + " ₽" : "") + '</span></div><div class="rname">Пассажир<span>★ ' + current.rating + "</span></div>" + pay + (state === "toDropoff" ? B + '<button class="kick" data-act="kick">Высадить пассажира</button>' : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : state === "boarding" ? A + '<div class="stopinfo" id="bwait">Бесплатное ожидание: ещё ' + PICK_FREE + " с</div>" : A);
 }
 function chainHtml() {
@@ -2692,7 +2723,8 @@ const newMeta = () => ({
   careerShifts: 0,                       // сколько смен отработано полностью
   open: { comfort: false, cplus: false },// открытые тарифы
   drive: "rent",                         // на чём работаем: "rent" - аренда, "own" - своя машина
-  own: null,                             // своя машина: { model, year, price, debt, pay, km, toKm, since, overdueAt }
+  cars: [], driveUid: null, carSeq: 1,   // свои машины: { uid, model, price, debt, pay, km, toKm, toSkip, since, overdueAt, rented, gbo }
+  seatOn: true,                          // опция «Детское кресло» включена
   loan: null,                            // займ в банке: { left, pay }
   deposit: 0,                            // вклад
   skills: { city: 0, tips: 0, nerves: 0, ace: 0, eco: 0, prio: 0 },
@@ -2733,15 +2765,20 @@ const DOWN = 0.2;
 const SALON_PRICE = { granta: 350000, rio: 400000, polo: 450000, octavia: 550000, tiggo4: 800000, optima: 850000, camry: 900000 };
 const SALON = CARS.map(c => ({ id: c.id, model: c.id, year: "бу", price: SALON_PRICE[c.id], pay: Math.round(c.rent * 0.7 * 15 / 100) * 100 }));   // Б/У машины; платёж = аренда x0.7 за 15 дней
 const salonCar = id => SALON.find(s => s.id === id || String(id).startsWith(s.id));
-const ownWear = () => M.own && M.own.year === 2020 ? 1.5 : 1;   // старые сохранения: машина 2020 года ломается чаще
 const UPKEEP = { econ: { to: 2500, rep: [2500, 4500] }, comfort: { to: 3100, rep: [3000, 5500] }, cplus: { to: 3800, rep: [3800, 7000] } };
 const TO_KM = 6000;   // ТО каждые 6000 км
-const driveOwn = () => M.drive === "own" && !!M.own;
-function ownValue() {   // за сколько можно продать: сразу минус 15%, дальше 0.1% за каждую смену, не ниже половины цены
-  if (!M.own) return 0;
-  return Math.round(M.own.price * Math.max(0.5, 0.85 - 0.001 * (M.careerShifts - M.own.since)) / 1000) * 1000;
-}
-const ownName = () => M.own ? CARS.find(c => c.id === M.own.model).name + ", б/у" : "";
+const GBO_PRICE = 30000, MAX_CARS = 5, RENT_OUT = 0.8;   // ГБО: расход топлива вдвое меньше; сданная машина приносит 80% её аренды за смену
+const ownWear = c => c && c.year === 2020 ? 1.5 : 1;   // старые сохранения: машина 2020 года ломается чаще
+const curOwn = () => M.cars.find(c => c.uid === M.driveUid) || null;
+const driveOwn = () => M.drive === "own" && !!curOwn();
+const gboOn = () => driveOwn() && !!curOwn().gbo;
+const carModel = c => CARS.find(x => x.id === c.model);
+const ownValue = c => Math.round(c.price * Math.max(0.5, 0.85 - 0.001 * (M.careerShifts - c.since)) / 1000) * 1000 + (c.gbo ? 15000 : 0);   // минус 15% сразу, дальше 0.1% за смену
+const ownName = c => (c = c || curOwn()) ? carModel(c).name + ", б/у" : "";
+const rentOutIncome = c => Math.round(carModel(c).rent * RENT_OUT / 10) * 10;
+const totalDebt = () => M.cars.reduce((a, c) => a + c.debt, 0);
+const nextCarPay = () => M.cars.reduce((a, c) => a + Math.min(c.pay, c.debt), 0);
+function dropCar(c) { M.cars = M.cars.filter(x => x !== c); if (M.driveUid === c.uid) { M.driveUid = null; M.drive = "rent"; carId = "rio"; ensureCls(); } }
 
 // ---------- Банк ----------
 const LOAN_RATE = 0.12, LOAN_PARTS = 4, DEPO_DAY = Math.pow(1.1, 1 / 30) - 1;   // займ: +12%, четыре платежа; вклад: 10% в месяц, проценты каждую смену
@@ -2772,27 +2809,30 @@ function checkPoints() {
 function onNewDay() {
   const notes = [];
   if (isPayDay(day)) {
-    if (M.own && M.own.debt > 0) {
-      const p = Math.min(M.own.pay, M.own.debt); money -= p; M.own.debt -= p; notes.push("Платёж за машину −" + fmtR(p));
-      if (money < 0 && M.own.overdueAt == null) M.own.overdueAt = M.careerShifts;
-      if (M.own.debt <= 0) { M.own.debt = 0; toast("Кредит выплачен", ownName() + " теперь полностью ваша", "goal"); }
+    for (const c of M.cars) if (c.debt > 0) {
+      const p = Math.min(c.pay, c.debt); money -= p; c.debt -= p; notes.push("Платёж за " + carModel(c).name + " −" + fmtR(p));
+      if (money < 0 && c.overdueAt == null) c.overdueAt = M.careerShifts;
+      if (c.debt <= 0) { c.debt = 0; toast("Кредит выплачен", ownName(c) + " теперь полностью ваша", "goal"); }
     }
     if (M.loan) { const p = Math.min(M.loan.pay, M.loan.left); money -= p; M.loan.left -= p; notes.push("Платёж по займу −" + fmtR(p)); if (M.loan.left <= 0) M.loan = null; }
   }
   if (M.deposit > 0) { const p = Math.round(M.deposit * DEPO_DAY); M.deposit += p; if (p >= 100) notes.push("Вклад +" + fmtR(p)); }
-  let toAsk = false;
-  if (M.own) {   // ТО каждые 6000 км. Ломается машина только с просроченным ТО; старая - чаще
-    const U = UPKEEP[CARS.find(c => c.id === M.own.model).t];
-    if (driveOwn() && M.own.km >= M.own.toKm && M.own.toSkip && Math.random() < breakChance()) {
+  for (const c of M.cars) if (c.rented) {   // сданная машина: оплата от водителя, пробег; ТО по сроку за ваш счёт
+    const inc = rentOutIncome(c); money += inc; c.km += 300; notes.push(carModel(c).name + " в аренде +" + fmtR(inc));
+    if (c.km >= c.toKm) { const cost = toCost(c); money -= cost; c.toKm = c.km + TO_KM; notes.push("ТО " + carModel(c).name + " −" + fmtR(cost)); }
+  }
+  let toAsk = false; const d = driveOwn() ? curOwn() : null;
+  if (d) {   // ломается только машина с просроченным ТО
+    const U = UPKEEP[carModel(d).t];
+    if (d.km >= d.toKm && d.toSkip && Math.random() < breakChance(d)) {
       const c = Math.round((U.rep[0] + Math.random() * (U.rep[1] - U.rep[0])) / 100) * 100; spend("fines", c, "ремонт"); notes.push("Поломка: ремонт −" + fmtR(c));
     }
-    toAsk = M.own.km >= M.own.toKm;
-    if (M.own.overdueAt != null) {
-      if (money >= 0) M.own.overdueAt = null;
-      else if (M.careerShifts - M.own.overdueAt >= 3) {   // три смены в минусе после платежа - банк забирает машину
-        const nm = ownName(); M.own = null; M.drive = "rent"; carId = "rio"; ensureCls();
-        notes.push("Банк забрал " + nm); toast("Банк забрал машину", nm + ": три смены без денег на счету после платежа", "alert");
-      }
+    toAsk = d.km >= d.toKm;
+  }
+  for (const c of M.cars.slice()) if (c.overdueAt != null) {
+    if (money >= 0) c.overdueAt = null;
+    else if (M.careerShifts - c.overdueAt >= 3) {   // три смены в минусе после платежа - банк забирает машину
+      const nm = ownName(c); dropCar(c); notes.push("Банк забрал " + nm); toast("Банк забрал машину", nm + ": три смены без денег на счету после платежа", "alert");
     }
   }
   scheduleCalls();
@@ -2800,35 +2840,33 @@ function onNewDay() {
   updateTop(); saveGame();
   if (toAsk) setTimeout(askTO, notes.length ? 1200 : 300);
 }
-// Шанс поломки за смену при просроченном ТО: 15% и ещё 3% за каждые 1000 км сверх срока; у машины 2020 года в 1.5 раза выше
-function breakChance() {
-  if (!M.own || M.own.km < M.own.toKm) return 0;
-  return Math.min(0.6, (0.15 + (M.own.km - M.own.toKm) / 1000 * 0.03) * ownWear());
-}
-const toCost = () => UPKEEP[CARS.find(c => c.id === M.own.model).t].to;
-function doTO() { spend("fines", toCost(), "ТО"); M.own.toKm = M.own.km + TO_KM; M.own.toSkip = false; saveGame(); updateTop(); }
+// Шанс поломки за смену при просроченном ТО: 15% и ещё 3% за каждые 1000 км сверх срока
+function breakChance(c) { c = c || curOwn(); if (!c || c.km < c.toKm) return 0; return Math.min(0.6, (0.15 + (c.km - c.toKm) / 1000 * 0.03) * ownWear(c)); }
+const toCost = c => UPKEEP[carModel(c || curOwn()).t].to;
+function doTO(c) { c = c || curOwn(); spend("fines", toCost(c), "ТО"); c.toKm = c.km + TO_KM; c.toSkip = false; saveGame(); updateTop(); }
 function askTO() {
-  if (!M.own || M.own.km < M.own.toKm || evt) return;
-  const over = Math.round(M.own.km - M.own.toKm);
-  showEvt({ icon: "car", color: over > 0 ? "red" : "blue", title: over > 0 ? "ТО просрочено" : "Пора на ТО", text: "Пробег " + Math.round(M.own.km).toLocaleString("ru-RU") + " км." + (over > 0 ? " Просрочено на " + over.toLocaleString("ru-RU") + " км." : "") + " Если отложить, шанс поломки " + Math.round(Math.max(breakChance(), 0.15 * ownWear()) * 100) + "% за смену и растёт.", choices: [
-    { t: "Пройти ТО", sub: fmtR(toCost()) + " · следующее через " + TO_KM.toLocaleString("ru-RU") + " км", go: () => { doTO(); toast("ТО пройдено", "Следующее через " + TO_KM.toLocaleString("ru-RU") + " км", "goal"); } },
-    { t: "Отложить", sub: "риск поломки растёт", go: () => { M.own.toSkip = true; saveGame(); } }] });
+  const c = curOwn(); if (!driveOwn() || c.km < c.toKm || evt) return;
+  const over = Math.round(c.km - c.toKm);
+  showEvt({ icon: "car", color: over > 0 ? "red" : "blue", title: over > 0 ? "ТО просрочено" : "Пора на ТО", text: ownName(c) + ", пробег " + Math.round(c.km).toLocaleString("ru-RU") + " км." + (over > 0 ? " Просрочено на " + over.toLocaleString("ru-RU") + " км." : "") + " Если отложить, шанс поломки " + Math.round(Math.max(breakChance(c), 0.15 * ownWear(c)) * 100) + "% за смену и растёт.", choices: [
+    { t: "Пройти ТО", sub: fmtR(toCost(c)) + " · следующее через " + TO_KM.toLocaleString("ru-RU") + " км", go: () => { doTO(c); toast("ТО пройдено", "Следующее через " + TO_KM.toLocaleString("ru-RU") + " км", "goal"); } },
+    { t: "Отложить", sub: "риск поломки растёт", go: () => { c.toSkip = true; saveGame(); } }] });
 }
-const toLeftTxt = () => !M.own ? "" : M.own.km >= M.own.toKm ? "ТО просрочено" : "до ТО " + Math.round(M.own.toKm - M.own.km).toLocaleString("ru-RU") + " км";
+const toLeftTxt = c => { c = c || curOwn(); return !c ? "" : c.km >= c.toKm ? "ТО просрочено" : "до ТО " + Math.round(c.toKm - c.km).toLocaleString("ru-RU") + " км"; };
 const fmtR = v => Math.round(v).toLocaleString("ru-RU") + " ₽";
 function onShiftEnd() { M.careerShifts++; const o = checkUnlock(true); return o; }
 
 // ---------- Телефон: постоянные пассажиры ----------
-const CALL_WAIT = 15 * 60;   // 15 игровых минут, чтобы поехать за клиентом
-function scheduleCalls() {
+const CALL_WAIT = 15 * 60, MAX_CONTACTS = 12;   // 15 игровых минут, чтобы поехать за клиентом
+const isVip = c => (c.rides || 0) >= 5;
+function scheduleCalls() {   // VIP-клиенты (5+ поездок) звонят чаще
   M.calls = []; M.pending = null;
-  const list = M.contacts.filter(c => c.like > -2); if (!list.length || Math.random() > 0.6) return;
+  const list = M.contacts.filter(c => c.like > -2); if (!list.length || Math.random() > Math.min(0.9, 0.6 + 0.1 * list.filter(isVip).length)) return;
   const n = Math.random() < 0.35 ? 2 : 1;
   for (let i = 0; i < n; i++) M.calls.push(Math.round((1 + Math.random() * 9) * 3600));
   M.calls.sort((a, b) => a - b);
 }
 function askNumber(c) {   // после хорошей поездки пассажир просит номер
-  if (M.contacts.length >= 8 || c.contactId || (c.passenger && c.passenger.scenes) || M.contacts.some(x => x.name === c.name)) return;
+  if (M.contacts.length >= MAX_CONTACTS || c.contactId || (c.passenger && c.passenger.scenes) || M.contacts.some(x => x.name === c.name)) return;
   const ct = { id: M.contactSeq++, name: c.name, node: c.to, addr: c.toAddr || addrOf(c.to), like: 0 };
   setTimeout(() => {
     if (evt || dialogue) return;
@@ -2851,7 +2889,7 @@ function tickPhone() {
   if (!M.calls.length || clock < M.calls[0] || evt || dialogue || endingShown || !online || M.pending) return;
   M.calls.shift();
   const list = M.contacts.filter(c => c.like > -2); if (!list.length) return;
-  const ct = list[Math.floor(Math.random() * list.length)], busy = state !== "idle";
+  const pool = list.flatMap(c => isVip(c) ? [c, c, c] : [c]), ct = pool[Math.floor(Math.random() * pool.length)], busy = state !== "idle";
   showCall(ct, busy);
 }
 function dropContact(ct) { if (ct.like <= -2) { M.contacts = M.contacts.filter(x => x !== ct); toast(ct.name + " удалил ваш номер", "Больше не будет звонить", "alert"); } }
@@ -2862,10 +2900,10 @@ function phoneChipHtml() {
     Math.max(0, Math.ceil((M.pending.deadline - clock) / 60)) + ' мин</span><button data-act="callgo">Поехать</button></div>';
 }
 function makeContactOrder(ct) {
-  const B = randSpot(N[ct.node][0], N[ct.node][1], TRIP_MIN, TRIP_MAX, 0.4);
+  const vip = isVip(ct), B = randSpot(N[ct.node][0], N[ct.node][1], vip ? 6000 : TRIP_MIN, TRIP_MAX, 0.4);   // VIP ездит дальше
   const trip = findPath(ct.node, B.node), pick = findPath(carNode, ct.node); if (!trip || !pick || B.node === ct.node) return null;
   const st = sumPath(trip), sp = sumPath(pick), cls = myCar().t;
-  const price = Math.round((BASE_FARE + st.km * PER_KM) * TARIFFS[cls].mult * 1.2 / 10) * 10;   // постоянный клиент платит на 20% больше
+  const price = Math.round((BASE_FARE + st.km * PER_KM) * TARIFFS[cls].mult * (vip ? 1.35 : 1.2) / 10) * 10;   // постоянный клиент +20%, VIP +35%
   return { id: nextOrderId++, passenger: { name: ct.name }, name: ct.name, fromPlace: { n: "Постоянный клиент", k: "home" }, fromAddr: ct.addr, toAddr: B.addr, rating: "5.00", cash: true, runner: false, late: 0,
     from: ct.node, to: B.node, place: B.place, tripKm: st.km, pickupKm: sp.km, pickupMin: Math.max(1, Math.round(sp.sec / 60)), price, tip: 0, mood: 1, ttl: 99, feeRate: 0, local: false,
     cls, surge: 1, surgeAdd: 0, offApp: true, noFee: true, stars: 0, contactId: ct.id };
@@ -2877,49 +2915,105 @@ function callGo() {
 }
 panel.addEventListener("click", e => { if (e.target.closest('[data-act="callgo"]')) callGo(); });
 function afterRide(c) {   // вызывается после каждой завершённой поездки
-  if (c.contactId) { const ct = M.contacts.find(x => x.id === c.contactId); if (ct) { ct.like = Math.min(5, ct.like + 1); logCall(ct.name, "done"); } }
+  if (c.contactId) {
+    const ct = M.contacts.find(x => x.id === c.contactId);
+    if (ct) {
+      ct.like = Math.min(5, ct.like + 1); ct.rides = (ct.rides || 0) + 1; logCall(ct.name, "done");
+      if (ct.rides === 5) toast(ct.name + " теперь VIP", "Звонит чаще, ездит дальше, платит на 35% больше", "goal");
+      if (ct.like >= 2 && M.contacts.length < MAX_CONTACTS && Math.random() < 0.15) {   // советует вас знакомым
+        const used = new Set(M.contacts.map(x => x.name)), free = NAMES.filter(n => !used.has(n));
+        if (free.length) { const A = randSpot(car.x, car.y, 1500, 7000, 0); const nc = { id: M.contactSeq++, name: free[Math.floor(Math.random() * free.length)], node: A.node, addr: A.addr, like: 0, rides: 0, ref: ct.name };
+          M.contacts.push(nc); toast("Новый контакт: " + nc.name, "По рекомендации: " + ct.name, "goal"); }
+      }
+    }
+  }
   else if (lastRide && lastRide.price > 0 && (lastRide.stars === 5 || (lastRide.stars === 0 && c.mood > 0)) && Math.random() < 0.08) askNumber(c);
   checkPoints();
 }
 
 // ---------- Окна ----------
+
+// ====== Дом: жильё и гараж со своими машинами (за руль, сдать в аренду, ТО, ГБО, продать) ======
+function showHome() {
+  let h = '<div class="hcard"><span class="pico blue">' + ico("home") + '</span><span class="ctxt"><b>Живёте у друга</b><small>Бесплатно. Своё жильё появится позже</small></span></div>' +
+    '<div class="gtar"><b>Гараж</b><span>' + M.cars.length + " из " + MAX_CARS + "</span></div>";
+  if (!M.cars.length) h += '<p class="lsub sal">Своих машин пока нет.</p><button class="bbtn" data-h="salon">Открыть автосалон</button>';
+  const busy = ledger.rent > 0 || ledger.started;
+  for (const c of M.cars) {
+    const m = carModel(c), drv = driveOwn() && curOwn() === c, chip = drv ? '<i class="hst on">за рулём</i>' : c.rented ? '<i class="hst rent">в аренде +' + fmtR(rentOutIncome(c)) + "</i>" : '<i class="hst">свободна</i>';
+    const btn = (k, t, dis) => '<button data-h="' + k + ":" + c.uid + '"' + (dis ? " disabled" : "") + ">" + t + "</button>";
+    h += '<div class="hcar"><div class="htop">' + carImg(m, 96) + '<span class="ctxt"><b>' + m.name + "</b>" + chip + "<small>" +
+      (c.debt > 0 ? "кредит " + fmtR(c.debt) : "кредит выплачен") + " · " + Math.round(c.km).toLocaleString("ru-RU") + " км · " + toLeftTxt(c) + (c.gbo ? " · ГБО" : "") + "</small></span></div><div class=\"hbtns\">" +
+      (drv || c.rented ? "" : btn("drive", "За руль", busy)) +
+      (M.cars.length >= 2 && !drv ? (c.rented ? btn("back", "Вернуть") : btn("rent", "Сдать в аренду")) : "") +
+      (c.km >= c.toKm && !c.rented ? btn("to", "ТО · " + fmtR(toCost(c))) : "") +
+      (c.gbo ? "" : btn("gbo", "ГБО · " + fmtR(GBO_PRICE))) +
+      (drv && busy ? "" : btn("sell", "Продать")) + "</div></div>";
+  }
+  if (M.cars.length === 1) h += '<p class="lsub sal">Купите вторую машину, и одну из них можно будет сдавать в аренду другому водителю.</p>';
+  $("homelist").innerHTML = h; $("home").hidden = false; menuEl.hidden = true;
+}
+$("home").addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { $("home").hidden = true; return; }
+  const b = e.target.closest("[data-h]"); if (!b || b.disabled) return;
+  if (b.dataset.h === "salon") { $("home").hidden = true; return showSalon(); }
+  const [k, id] = b.dataset.h.split(":"), c = M.cars.find(x => x.uid === +id); if (!c) return;
+  if (k === "drive") { if (driveCar(c)) toast("Вы за рулём", ownName(c), "goal"); }
+  else if (k === "rent") { c.rented = true; toast(ownName(c) + " сдана в аренду", "+" + fmtR(rentOutIncome(c)) + " каждую смену, пробег 300 км", "goal"); }
+  else if (k === "back") { c.rented = false; toast("Машина вернулась в гараж", ownName(c), "goal"); }
+  else if (k === "to") { if (money < toCost(c)) return toast("Не хватает на ТО", "Нужно " + fmtR(toCost(c)), "alert"); doTO(c); toast("ТО пройдено", "Следующее через " + TO_KM.toLocaleString("ru-RU") + " км", "goal"); }
+  else if (k === "gbo") {
+    if (money < GBO_PRICE) return toast("Не хватает на ГБО", "Нужно " + fmtR(GBO_PRICE), "alert");
+    return askConfirm("Поставить ГБО?", ownName(c) + ": газ вместо бензина, топливо тратится вдвое медленнее. " + fmtR(GBO_PRICE) + ".", "Поставить", () => { money -= GBO_PRICE; c.gbo = true; saveGame(); updateTop(); updateFuel(); showHome(); toast("ГБО установлено", ownName(c), "goal"); }, "fuel");
+  }
+  else if (k === "sell") {
+    const v = ownValue(c), get = v - c.debt;
+    return askConfirm("Продать " + ownName(c) + "?", "Оценка " + fmtR(v) + (c.debt > 0 ? ", минус долг " + fmtR(c.debt) : "") + ". Вы получите " + fmtR(get) + ".", "Продать", () => {
+      money += get; dropCar(c); saveGame(); updateTop(); renderPanel(); showHome(); toast("Машина продана", (get >= 0 ? "+" : "") + fmtR(get), "goal");
+    }, "car");
+  }
+  saveGame(); updateTop(); renderPanel(); showHome();
+});
+const seatReady = () => owns("seat") && M.seatOn;
 const lockText = s => [s.shifts + " смен" + (s.shifts < 5 ? "ы" : ""), s.rides + " поездок", s.rating ? "рейтинг " + s.rating.toFixed(1) : ""].filter(Boolean).join(" · ");
 const stageFor = cls => STAGES.find(s => s.cls === cls);
-function showGarage() {   // аренда или своя машина; сменить можно только до выхода на линию
+function showGarage() {   // своя или арендная машина; сменить можно только до выхода на линию
   enforceRatingCls(false);
   let html = "";
-  if (M.own) {
-    const c = CARS.find(x => x.id === M.own.model);
-    html += '<div class="gtar"><b>Своя машина</b></div><button class="gcar' + (driveOwn() ? " on" : "") + '" data-own="1">' + carImg(c, 112) + '<span class="ginfo"><b>' + ownName() + "</b><em>" +
-      (M.own.debt > 0 ? "кредит " + fmtR(M.own.debt) : "без аренды") + " · " + toLeftTxt() + "</em></span></button>";
+  if (M.cars.length) {
+    html += '<div class="gtar"><b>Свои машины</b></div>';
+    for (const c of M.cars) html += '<button class="gcar' + (driveOwn() && curOwn() === c ? " on" : "") + (c.rented ? " lock" : "") + '" data-own="' + c.uid + '">' + carImg(carModel(c), 112) + '<span class="ginfo"><b>' + ownName(c) + "</b><em>" +
+      (c.rented ? "сдана в аренду" : (c.debt > 0 ? "кредит " + fmtR(c.debt) : "без аренды") + " · " + toLeftTxt(c)) + "</em></span></button>";
   }
   for (const t of TORDER) {
     const open = tariffOpen(t);
-    html += '<div class="gtar"><b>' + TARIFFS[t].name + (M.own ? " · аренда" : "") + "</b>" + (open ? "" : "<span>" + lockText(stageFor(t)) + "</span>") + "</div>";
+    html += '<div class="gtar"><b>' + TARIFFS[t].name + (M.cars.length ? " · аренда" : "") + "</b>" + (open ? "" : "<span>" + lockText(stageFor(t)) + "</span>") + "</div>";
     for (const c of CARS.filter(c => c.t === t)) html += '<button class="gcar' + (!driveOwn() && c.id === carId ? " on" : "") + (open ? "" : " lock") + '" ' + (open ? 'data-car="' + c.id + '"' : 'data-lock="' + t + '"') + ">" + carImg(c, 112) +
       '<span class="ginfo"><b>' + c.name + "</b><em>" + c.rent.toLocaleString("ru-RU") + " ₽</em></span></button>";
   }
   $("garagelist").innerHTML = html; $("garage").hidden = false; menuEl.hidden = true;
 }
+function driveCar(c) {   // сесть за руль своей машины
+  if (driveOwn() && curOwn() === c) return true;
+  if (c.rented) { toast("Машина сдана в аренду", "Верните её в разделе «Дом»", "alert"); return false; }
+  if (ledger.rent > 0 || ledger.started) { toast("Сменить автомобиль нельзя", "Можно в начале следующей смены", "alert"); return false; }
+  if (!tariffOpen(carModel(c).t)) { toast("Тариф ещё закрыт", "Машина выше открытого тарифа", "alert"); return false; }
+  M.drive = "own"; M.driveUid = c.uid; carId = c.model; carChosen = true; ensureCls(); enforceRatingCls(false); saveGame(); updateTop(); renderPanel(); return true;
+}
 $("garage").addEventListener("click", e => {
   const lk = e.target.closest("[data-lock]");
-  if (lk) return toast("Тариф " + TARIFFS[lk.dataset.lock].name + " закрыт", lockText(stageFor(lk.dataset.lock)), "alert");
-  if (e.target.closest("[data-own]")) {
-    if (driveOwn()) return;
-    if (ledger.rent > 0 || ledger.started) return toast("Сменить автомобиль нельзя", "Можно в начале следующей смены", "alert");
-    if (!tariffOpen(CARS.find(c => c.id === M.own.model).t)) return toast("Тариф ещё закрыт", "Своя машина выше открытого тарифа", "alert");
-    M.drive = "own"; carId = M.own.model; carChosen = true; ensureCls(); enforceRatingCls(false); saveGame(); showGarage(); updateTop(); renderPanel();
-  }
+  if (lk && lk.dataset.lock) return toast("Тариф " + TARIFFS[lk.dataset.lock].name + " закрыт", lockText(stageFor(lk.dataset.lock)), "alert");
+  const ob = e.target.closest("[data-own]");
+  if (ob) { const c = M.cars.find(x => x.uid === +ob.dataset.own); if (c && driveCar(c)) showGarage(); }
 });
 function showSalon() {
-  let html = '<p class="lsub sal">Первоначальный взнос 20%, оставшаяся сумма в кредит.</p>';
-  if (M.own) html += '<div class="ownbox"><div><b>' + ownName() + '</b><small>' + (M.own.debt > 0 ? "Кредит " + fmtR(M.own.debt) + " · платёж " + fmtR(M.own.pay) : "Кредит выплачен") + " · пробег " + Math.round(M.own.km).toLocaleString("ru-RU") + " км · " + toLeftTxt() + '</small></div>' + (M.own.km >= M.own.toKm ? '<button class="sbuy" data-to="1">ТО</button>' : "") + '<button class="sbuy" data-sell="1">Продать</button></div>';
+  let html = '<p class="lsub sal">Первоначальный взнос 20%, оставшаяся сумма в кредит.' + (M.cars.length ? " Свои машины — в разделе «Дом»." : "") + "</p>";
   for (const t of TORDER) {
     const open = tariffOpen(t);
     html += '<div class="gtar"><b>' + TARIFFS[t].name + "</b>" + (open ? "" : "<span>" + lockText(stageFor(t)) + "</span>") + "</div>";
     for (const c of CARS.filter(c => c.t === t)) {
-      const v = SALON.filter(s => s.model === c.id);
-      html += '<div class="scar' + (open ? "" : " lock") + '">' + carImg(c, 112) + '<span class="ginfo"><b>' + c.name + "</b>" + v.map(s => '<button class="syear" data-buy="' + s.id + '"' + (open ? "" : ' data-lock="' + t + '"') + "><i>Б/У</i>" + fmtR(s.price) + "</button>").join("") + "</span></div>";
+      const v = SALON.filter(s => s.model === c.id), n = M.cars.filter(x => x.model === c.id).length;
+      html += '<div class="scar' + (open ? "" : " lock") + '">' + carImg(c, 112) + '<span class="ginfo"><b>' + c.name + (n ? ' <i class="sown">у вас ' + n + "</i>" : "") + "</b>" + v.map(s => '<button class="syear" data-buy="' + s.id + '"' + (open ? "" : ' data-lock="' + t + '"') + "><i>Б/У</i>" + fmtR(s.price) + "</button>").join("") + "</span></div>";
     }
   }
   $("salonlist").innerHTML = html; $("salon").hidden = false; menuEl.hidden = true;
@@ -2927,22 +3021,15 @@ function showSalon() {
 $("salon").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("salon").hidden = true; return; }
   const lk = e.target.closest("[data-lock]"); if (lk) return toast("Тариф " + TARIFFS[lk.dataset.lock].name + " закрыт", lockText(stageFor(lk.dataset.lock)), "alert");
-  if (e.target.closest("[data-to]")) { if (money < toCost()) return toast("Не хватает на ТО", "Нужно " + fmtR(toCost()), "alert"); doTO(); toast("ТО пройдено", "Следующее через " + TO_KM.toLocaleString("ru-RU") + " км", "goal"); return showSalon(); }
-  if (e.target.closest("[data-sell]")) {
-    const v = ownValue(), get = v - M.own.debt;
-    askConfirm("Продать " + ownName() + "?", "Оценка " + fmtR(v) + (M.own.debt > 0 ? ", минус долг " + fmtR(M.own.debt) : "") + ". Вы получите " + fmtR(get) + ".", "Продать", () => {
-      money += get; if (driveOwn()) { M.drive = "rent"; carId = "rio"; ensureCls(); } M.own = null; saveGame(); updateTop(); showSalon(); toast("Машина продана", (get >= 0 ? "+" : "") + fmtR(get), "goal");
-    }, "car");
-    return;
-  }
   const b = e.target.closest("[data-buy]"); if (!b) return;
   const s = salonCar(b.dataset.buy), c = CARS.find(x => x.id === s.model), down = Math.round(s.price * DOWN);
-  if (M.own) return toast("Сначала продайте свою машину", "Своя машина может быть только одна", "alert");
+  if (M.cars.length >= MAX_CARS) return toast("Гараж заполнен", "Не больше " + MAX_CARS + " машин", "alert");
   if (money < down) return toast("Не хватает на взнос", "Нужно " + fmtR(down) + ", на счету " + fmtR(money), "alert");
   askConfirm("Купить " + c.name + "?", "Взнос " + fmtR(down) + " сейчас. Кредит " + fmtR(s.price - down) + ": " + fmtR(s.pay) + " 1 и 15 числа, примерно " + Math.ceil((s.price - down) / s.pay) + " платежей.", "Купить", () => {
-    money -= down; M.own = { model: s.model, year: s.year, price: s.price, debt: s.price - down, pay: s.pay, km: 0, toKm: TO_KM, since: M.careerShifts, overdueAt: null };
-    if (!(ledger.rent > 0 || ledger.started)) { M.drive = "own"; carId = s.model; carChosen = true; ensureCls(); }
-    saveGame(); updateTop(); renderPanel(); showSalon(); toast("Машина ваша", c.name + ", б/у" + (M.drive === "own" ? "" : " · сесть за руль можно со следующей смены"), "goal");
+    money -= down; const nc = { uid: M.carSeq++, model: s.model, year: s.year, price: s.price, debt: s.price - down, pay: s.pay, km: 0, toKm: TO_KM, toSkip: false, since: M.careerShifts, overdueAt: null, rented: false, gbo: false };
+    M.cars.push(nc);
+    if (!driveOwn() && !(ledger.rent > 0 || ledger.started) && tariffOpen(c.t)) { M.drive = "own"; M.driveUid = nc.uid; carId = s.model; carChosen = true; ensureCls(); }
+    saveGame(); updateTop(); renderPanel(); showSalon(); toast("Машина ваша", c.name + ", б/у" + (M.driveUid === nc.uid ? "" : " · в гараже, раздел «Дом»"), "goal");
   });
   $("askicon").className = "askicon askcar"; $("askicon").innerHTML = carImg(c, 200);
 });
@@ -2954,8 +3041,8 @@ function payChips(kind, debt) {   // погасить досрочно: 10 ты�
 function showBank() {
   const row = (t, v) => '<div class="lrow"><span>' + t + "</span><b>" + v + "</b></div>";
   let h = '<p class="lsub sal">На счету ' + fmtR(money) + ". Платежи 1 и 15 числа, ближайший " + dateTxt(nextPayDay(day + 1)) + ".</p>";
-  if (M.own && M.own.debt > 0) h += '<div class="bsec"><b>Кредит за машину</b>' + row("Осталось", fmtR(M.own.debt)) + row("Платёж", fmtR(Math.min(M.own.pay, M.own.debt)) + " · ещё " + Math.ceil(M.own.debt / M.own.pay)) +
-    (M.own.overdueAt != null ? '<p class="bwarn">Просрочка: пополните счёт, иначе через ' + Math.max(0, 3 - (M.careerShifts - M.own.overdueAt)) + " смены банк заберёт машину</p>" : "") + payChips("car", M.own.debt) + "</div>";
+  for (const c of M.cars) if (c.debt > 0) h += '<div class="bsec"><b>Кредит: ' + carModel(c).name + "</b>" + row("Осталось", fmtR(c.debt)) + row("Платёж", fmtR(Math.min(c.pay, c.debt)) + " · ещё " + Math.ceil(c.debt / c.pay)) +
+    (c.overdueAt != null ? '<p class="bwarn">Просрочка: пополните счёт, иначе через ' + Math.max(0, 3 - (M.careerShifts - c.overdueAt)) + " смены банк заберёт машину</p>" : "") + payChips("car:" + c.uid, c.debt) + "</div>";
   h += '<div class="bsec"><b>Займ</b>';
   if (M.loan) h += row("Осталось вернуть", fmtR(M.loan.left)) + row("Платёж", fmtR(Math.min(M.loan.pay, M.loan.left))) + payChips("loan", M.loan.left);
   else h += '<p class="bnote">4 платежа, переплата 12%. Доступно до ' + fmtR(loanLimit()) + '</p><div class="chips">' + [10000, 30000, 50000, 100000].map(v => '<button class="chip2" data-loan="' + v + '"' + (v > loanLimit() ? " disabled" : "") + ">" + (v / 1000) + " тыс.</button>").join("") + "</div>";
@@ -2968,9 +3055,9 @@ $("bank").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("bank").hidden = true; return; }
   const b = e.target.closest("button"); if (!b || b.disabled) return;
   if (b.dataset.pay) {   // досрочное погашение части или всего долга
-    const car = b.dataset.pay === "car", debt = car ? M.own.debt : M.loan.left, v = b.dataset.v === "all" ? debt : Math.min(+b.dataset.v, debt);
+    const own = b.dataset.pay.startsWith("car:") ? M.cars.find(x => x.uid === +b.dataset.pay.slice(4)) : null, car = !!own, debt = car ? own.debt : M.loan.left, v = b.dataset.v === "all" ? debt : Math.min(+b.dataset.v, debt);
     money -= v;
-    if (car) { M.own.debt -= v; if (money >= 0) M.own.overdueAt = null; if (M.own.debt <= 0) { M.own.debt = 0; toast("Кредит погашен", ownName() + " полностью ваша", "goal"); } else toast("Внесено " + fmtR(v), "Осталось " + fmtR(M.own.debt), "goal"); }
+    if (car) { own.debt -= v; if (money >= 0) own.overdueAt = null; if (own.debt <= 0) { own.debt = 0; toast("Кредит погашен", ownName(own) + " полностью ваша", "goal"); } else toast("Внесено " + fmtR(v), "Осталось " + fmtR(own.debt), "goal"); }
     else { M.loan.left -= v; if (M.loan.left <= 0) { M.loan = null; toast("Займ погашен", "", "goal"); } else toast("Внесено " + fmtR(v), "Осталось " + fmtR(M.loan.left), "goal"); }
   }
   else if (b.dataset.bank === "withdraw") { money += M.deposit; M.deposit = 0; }
@@ -3006,12 +3093,12 @@ const CALLK = { go: ["Поехали", ""], done: ["Отвезли", "ok"], no: 
 function logCall(name, k) { M.callLog = (M.callLog || []).concat([{ n: name, k, d: day }]).slice(-20); }
 function showPhone() {
   document.querySelectorAll(".sclock").forEach(e => e.textContent = clockTxt(clock));
-  let h = '<div class="shead"><b>Контакты</b><span>' + M.contacts.length + " из 8</span></div>";
+  let h = '<div class="shead"><b>Контакты</b><span>' + M.contacts.length + " из " + MAX_CONTACTS + "</span></div>";
   if (M.pending) { const ct = M.contacts.find(x => x.id === M.pending.id); if (ct) h += '<div class="swait">' + ct.name + " ждёт вас. Нажмите «Поехать» на главном экране</div>"; }
   if (!M.contacts.length) h += '<p class="sempty">Пока никого. Пассажиры, которым понравилась поездка, иногда просят номер. Потом звонят и платят на 20% больше, наличными без комиссии.</p>';
   for (const c of M.contacts) {
-    const rel = c.like >= 3 ? "постоянный" : c.like >= 1 ? "доволен" : c.like >= 0 ? "знакомый" : "обижен";
-    h += '<div class="srow">' + avatar(c.name) + '<span class="ctxt"><b>' + c.name + "</b><small>" + c.addr + '</small></span><i class="ctag' + (c.like < 0 ? " bad" : "") + '">' + rel + "</i></div>";
+    const rel = isVip(c) ? "VIP" : c.like >= 3 ? "постоянный" : c.like >= 1 ? "доволен" : c.like >= 0 ? "знакомый" : "обижен";
+    h += '<div class="srow">' + avatar(c.name) + '<span class="ctxt"><b>' + c.name + "</b><small>" + (c.ref ? "от " + c.ref + " · " : "") + (c.rides || 0) + " поездок · " + c.addr + '</small></span><i class="ctag' + (c.like < 0 ? " bad" : isVip(c) ? " vip" : "") + '">' + rel + "</i></div>";
   }
   const log = (M.callLog || []).slice(-5).reverse();
   if (log.length) h += '<div class="shead small"><b>Недавние</b></div>' + log.map(l => '<div class="srow slog">' + avatar(l.n, "sm") + '<span class="ctxt"><b>' + l.n + "</b><small>" + dateTxt(l.d) + '</small></span><i class="lk ' + CALLK[l.k][1] + '">' + CALLK[l.k][0] + "</i></div>").join("");
@@ -3048,8 +3135,8 @@ function renderMenu() {   // профиль: ступень, дата, фина�
   } else h = '<div class="mnext"><span>Все тарифы открыты</span></div>';
   $("mnextbox").innerHTML = h;
   const fin = [];
-  if (M.own) fin.push(["Своя машина", ownName()], ["Кредит", M.own.debt > 0 ? "осталось " + fmtR(M.own.debt) : "выплачен"]);
-  if ((M.own && M.own.debt > 0) || M.loan) fin.push(["Платёж " + dateTxt(nextPayDay(day + 1)), fmtR((M.own && M.own.debt > 0 ? Math.min(M.own.pay, M.own.debt) : 0) + (M.loan ? Math.min(M.loan.pay, M.loan.left) : 0))]);
+  if (M.cars.length) { const rn = M.cars.filter(c => c.rented).length; fin.push(["Свои машины", M.cars.length + (rn ? " · в аренде " + rn : "")], ["Кредит", totalDebt() > 0 ? "осталось " + fmtR(totalDebt()) : "выплачен"]); }
+  if (totalDebt() > 0 || M.loan) fin.push(["Платёж " + dateTxt(nextPayDay(day + 1)), fmtR(nextCarPay() + (M.loan ? Math.min(M.loan.pay, M.loan.left) : 0))]);
   if (M.loan) fin.push(["Займ", "осталось " + fmtR(M.loan.left)]);
   if (M.deposit > 0) fin.push(["Вклад", fmtR(M.deposit)]);
   $("mfin").innerHTML = fin.map(([a, b]) => "<div><span>" + a + "</span><b>" + b + "</b></div>").join(""); $("mfin").hidden = !fin.length;
@@ -3060,7 +3147,7 @@ $("salonbtn").addEventListener("click", showSalon);
 $("bankbtn").addEventListener("click", showBank);
 $("skillsbtn").addEventListener("click", showSkills);
 $("phonebtn").addEventListener("click", showPhone);
-$("achbtn").addEventListener("click", () => toast("Достижения", "Скоро появятся", "star"));
+$("homebtn").addEventListener("click", showHome);
 statusPill.addEventListener("click", renderMenu);
 function renderSound() { $("sndon").classList.toggle("on", SND.on); $("sndvol").value = Math.round(SND.vol * 100); $("sndvol").disabled = !SND.on; }
 statusPill.addEventListener("click", renderSound);
@@ -3084,7 +3171,7 @@ $("mtest").addEventListener("click", e => {
   else if (t === "rides") { ridesDone += 60; checkPoints(); }
   else if (t === "next") { menuEl.hidden = true; testNextShift(); }
   else if (t === "pay") { menuEl.hidden = true; for (let i = 0; i < 20 && testNextShift() && !isPayDay(day); i++); }
-  else if (t === "km") { if (!M.own) return toast("Нет своей машины", "Купите в автосалоне", "alert"); M.own.km += 6000; }
+  else if (t === "km") { const c = curOwn() || M.cars[0]; if (!c) return toast("Нет своей машины", "Купите в автосалоне", "alert"); c.km += 6000; }
   else if (t === "call") {
     if (!online) return toast("Выйдите на линию", "Клиенты звонят, когда вы на линии", "alert");
     if (!M.contacts.length) M.contacts.push({ id: M.contactSeq++, name: "Тимур", node: nodeNear(car.x + 1500, car.y + 800), addr: addrNear(car.x + 1500, car.y + 800) || "улица Ленина, 10", like: 0 });
