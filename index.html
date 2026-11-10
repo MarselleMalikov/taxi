@@ -1038,7 +1038,7 @@ const SND = (() => {
     get on() { return pref.on; }, get vol() { return pref.vol; },
     set(o) { Object.assign(pref, o); save(); if (!pref.on) this.ringStop(); },
     unlock() { ctx(); },
-    order() { for (const d of [0, 0.42]) { tone(988, d, 0.16, { vol: 0.22 }); tone(1319, d + 0.13, 0.28, { vol: 0.22 }); } buzz([60, 300, 60]); },   // новый заказ: «динь-динь» дважды
+    order() { for (const d of [0, 0.45]) { tone(659, d, 0.2, { vol: 0.17, att: 0.02 }); tone(880, d + 0.14, 0.32, { vol: 0.17, att: 0.02 }); } buzz([60, 300, 60]); },   // новый заказ: «динь-динь» дважды
     engineOn() { [587, 784, 1175].forEach((f, i) => tone(f, i * 0.09, 0.32, { vol: 0.13 })); buzz(40); },             // на линию: мягкий восходящий сигнал
     engineOff() { [880, 659, 440].forEach((f, i) => tone(f, i * 0.1, 0.34, { vol: 0.11 })); },                         // с линии: тот же сигнал вниз
     kPick() { tone(740, 0, 0.09, { type: "triangle", vol: 0.16, f2: 1100 }); },                                         // «Угадай где кэф?»: выбор зоны
