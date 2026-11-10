@@ -993,12 +993,36 @@ const SND = (() => {
       src.connect(flt); flt.connect(g); g.connect(master); src.start(t);
     } catch (e) {}
   }
+  function motor(at, dur, curve, vol, cut) {   // двигатель: пила + квадрат на полтона ниже через фильтр низких частот
+    const a = ctx(); if (!a) return;
+    try {
+      const t = a.currentTime + (at || 0), lp = a.createBiquadFilter(), g = a.createGain();
+      lp.type = "lowpass"; lp.frequency.value = cut || 520; lp.Q.value = 2;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.06); g.gain.setValueAtTime(vol, t + dur * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      lp.connect(g); g.connect(master);
+      for (const [type, k, v] of [["sawtooth", 1, 1], ["square", 0.5, 0.5]]) {
+        const o = a.createOscillator(), og = a.createGain(); o.type = type; og.gain.value = v;
+        o.frequency.setValueCurveAtTime(new Float32Array(curve.map(f => f * k)), t, dur); o.connect(og); og.connect(lp); o.start(t); o.stop(t + dur + 0.02);
+      }
+    } catch (e) {}
+  }
   const buzz = p => { try { if (pref.on && navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
   return {
     get on() { return pref.on; }, get vol() { return pref.vol; },
     set(o) { Object.assign(pref, o); save(); if (!pref.on) this.ringStop(); },
     unlock() { ctx(); },
-    order() { tone(988, 0, 0.16, { vol: 0.22 }); tone(1319, 0.13, 0.28, { vol: 0.22 }); buzz(60); },                    // новый заказ: двойной «динь»
+    order() { for (const d of [0, 0.42]) { tone(988, d, 0.16, { vol: 0.22 }); tone(1319, d + 0.13, 0.28, { vol: 0.22 }); } buzz([60, 300, 60]); },   // новый заказ: «динь-динь» дважды
+    engineOn() {   // запуск двигателя: стартер, схватил, перегазовка, холостые
+      for (let i = 0; i < 4; i++) noise(i * 0.13, 0.1, 0.22, 180, 1.5);
+      motor(0, 0.55, [26, 30, 27, 31, 28], 0.18, 380);
+      motor(0.5, 1.5, [38, 95, 120, 80, 58, 52, 50], 0.26, 640);
+    },
+    engineOff() { motor(0, 1.1, [52, 48, 40, 30, 20, 14], 0.22, 520); noise(1.0, 0.08, 0.12, 240, 1.5); },   // глушим: обороты падают, щелчок
+    kPick() { tone(740, 0, 0.09, { type: "triangle", vol: 0.16, f2: 1100 }); },                                         // «Угадай где кэф?»: выбор зоны
+    kUnpick() { tone(900, 0, 0.08, { type: "triangle", vol: 0.12, f2: 560 }); },
+    kFlip(good) { noise(0, 0.05, 0.16, 2600, 2); tone(good ? 880 : 300, 0.02, 0.12, { type: good ? "sine" : "triangle", vol: good ? 0.1 : 0.14 }); },
+    kWin() { [784, 988, 1175, 1568].forEach((f, i) => tone(f, i * 0.08, 0.32, { type: "triangle", vol: 0.14 })); setTimeout(() => this.coins(), 320); },
+    kLose() { tone(330, 0, 0.18, { type: "triangle", vol: 0.18, f2: 220 }); tone(196, 0.16, 0.4, { type: "triangle", vol: 0.2, f2: 110 }); buzz([90, 60, 90]); },
     accept() { noise(0, 0.05, 0.35, 1800, 2); tone(660, 0.01, 0.09, { type: "triangle", vol: 0.12 }); },               // принят: щелчок
     coins() { [1568, 2093, 1760, 2349].forEach((f, i) => tone(f, i * 0.06, 0.18, { type: "triangle", vol: 0.12 })); },   // поездка завершена: монеты
     tip() { tone(2637, 0, 0.12, { vol: 0.1 }); tone(3136, 0.08, 0.22, { vol: 0.1 }); },                                // чаевые: выше и легче
@@ -1414,7 +1438,7 @@ function finishRide(reason) {
   const chained = c.next, pendingNext = !c.next && c.nextOffer;   // предложенный, но ещё не принятый следующий заказ
   current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); checkBusinessDone(); updateTop(); saveGame();
   if (chained) { chained.ttl = ORDER_TTL; orders = [chained]; acceptOrder(chained.id); return renderPanel(); }   // сразу едем к следующему клиенту
-  if (offAfter) { offAfter = false; online = false; orders = []; floaters.push({ text: "Вы ушли с линии", x: car.x, y: car.y, age: 0, color: "#1E1F23", dy: -40 }); }
+  if (offAfter) { offAfter = false; online = false; orders = []; SND.engineOff(); floaters.push({ text: "Вы ушли с линии", x: car.x, y: car.y, age: 0, color: "#1E1F23", dy: -40 }); }
   if (pendingNext && pendingNext.ttl > 0 && online) { orders = [pendingNext]; previewId = null; }   // неотвеченное предложение остаётся и ждёт решения
   renderPanel();
 }
@@ -1696,14 +1720,14 @@ function kPlay() {
   kOpen = new Set(); kPhase = "reveal"; kBusy = true; showKef();
   const order = [...kSel, ...KCELLS.map(c => c.id).filter(id => !kSel.has(id))];   // сначала открываем выбранные зоны
   order.forEach((id, i) => setTimeout(() => {
-    kOpen.add(id); drawKef(); const g = $("kfield").querySelector('[data-z="' + id + '"]'); if (g) g.classList.add("kflip");
+    kOpen.add(id); SND.kFlip(!kEmpty.has(id)); drawKef(); const g = $("kfield").querySelector('[data-z="' + id + '"]'); if (g) g.classList.add("kflip");
     if (i === order.length - 1) setTimeout(done, 350);
   }, 140 * i + (i >= k ? 250 : 0)));
   function done() {
     const win = [...kSel].every(id => !kEmpty.has(id)), pay = win ? Math.floor(bet * coef) : 0, net = pay - bet;
     money += pay; ledger.casino = (ledger.casino || 0) + net;
     if (net > 500) moodAdd(5); else if (net <= -500) moodAdd(-5);
-    kLast = { win, net, bet, mood: net > 500 ? 5 : net <= -500 ? -5 : 0 }; kPhase = "done"; kBusy = false; updateTop(); saveGame(); showKef();
+    kLast = { win, net, bet, mood: net > 500 ? 5 : net <= -500 ? -5 : 0 }; if (win) SND.kWin(); else SND.kLose(); kPhase = "done"; kBusy = false; updateTop(); saveGame(); showKef();
   }
 }
 $("kef").addEventListener("click", e => {
@@ -1715,7 +1739,7 @@ $("kef").addEventListener("click", e => {
   if (ch && !ch.disabled) { kBet = +ch.dataset.kchip; return showKef(); }
   if (z) {
     if (kPhase === "done") { kPhase = "pick"; kOpen = new Set(); kEmpty = new Set(); }
-    const id = +z.dataset.z; if (kSel.has(id)) kSel.delete(id); else if (kSel.size < KMAX) kSel.add(id); else toast("Не больше " + KMAX + " зон", "Снимите одну, чтобы выбрать другую", "alert");
+    const id = +z.dataset.z; if (kSel.has(id)) { kSel.delete(id); SND.kUnpick(); } else if (kSel.size < KMAX) { kSel.add(id); SND.kPick(); } else toast("Не больше " + KMAX + " зон", "Снимите одну, чтобы выбрать другую", "alert");
     return showKef();
   }
   if (e.target.closest("#kgo")) { if (kPhase === "done") { kPhase = "pick"; kOpen = new Set(); } return kPlay(); }
@@ -1782,7 +1806,7 @@ function updateOffBtn() {
   b.textContent = state === "idle" ? "Уйти с линии" : offAfter ? "Отменить: остаться на линии" : "Уйти с линии после заказа";
 }
 $("offbtn").addEventListener("click", () => {
-  if (state === "idle") { online = false; orders = []; previewId = null; offAfter = false; menuEl.hidden = true; return renderPanel(); }
+  if (state === "idle") { online = false; orders = []; previewId = null; offAfter = false; menuEl.hidden = true; SND.engineOff(); return renderPanel(); }
   offAfter = !offAfter; if (offAfter && current) { current.nextOffer = null; } updateOffBtn(); renderPanel();
 });
 statusPill.addEventListener("click", () => { updateOffBtn(); updateTop(); updateStatus(); $("mday").textContent = day; menuEl.hidden = false; });
@@ -2117,7 +2141,7 @@ $("ff").addEventListener("click", () => { ff = ff === 1 ? 2 : ff === 2 ? 4 : 1; 
 shiftBtn.addEventListener("click", () => {
   if (state !== "idle") return;
   if (!online && blockLeft() > 0) return toast("Доступ к заказам закрыт", "Откроется в " + clockTxt(blockUntil), "alert");
-  online = !online; if (online) { spawnTimer = 1.5; enforceRatingCls(true); } else { orders = []; previewId = null; }
+  online = !online; if (online) { spawnTimer = 1.5; enforceRatingCls(true); SND.engineOn(); } else { orders = []; previewId = null; SND.engineOff(); }
   if (online && !ledger.rent && !ledger.started) { ledger.started = true; if (!driveOwn()) spend("rent", myCar().rent, "аренда"); }   // аренда - один раз за смену; на своей машине аренды нет
   menuEl.hidden = true; renderPanel();
 });
