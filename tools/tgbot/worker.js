@@ -28,7 +28,12 @@ export default {
 
 // Открыть в браузере: https://<воркер>.workers.dev/setup?secret=<WEBHOOK_SECRET>
 async function setup(url, env) {
-  if (url.searchParams.get("secret") !== env.WEBHOOK_SECRET) return new Response("wrong secret", { status: 403 });
+  const txt = (t, status = 400) => new Response(t, { status, headers: { "content-type": "text/plain; charset=utf-8" } });
+  const missing = ["TG_TOKEN", "GH_TOKEN", "WEBHOOK_SECRET", "REPO", "BRANCH", "ALLOWED_IDS"].filter(k => !env[k]);
+  if (!env.WEBHOOK_SECRET) return txt(`Переменная WEBHOOK_SECRET не найдена. Не заданы: ${missing.join(", ")}.\nПроверь имена (большие буквы, без пробелов) и нажми Deploy после добавления.`);
+  const got = url.searchParams.get("secret") || "";
+  if (got !== env.WEBHOOK_SECRET) return txt(`Секрет не совпадает: в ссылке ${got.length} символов, в WEBHOOK_SECRET — ${env.WEBHOOK_SECRET.length}.\nОбычно мешает лишний пробел или символы кроме латиницы и цифр.`, 403);
+  if (missing.length) return txt(`Секрет верный, но не заданы переменные: ${missing.join(", ")}.`);
   const hook = await tg(env, "setWebhook", {
     url: `${url.origin}/`,
     secret_token: env.WEBHOOK_SECRET,
