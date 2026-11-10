@@ -456,6 +456,18 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .eopen{margin-top:8px;padding:9px 12px;border-radius:14px;background:#FFFBEA;font-size:15px;font-weight:700}
 #salon,#bank,#skills,#phone{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#salon[hidden],#bank[hidden],#skills[hidden],#phone[hidden]{display:none}
 .gtar span{font-size:13.5px!important;color:var(--m);text-align:right;line-height:1.25}#salon .gtar{margin-top:6px}
+
+/* окно «Тарифы и режимы» */
+#modes .askcard{padding:16px!important}#modes .mhead b{font-size:21px;font-weight:800}
+.mlabel{margin:12px 2px 6px;font-size:14px;font-weight:700;color:var(--m)}
+#modes .clsrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0}#modes .clsbtn{min-width:0;padding:8px 2px;font-size:15px!important;white-space:nowrap;cursor:pointer}#modes .clsbtn.dim{opacity:.4}
+#modes .mode{margin-top:6px;padding:9px 12px;border-width:1.5px}#modes .mode b{font-size:16px!important;line-height:1.2}#modes .mode b i{font-size:13px}#modes .mode small{font-size:14px!important;margin-top:1px;line-height:1.3!important}
+#modes .mode.on{border-width:2px}
+
+/* тестовый режим */
+.mtest{border:2px dashed #C9CDD5;border-radius:20px;padding:12px}.mtest>b{display:block;font-size:16px;margin:0 2px 8px}.mtest[hidden]{display:none}
+.mtgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.mtgrid button{min-width:0;padding:9px 4px;border:none;border-radius:14px;background:var(--c);font-family:inherit;font-size:13.5px;font-weight:600;line-height:1.2;color:var(--ink);cursor:pointer}
+.mtgrid button[data-t="off"]{background:#FDE7E7;color:#C9363B}
 </style></head>
 <body>
 <div id="app">
@@ -485,7 +497,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
       <div class="mfin" id="mfin" hidden></div>
       <div class="mstatus status off" id="mstatus"><span class="dot"></span><span id="statustext">Не на линии</span></div>
       <button class="mbtn dark" id="offbtn" hidden></button>
-      <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Гараж</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Казино</button><button class="mtile" id="achbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="trophy"></svg></span>Достижения</button></div>
+      <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Таксопарк</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Казино</button><button class="mtile" id="achbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="trophy"></svg></span>Достижения</button></div>
       <div class="mstats">
         <div><span>Машина</span><b id="mcar"></b></div>
         <div><span>За смену</span><b id="mshift">0 ₽</b></div>
@@ -493,14 +505,15 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
         <div><span>Поездок всего</span><b id="rides">0</b></div>
         <div hidden><span>Смена</span><b id="mday">1</b></div>
       </div>
+      <div class="mtest" id="mtest" hidden><b>Тестовый режим</b><div class="mtgrid"><button data-t="money">+100 000 ₽</button><button data-t="open">Открыть тарифы</button><button data-t="rides">+60 поездок</button><button data-t="next">Следующая смена</button><button data-t="pay">До платёжного дня</button><button data-t="km">+6 000 км</button><button data-t="call">Звонок клиента</button><button data-t="number">Просит номер</button><button data-t="rain">Дождь</button><button data-t="tire">Прокол</button><button data-t="crash">ДТП</button><button data-t="hail">Голосующий</button><button data-t="r475">Рейтинг 4.75</button><button data-t="r44">Рейтинг 4.4</button><button data-t="r5">Рейтинг 5.0</button><button data-t="mood">Настроение 20%</button><button data-t="fuel">Бак 3 л</button><button data-t="off">Выключить тест</button></div></div>
       <button id="reset">Сбросить прогресс</button>
     </div>
   </div>
 </div>
 <div id="ledger" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Смена <span id="lday"></span></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="lrows"></div></div></div>
-<div id="modes" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Режим работы</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="modelist"></div></div></div>
+<div id="modes" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Тарифы и режимы</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="modelist"></div></div></div>
 <div id="pause" hidden><div class="askback" data-close="1"></div><div class="askcard pcard"><div class="mhead"><b>Перерыв</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="ponline"><div class="potop"><span>На линии</span><b id="pon"></b></div><span class="pbar"><i id="ponbar"></i></span></div><button class="pact" id="prest"><span class="pico blue" id="prestico"></span><span class="ptxt"><span class="ptop"><b>Отдохнуть</b><span class="pprice">Бесплатно</span></span><span class="ptags"><i>20 мин</i><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path d="M4.4 8.6q2.6 2.2 5.2 0"/></svg><span id="presttag"></span></i></span></span></button><button class="pact" id="plunch"><span class="pico orange" id="plunchico"></span><span class="ptxt"><span class="ptop"><b>Пообедать</b><span class="pprice">350 ₽</span></span><span class="ptags"><i>20 мин</i><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path d="M4.4 8.6q2.6 2.2 5.2 0"/></svg>+20%</i></span></span></button><button class="pact" id="pfuel"><span class="pico green" id="pfuelico"></span><span class="ptxt"><span class="ptop"><b>Заправиться</b><span class="pprice" id="pfuelprice"></span></span><span class="ptags"><i id="pfueltag"></i></span></span></button><p class="pnote" id="pausenote"></p></div></div>
-<div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Гараж</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
+<div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Таксопарк</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
 <div id="salon" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Автосалон</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="salonlist"></div></div></div>
 <div id="bank" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Банк</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="banklist"></div></div></div>
 <div id="skills" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Навыки</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="skilllist"></div></div></div>
@@ -943,8 +956,8 @@ const BUSINESS_PER_SHIFT = 2;
 // Режимы работы. Классический - конечная точка видна только после посадки. Гибкий - видна сразу, комиссия +5%.
 // По делам - заказы в сторону своей точки, комиссия +9%. Мой район - позже
 let workMode = "classic";
-const MODE_NAME = { classic: "Классический", flex: "Гибкий", business: "По делам", district: "Мой район" };
-const MODE_SHORT = { classic: "Классика", flex: "Гибкий", business: "По делам", district: "Мой район" };
+const MODE_NAME = { classic: "Классический", flex: "Гибкий", business: "По делам", district: "По району" };
+const MODE_SHORT = { classic: "Классика", flex: "Гибкий", business: "По делам", district: "По району" };
 // Мой район: город поделён на 5 районов; заказы приходят только с концом поездки в выбранных районах.
 // Чем меньше районов выбрано, тем выше доплата к комиссии
 // Контуры районов сняты с рисунка на карте (пиксели скриншота -> широта/долгота)
@@ -976,7 +989,7 @@ function startDistrictPick() {
 }
 function districtPanelHtml() {
   const n = districtPick.size, fee = Math.round(districtFee(n) * 100);
-  return '<div class="dhead"><button class="dback" data-act="dcancel" aria-label="Назад">' + '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' + "</button><b>Мой район</b></div>" +
+  return '<div class="dhead"><button class="dback" data-act="dcancel" aria-label="Назад">' + '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>' + "</button><b>По району</b></div>" +
     '<p class="lsub" style="text-align:left">Нажимайте на районы на карте. Заказы будут приходить с концом поездки в выбранных районах.</p>' +
     '<div class="dfee"><b>' + (n ? "Комиссия +" + fee + "%" : "Выберите хотя бы один район") + "</b><small>Больше районов - ниже комиссия</small>" +
     '<span class="pbar"><i style="width:' + (n / 3 * 100) + '%"></i></span></div>' +
@@ -1630,22 +1643,36 @@ $("pause").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || b.disabled) return;
   if (b.id === "prest") takeBreak("rest"); else if (b.id === "plunch") takeBreak("lunch"); else if (b.id === "pfuel") { $("pause").hidden = true; goRefuel(); }
 });
-function showModes() {
+function showModes() {   // тарифы заказов и режим работы
+  enforceRatingCls(false);
   const m = modeNow(), left = Math.max(0, BUSINESS_PER_SHIFT - businessUses);
   const card = (id, title, extra, text, dis) => '<button class="mode' + (id === "business" ? " biz" : "") + (m === id ? " on" : "") + '" data-mode="' + id + '"' + (dis ? " disabled" : "") + "><b>" + title + "<i>" + extra + "</i></b><small>" + text + "</small></button>";
   $("modelist").innerHTML =
-    card("classic", "Классический", "комиссия 25%", "Куда ехать, станет известно после посадки.") +
-    card("flex", "Гибкий", "+5% комиссии", "Конечная точка видна сразу в предложении заказа, карта показывает весь маршрут.") +
-    card("business", "По делам", "+9% комиссии", business ? "Едете к точке: " + business.addr + ". Нажмите, чтобы выключить." : "Отметьте на карте, куда вам нужно, - будут приходить заказы по пути. Осталось " + left + " из " + BUSINESS_PER_SHIFT + " за смену.", !business && left <= 0) +
-    card("district", "Мой район", districtSel ? "+" + Math.round(districtFee(districtSel.size) * 100) + "% комиссии" : "+1-9% комиссии", districtSel ? "Районы: " + DISTRICTS.filter(d => districtSel.has(d.id)).map(d => d.name).join(", ") + ". Нажмите, чтобы закончить режим." : "Заказы только с концом поездки в выбранных районах. Больше районов - ниже комиссия.");
+    '<div class="mlabel">Тарифы заказов</div><div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + (clsAllowed(c) ? "" : " dim") + '" data-cls="' + c + '">' + TARIFFS[c].name + "</button>").join("") + "</div>" +
+    '<div class="mlabel">Режим работы</div>' +
+    card("classic", "Классический", "комиссия 25%", "Куда ехать, узнаете после посадки") +
+    card("flex", "Гибкий", "+5% комиссии", "Конечная точка видна сразу") +
+    card("business", "По делам", "+9% комиссии", business ? "Едете к: " + business.addr + ". Нажмите, чтобы выключить" : "Заказы по пути к вашей точке, " + left + " из " + BUSINESS_PER_SHIFT, !business && left <= 0) +
+    card("district", "По району", districtSel ? "+" + Math.round(districtFee(districtSel.size) * 100) + "% комиссии" : "+1-9% комиссии", districtSel ? "Районы: " + DISTRICTS.filter(d => districtSel.has(d.id)).map(d => d.name).join(", ") + ". Нажмите, чтобы выключить" : "Поездки только в выбранные районы");
   $("modes").hidden = false;
 }
 $("modes").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("modes").hidden = true; return; }
+  const cb = e.target.closest("[data-cls]");
+  if (cb) {   // включить/выключить тариф заказов; хотя бы один должен остаться
+    const c = cb.dataset.cls;
+    if (!tariffOpen(c)) return toast("Тариф " + TARIFFS[c].name + " закрыт", lockText(stageFor(c)), "alert");
+    if (!clsAllowed(c)) return toast("Тариф " + TARIFFS[c].name + " недоступен", "Нужна машина этого класса", "alert");
+    if (!clsActive(c) && !clsRatingOk(c)) return toast("Тариф " + TARIFFS[c].name + " недоступен", "Нужен рейтинг от " + CLS_MIN_RATING[c], "alert");
+    if (clsActive(c)) delete clsAutoOff[c];
+    const next = Object.assign({}, clsOn, { [c]: !clsActive(c) });
+    if (TORDER.some(x => clsAllowed(x) && next[x])) { clsOn = next; orders = []; previewId = null; saveGame(); renderPanel(); }
+    return showModes();
+  }
   const b = e.target.closest("[data-mode]"); if (!b || b.disabled) return;
   const id = b.dataset.mode; $("modes").hidden = true;
   if (id === "district") {
-    if (districtSel) askConfirm("Закончить режим\n«Мой район»?", "Заказы снова будут приходить по всему городу.", "Закончить", () => { districtSel = null; workMode = "classic"; orders = []; spawnTimer = 1.5; lastClk = ""; saveGame(); renderPanel(); }, "pin");
+    if (districtSel) askConfirm("Закончить режим\n«По району»?", "Заказы снова будут приходить по всему городу.", "Закончить", () => { districtSel = null; workMode = "classic"; orders = []; spawnTimer = 1.5; lastClk = ""; saveGame(); renderPanel(); }, "pin");
     else startDistrictPick();
     lastClk = ""; return;
   }
@@ -2040,7 +2067,7 @@ function idleHtml(searching) {   // машина и статус, под ним�
   const c = myCar(), tile = (act, icon, t) => '<button class="tile" data-act="' + act + '">' + ico(icon) + t + "</button>";
   return '<div class="ihead"><div class="icar">' + carImg(c, 84) + "</div><div><b>" + (searching ? "Свободные заказы" : c.name) + "</b><small>" +
     (searching ? '<i class="live"></i>Ищем пассажиров…' : TARIFFS[c.t].name + " · " + MODE_NAME[modeNow()]) + "</small></div></div>" +
-    '<div class="tiles">' + tile("tledger", "wallet", "Доход") + tile("tmodes", "sliders", "Режим") + tile("tgarage", "car", "Гараж") + tile("tshop", "bag", "Магазин") + "</div>";
+    '<div class="tiles">' + tile("tledger", "wallet", "Доход") + tile("tmodes", "sliders", "Режим") + tile("tgarage", "car", "Таксопарк") + tile("tshop", "bag", "Магазин") + "</div>";
 }
 function renderPanel() {
   let html = "";
@@ -2569,7 +2596,7 @@ function checkUnlock(silent) {
   const opened = [];
   for (const s of STAGES) if (s.cls && !M.open[s.cls] && (s.cls !== "cplus" || M.open.comfort) &&
     M.careerShifts >= s.shifts && ridesDone >= s.rides && (!s.rating || getRating() >= s.rating)) { M.open[s.cls] = true; opened.push(s); }
-  if (!silent) for (const s of opened) toast("Открыт тариф " + TARIFFS[s.cls].name, "Новая ступень: " + s.name + ". Машины в гараже и автосалоне", "goal");
+  if (!silent) for (const s of opened) toast("Открыт тариф " + TARIFFS[s.cls].name, "Новая ступень: " + s.name + ". Машины в таксопарке и автосалоне", "goal");
   return opened;
 }
 
@@ -2635,12 +2662,13 @@ function onNewDay() {
     if (M.loan) { const p = Math.min(M.loan.pay, M.loan.left); money -= p; M.loan.left -= p; notes.push("Платёж по займу −" + fmtR(p)); if (M.loan.left <= 0) M.loan = null; }
     if (M.deposit > 0) { const p = Math.round(M.deposit * DEPO_RATE); M.deposit += p; notes.push("Проценты по вкладу +" + fmtR(p)); }
   }
-  if (M.own) {   // ТО по пробегу и случайный ремонт; старая машина ломается чаще
-    const U = UPKEEP[CARS.find(c => c.id === M.own.model).t], wear = salonCar(M.own.model + M.own.year).wear;
-    if (M.own.km >= M.own.toKm) { money -= U.to; M.own.toKm += TO_KM; notes.push("ТО −" + fmtR(U.to)); }
-    if (driveOwn() && Math.random() < (0.03 + M.own.km / 20000 * 0.01) * wear) {
-      const c = Math.round((U.rep[0] + Math.random() * (U.rep[1] - U.rep[0])) / 100) * 100; money -= c; notes.push("Ремонт −" + fmtR(c));
+  let toAsk = false;
+  if (M.own) {   // ТО каждые 6000 км. Ломается машина только с просроченным ТО; старая - чаще
+    const U = UPKEEP[CARS.find(c => c.id === M.own.model).t];
+    if (driveOwn() && M.own.km >= M.own.toKm && M.own.toSkip && Math.random() < breakChance()) {
+      const c = Math.round((U.rep[0] + Math.random() * (U.rep[1] - U.rep[0])) / 100) * 100; spend("fines", c, "ремонт"); notes.push("Поломка: ремонт −" + fmtR(c));
     }
+    toAsk = M.own.km >= M.own.toKm;
     if (M.own.overdueAt != null) {
       if (money >= 0) M.own.overdueAt = null;
       else if (M.careerShifts - M.own.overdueAt >= 3) {   // три смены в минусе после платежа - банк забирает машину
@@ -2652,7 +2680,23 @@ function onNewDay() {
   scheduleCalls();
   if (notes.length) toast(dateTxt(day), notes.join(" · "), notes.some(n => n.includes("−")) ? "alert" : "goal");
   updateTop(); saveGame();
+  if (toAsk) setTimeout(askTO, notes.length ? 1200 : 300);
 }
+// Шанс поломки за смену при просроченном ТО: 15% и ещё 3% за каждые 1000 км сверх срока; у машины 2020 года в 1.5 раза выше
+function breakChance() {
+  if (!M.own || M.own.km < M.own.toKm) return 0;
+  return Math.min(0.6, (0.15 + (M.own.km - M.own.toKm) / 1000 * 0.03) * salonCar(M.own.model + M.own.year).wear);
+}
+const toCost = () => UPKEEP[CARS.find(c => c.id === M.own.model).t].to;
+function doTO() { spend("fines", toCost(), "ТО"); M.own.toKm = M.own.km + TO_KM; M.own.toSkip = false; saveGame(); updateTop(); }
+function askTO() {
+  if (!M.own || M.own.km < M.own.toKm || evt) return;
+  const over = Math.round(M.own.km - M.own.toKm);
+  showEvt({ icon: "car", color: over > 0 ? "red" : "blue", title: over > 0 ? "ТО просрочено" : "Пора на ТО", text: "Пробег " + Math.round(M.own.km).toLocaleString("ru-RU") + " км." + (over > 0 ? " Просрочено на " + over.toLocaleString("ru-RU") + " км." : "") + " Если отложить, шанс поломки " + Math.round(Math.max(breakChance(), 0.15 * salonCar(M.own.model + M.own.year).wear) * 100) + "% за смену и растёт.", choices: [
+    { t: "Пройти ТО", sub: fmtR(toCost()) + " · следующее через " + TO_KM.toLocaleString("ru-RU") + " км", go: () => { doTO(); toast("ТО пройдено", "Следующее через " + TO_KM.toLocaleString("ru-RU") + " км", "goal"); } },
+    { t: "Отложить", sub: "риск поломки растёт", go: () => { M.own.toSkip = true; saveGame(); } }] });
+}
+const toLeftTxt = () => !M.own ? "" : M.own.km >= M.own.toKm ? "ТО просрочено" : "до ТО " + Math.round(M.own.toKm - M.own.km).toLocaleString("ru-RU") + " км";
 const fmtR = v => Math.round(v).toLocaleString("ru-RU") + " ₽";
 function onShiftEnd() { M.careerShifts++; const o = checkUnlock(true); return o; }
 
@@ -2727,11 +2771,11 @@ const lockText = s => [s.shifts + " смен" + (s.shifts < 5 ? "ы" : ""), s.ri
 const stageFor = cls => STAGES.find(s => s.cls === cls);
 function showGarage() {   // аренда или своя машина; сменить можно только до выхода на линию
   enforceRatingCls(false);
-  let html = '<div class="clsrow">' + TORDER.map(c => '<button class="clsbtn' + (clsActive(c) ? " on" : "") + '" data-cls="' + c + '"' + (clsAllowed(c) ? "" : " disabled") + ">" + TARIFFS[c].name + "</button>").join("") + "</div>";
+  let html = "";
   if (M.own) {
     const c = CARS.find(x => x.id === M.own.model);
     html += '<div class="gtar"><b>Своя машина</b></div><button class="gcar' + (driveOwn() ? " on" : "") + '" data-own="1">' + carImg(c, 112) + '<span class="ginfo"><b>' + ownName() + "</b><em>" +
-      (M.own.debt > 0 ? "кредит " + fmtR(M.own.debt) : "без аренды") + "</em></span></button>";
+      (M.own.debt > 0 ? "кредит " + fmtR(M.own.debt) : "без аренды") + " · " + toLeftTxt() + "</em></span></button>";
   }
   for (const t of TORDER) {
     const open = tariffOpen(t);
@@ -2753,7 +2797,7 @@ $("garage").addEventListener("click", e => {
 });
 function showSalon() {
   let html = '<p class="lsub sal">С пробегом, 2020 и 2021 год. Взнос 20%, остальное в кредит. Без аренды, но ТО и ремонт за ваш счёт.</p>';
-  if (M.own) html += '<div class="ownbox"><div><b>' + ownName() + '</b><small>' + (M.own.debt > 0 ? "Кредит " + fmtR(M.own.debt) + " · платёж " + fmtR(M.own.pay) : "Кредит выплачен") + " · пробег " + Math.round(M.own.km).toLocaleString("ru-RU") + ' км</small></div><button class="sbuy" data-sell="1">Продать</button></div>';
+  if (M.own) html += '<div class="ownbox"><div><b>' + ownName() + '</b><small>' + (M.own.debt > 0 ? "Кредит " + fmtR(M.own.debt) + " · платёж " + fmtR(M.own.pay) : "Кредит выплачен") + " · пробег " + Math.round(M.own.km).toLocaleString("ru-RU") + " км · " + toLeftTxt() + '</small></div>' + (M.own.km >= M.own.toKm ? '<button class="sbuy" data-to="1">ТО</button>' : "") + '<button class="sbuy" data-sell="1">Продать</button></div>';
   for (const t of TORDER) {
     const open = tariffOpen(t);
     html += '<div class="gtar"><b>' + TARIFFS[t].name + "</b>" + (open ? "" : "<span>" + lockText(stageFor(t)) + "</span>") + "</div>";
@@ -2767,6 +2811,7 @@ function showSalon() {
 $("salon").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("salon").hidden = true; return; }
   const lk = e.target.closest("[data-lock]"); if (lk) return toast("Тариф " + TARIFFS[lk.dataset.lock].name + " закрыт", lockText(stageFor(lk.dataset.lock)), "alert");
+  if (e.target.closest("[data-to]")) { if (money < toCost()) return toast("Не хватает на ТО", "Нужно " + fmtR(toCost()), "alert"); doTO(); toast("ТО пройдено", "Следующее через " + TO_KM.toLocaleString("ru-RU") + " км", "goal"); return showSalon(); }
   if (e.target.closest("[data-sell]")) {
     const v = ownValue(), get = v - M.own.debt;
     askConfirm("Продать " + ownName() + "?", "Оценка " + fmtR(v) + (M.own.debt > 0 ? ", минус долг " + fmtR(M.own.debt) : "") + ". Вы получите " + fmtR(get) + ".", "Продать", () => {
@@ -2816,7 +2861,7 @@ $("bank").addEventListener("click", e => {
 });
 function showSkills() {
   const p = pointsInfo();
-  let h = '<div class="ponline"><div class="potop"><span>' + (p.free > 0 ? "Свободных очков: " + p.free : "До очка навыка") + "</span><b>" + (p.need ? p.have + " из " + p.need : "всё изучено") + '</b></div><span class="pbar"><i style="width:' + (p.need ? Math.min(100, p.have / p.need * 100) : 100) + '%"></i></span></div>';
+  let h = '<div class="ponline"><div class="potop"><span>' + (p.free > 0 ? "Свободных очков: " + p.free : "До следующего навыка") + "</span><b>" + (p.need ? p.have + " из " + p.need : "всё изучено") + '</b></div><span class="pbar"><i style="width:' + (p.need ? Math.min(100, p.have / p.need * 100) : 100) + '%"></i></span></div>';
   for (const s of SKILLS) {
     const l = M.skills[s.id] || 0;
     const now = l ? s.u(s.v[l - 1]) : null, nxt = l < 3 ? s.u(s.v[l]) : null;
@@ -2860,7 +2905,7 @@ function renderMenu() {   // профиль: ступень, дата, фина�
   if (M.deposit > 0) fin.push(["Вклад", fmtR(M.deposit)]);
   $("mfin").innerHTML = fin.map(([a, b]) => "<div><span>" + a + "</span><b>" + b + "</b></div>").join(""); $("mfin").hidden = !fin.length;
   const p = pointsInfo(); $("skillbadge").textContent = p.free > 0 ? p.free : ""; $("skillbadge").hidden = !(p.free > 0);
-  $("phonebadge").hidden = !M.pending;
+  $("phonebadge").hidden = !M.pending; $("mtest").hidden = !testOn();
 }
 $("salonbtn").addEventListener("click", showSalon);
 $("bankbtn").addEventListener("click", showBank);
@@ -2868,6 +2913,43 @@ $("skillsbtn").addEventListener("click", showSkills);
 $("phonebtn").addEventListener("click", showPhone);
 $("achbtn").addEventListener("click", () => toast("Достижения", "Скоро появятся", "star"));
 statusPill.addEventListener("click", renderMenu);
+// ====== Тестовый режим: открыть игру с #test в конце адреса. Панель в меню для быстрой проверки ======
+const TEST_KEY = "taxi-test";
+const testHash = () => { try { if (location.hash === "#test") localStorage.setItem(TEST_KEY, "1"); } catch (e) {} };
+testHash(); window.addEventListener("hashchange", () => { testHash(); renderMenu(); });
+const testOn = () => { try { return localStorage.getItem(TEST_KEY) === "1"; } catch (e) { return false; } };
+function testNextShift() {
+  if (state !== "idle") { toast("Сначала завершите заказ", "", "alert"); return false; }
+  if (!endingShown) endShift();
+  const b = endCard.querySelector('[data-end="newshift"]'); if (b) b.click(); return true;
+}
+$("mtest").addEventListener("click", e => {
+  const b = e.target.closest("[data-t]"); if (!b) return;
+  const t = b.dataset.t, pass = { name: "Тимур", to: carNode, toAddr: addrOf(carNode), passenger: {} };
+  if (t === "money") money += 100000;
+  else if (t === "open") { M.careerShifts = Math.max(M.careerShifts, 8); ridesDone = Math.max(ridesDone, 100); M.open = { comfort: true, cplus: true }; }
+  else if (t === "rides") { ridesDone += 60; checkPoints(); }
+  else if (t === "next") { menuEl.hidden = true; testNextShift(); }
+  else if (t === "pay") { menuEl.hidden = true; for (let i = 0; i < 20 && testNextShift() && !isPayDay(day); i++); }
+  else if (t === "km") { if (!M.own) return toast("Нет своей машины", "Купите в автосалоне", "alert"); M.own.km += 6000; }
+  else if (t === "call") {
+    if (!online) return toast("Выйдите на линию", "Клиенты звонят, когда вы на линии", "alert");
+    if (!M.contacts.length) M.contacts.push({ id: M.contactSeq++, name: "Тимур", node: nodeNear(car.x + 1500, car.y + 800), addr: addrNear(car.x + 1500, car.y + 800) || "улица Ленина, 10", like: 0 });
+    M.pending = null; M.calls = [clock]; menuEl.hidden = true;
+  }
+  else if (t === "number") { menuEl.hidden = true; M.contacts = M.contacts.filter(c => c.name !== pass.name); askNumber(pass); }
+  else if (t === "rain") { rain = { start: clock - RAIN_FADE, end: clock + 2 * 3600 }; rainShown = 0; menuEl.hidden = true; }
+  else if (t === "tire") { menuEl.hidden = true; evtTire(); }
+  else if (t === "crash") { menuEl.hidden = true; evtCrash(); }
+  else if (t === "hail") { if (!online || state !== "idle") return toast("Нужно быть на линии без заказа", "", "alert"); menuEl.hidden = true; evtHail(); }
+  else if (t === "r475" || t === "r44" || t === "r5") { const w = getRating(); rates = Array(150).fill({ r475: 4.75, r44: 4.4, r5: 5 }[t]); checkRating(w); }
+  else if (t === "mood") { mood = 20; updateMood(); }
+  else if (t === "fuel") { fuel = 3; updateFuel(); }
+  else if (t === "off") { try { localStorage.removeItem(TEST_KEY); } catch (e) {} if (location.hash === "#test") history.replaceState(null, "", location.pathname + location.search); }
+  saveGame(); updateTop(); renderPanel(); if (!menuEl.hidden) renderMenu();
+  if (t !== "off") toast("Тест", b.textContent, "star");
+});
+
 
 for (const sv of document.querySelectorAll("svg[data-ic]")) sv.innerHTML = ICON[sv.dataset.ic];
 loadGame(); camX = car.x; camY = car.y; updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
