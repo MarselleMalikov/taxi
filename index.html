@@ -538,6 +538,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .tbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .tbtns button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:11px 8px;border:none;border-radius:24px;font-family:inherit;font-size:17px;font-weight:800;color:#fff;cursor:pointer;line-height:1.15}
 .tbtns small{font-size:13px;font-weight:500;opacity:.85}.tlong{background:#1FAF55}.tshort{background:#E5484D}.tbtns button:disabled{opacity:.4;cursor:default}
+#trade .tnote{margin:8px 2px 0!important;font-size:13px!important;color:var(--m);line-height:1.3!important;text-align:left!important}
 .tpos{margin-top:10px;padding:12px 14px;border-radius:20px;background:var(--c)}.tptop{display:flex;align-items:center;justify-content:space-between}.tptop i{font-style:normal;font-size:14px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff}
 .tptop i.lg{background:#1FAF55}.tptop i.sh{background:#E5484D}.tptop span{font-size:14px;color:var(--m)}#tpnl{display:block;margin-top:6px;font-size:24px;font-weight:800}
 .tprow{display:flex;justify-content:space-between;margin-top:4px;font-size:14px;color:var(--m);font-variant-numeric:tabular-nums}.tclose{width:100%;margin-top:10px}
@@ -1721,17 +1722,20 @@ $("casino").addEventListener("click", e => {
 });
 
 // ====== Биржа TaxiCoin: свечной график, стакан, лонг и шорт с плечом. Цена - случайное блуждание без перекоса ======
-const TX = { price: 1000, candles: [], cur: null, tick: 0, timer: 0, sum: 1000, lev: 5, pos: null, open0: 1000, last: null };
-const TX_LEVS = [1, 2, 5, 10, 25], TX_FEE = 0.001, TX_TICKS = 10, TX_KEEP = 36;   // комиссия 0.1% от объёма на вход и выход; свеча = 10 тиков по 0.15 с
+const TX = { price: 1000, candles: [], cur: null, tick: 0, timer: 0, sum: 1000, lev: 5, pos: null, open0: 1000, last: null, vol: 1 };
+const TX_LEVS = [1, 2, 5, 10, 25], TX_FEE = 0.001, TX_TICKS = 10, TX_KEEP = 36;   // комиссия 0.1% от объёма на вход и на выход; свеча = 10 тиков по 0.15 с
+const TX_SPREAD = 0.0008, TX_FUND = 0.00025;   // спред: покупка дороже, продажа дешевле; плата за удержание - 0.025% объёма за каждую свечу
 function txStep() {   // новый тик цены: обычный шум, иногда резкий скачок; цена не уходит ниже 50 ₽
-  const jump = Math.random() < 0.02 ? (Math.random() - 0.5) * 0.03 : 0;
-  TX.price = Math.max(50, TX.price * Math.exp((Math.random() - 0.5) * 0.0055 + jump));
+  if (Math.random() < 0.004) TX.vol = Math.random() < 0.3 ? 2.5 : 1;   // периоды штиля и бури
+  const jump = Math.random() < 0.02 ? (Math.random() - 0.5) * 0.05 : 0;
+  TX.price = Math.max(50, TX.price * Math.exp((Math.random() - 0.5) * 0.0055 * TX.vol + jump));
+  if (TX.pos && TX.tick === TX_TICKS - 1) TX.pos.fund += TX.pos.margin * TX.pos.lev * TX_FUND;
   if (!TX.cur) TX.cur = { o: TX.price, h: TX.price, l: TX.price, c: TX.price };
   TX.cur.c = TX.price; TX.cur.h = Math.max(TX.cur.h, TX.price); TX.cur.l = Math.min(TX.cur.l, TX.price);
   if (++TX.tick >= TX_TICKS) { TX.candles.push(TX.cur); if (TX.candles.length > TX_KEEP) TX.candles.shift(); TX.cur = null; TX.tick = 0; }
 }
 if (!TX.candles.length) { for (let i = 0; i < TX_KEEP * TX_TICKS; i++) txStep(); TX.open0 = TX.candles[0].o; }   // история при старте
-const txPnl = (p = TX.pos) => p ? p.margin * p.lev * (TX.price / p.entry - 1) * p.dir - p.margin * p.lev * TX_FEE : 0;
+const txPnl = (p = TX.pos) => p ? p.margin * p.lev * ((TX.price * (1 - p.dir * TX_SPREAD)) / p.entry - 1) * p.dir - p.margin * p.lev * TX_FEE * 2 - (p.fund || 0) : 0;   // выход по худшей цене стакана
 const txLiq = p => p.entry * (1 - p.dir * 0.9 / p.lev);   // цена ликвидации: потеря 90% залога
 const fmtP = v => v.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 function txDraw() {
@@ -1764,18 +1768,20 @@ function txHead() {
   const ch = (TX.price / TX.open0 - 1) * 100;
   $("tpx").textContent = fmtP(TX.price) + " ₽"; $("tchg").textContent = (ch >= 0 ? "+" : "−") + Math.abs(ch).toFixed(2) + "%"; $("tchg").className = ch >= 0 ? "up" : "down";
   $("tbal").textContent = fmtR(money);
+  if (TX.pos) { const f = $("tfund"); if (f) f.textContent = "−" + fmtR(TX.pos.fund || 0); }
   if (TX.pos) { const p = txPnl(), el = $("tpnl"); if (el) { el.textContent = (p >= 0 ? "+" : "−") + fmtR(Math.abs(p)) + " · " + (p >= 0 ? "+" : "−") + Math.abs(p / TX.pos.margin * 100).toFixed(1) + "%"; el.className = p >= 0 ? "up" : "down"; } }
 }
 function txCtl() {
   if (TX.pos) {
     const p = TX.pos;
     $("tctl").innerHTML = '<div class="tpos"><div class="tptop"><i class="' + (p.dir > 0 ? "lg" : "sh") + '">' + (p.dir > 0 ? "Лонг" : "Шорт") + " ×" + p.lev + "</i><span>залог " + fmtR(p.margin) + '</span></div><b id="tpnl"></b>' +
-      '<div class="tprow"><span>Вход ' + fmtP(p.entry) + '</span><span>Ликвидация ' + fmtP(txLiq(p)) + '</span></div></div><button class="kgo tclose" data-t2="close">Закрыть позицию</button>';
+      '<div class="tprow"><span>Вход ' + fmtP(p.entry) + '</span><span>Ликвидация ' + fmtP(txLiq(p)) + '</span></div><div class="tprow"><span>Удержание</span><span id="tfund"></span></div></div><button class="kgo tclose" data-t2="close">Закрыть позицию</button>';
   } else {
     TX.sum = Math.max(100, Math.min(TX.sum, Math.max(100, Math.floor(money / 100) * 100)));
     $("tctl").innerHTML = '<div class="tlab">Сумма</div><div class="kbet"><button data-t2="minus" aria-label="Меньше">−</button><b>' + fmtR(TX.sum) + '</b><button data-t2="plus" aria-label="Больше">+</button>' +
       '<span>×' + TX.lev + " = " + fmtR(TX.sum * TX.lev) + '</span></div><div class="chips">' + [1000, 5000, 10000, 50000].map(v => '<button class="chip2' + (v === TX.sum ? " on" : "") + '" data-tsum="' + v + '"' + (v > money ? " disabled" : "") + ">" + v.toLocaleString("ru-RU") + "</button>").join("") + "</div>" +
       '<div class="tlab">Плечо</div><div class="chips">' + TX_LEVS.map(v => '<button class="chip2' + (v === TX.lev ? " on" : "") + '" data-tlev="' + v + '">×' + v + "</button>").join("") + "</div>" +
+'<p class="tnote">Комиссия 0,1% · спред 0,08% · удержание 0,025% за свечу</p>' +
       '<div class="tbtns"><button class="tlong" data-t2="long"' + (money < TX.sum ? " disabled" : "") + '>Лонг<small>цена вырастет</small></button><button class="tshort" data-t2="short"' + (money < TX.sum ? " disabled" : "") + ">Шорт<small>цена упадёт</small></button></div>";
   }
   txHead();
@@ -1808,7 +1814,7 @@ $("trade").addEventListener("click", e => {
   else if (k === "plus") TX.sum = Math.min(Math.floor(money / 100) * 100, TX.sum + (TX.sum >= 5000 ? 1000 : 100));
   else if (k === "long" || k === "short") {
     if (money < TX.sum) return;
-    money -= TX.sum; TX.pos = { dir: k === "long" ? 1 : -1, lev: TX.lev, margin: TX.sum, entry: TX.price }; SND.accept(); updateTop(); saveGame();
+    money -= TX.sum; const dir = k === "long" ? 1 : -1; TX.pos = { dir, lev: TX.lev, margin: TX.sum, entry: TX.price * (1 + dir * TX_SPREAD), fund: 0 }; SND.accept(); updateTop(); saveGame();
   }
   else if (k === "close") return txClose(false);
   txCtl(); txDraw();
