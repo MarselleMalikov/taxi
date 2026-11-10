@@ -1,0 +1,124 @@
+# Задача из Telegram → Claude правит репозиторий → коммит в main → ответ в Telegram.
+# Запускается ботом из tools/tgbot/worker.js (repository_dispatch). Установка: tools/tgbot/README.md
+name: Claude из Telegram
+
+on:
+  repository_dispatch:
+    types: [tg]
+
+# задачи выполняются по очереди, чтобы не мешать друг другу
+concurrency:
+  group: tg-claude
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TG_TOKEN: ${{ secrets.TG_TOKEN }}
+      CHAT_ID: ${{ github.event.client_payload.chat_id }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 30
+
+      - name: Последние коммиты для контекста
+        run: git log -15 --pretty='- %h %s' > "$RUNNER_TEMP/log.txt"
+
+      - name: Claude
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: >-
+            --max-turns 80
+            --allowedTools "Read,Edit,MultiEdit,Write,Glob,Grep,Bash(node:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git show:*)"
+          prompt: |
+            Ты работаешь над браузерной игрой «Такси» из этого репозитория. Задача пришла из Telegram от владельца.
+            Сначала прочитай CONTEXT.md (там описано, где что лежит) и, если нужно, DESIGN.md.
+            Последние коммиты лежат в файле ${{ runner.temp }}/log.txt.
+
+            Правила:
+            - Только меняй файлы. Не делай git commit и git push — это сделает workflow после тебя.
+            - Если по задаче есть важное, что стоит помнить в следующий раз, допиши это в CONTEXT.md.
+            - Если задача непонятна или это вопрос, ничего не меняй, просто ответь.
+            - Последним сообщением дай короткий ответ на русском для Telegram (до 15 строк, без markdown-таблиц):
+              что сделал или ответ на вопрос.
+
+            Задача:
+            ${{ github.event.client_payload.text }}
+
+      - name: Коммит и пуш
+        id: push
+        if: always() && steps.claude.outcome != 'skipped'
+        env:
+          TASK: ${{ github.event.client_payload.text }}
+        run: |
+          git config user.name "claude-tg-bot"
+          git config user.email "claude-tg-bot@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            title=$(printf '%s' "$TASK" | head -n1 | cut -c1-70)
+            git commit -q -m "TG: $title" -m "$TASK"
+          fi
+          if [ "$(git rev-list --count origin/main..HEAD)" = "0" ]; then
+            echo "changed=0" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          git pull -q --rebase origin main
+          git push -q origin HEAD:main
+          echo "changed=1" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          git show --stat --format= HEAD | tail -n 15 > "$RUNNER_TEMP/stat.txt"
+          # пересобрать GitHub Pages (пуш от GITHUB_TOKEN может не запустить сборку сам)
+          curl -sS -o /dev/null -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds" || true
+
+      - name: Ответ в Telegram
+        if: always()
+        env:
+          EXEC_FILE: ${{ steps.claude.outputs.execution_file }}
+          CLAUDE_OUTCOME: ${{ steps.claude.outcome }}
+          CHANGED: ${{ steps.push.outputs.changed }}
+          SHA: ${{ steps.push.outputs.sha }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, urllib.request, urllib.parse
+          e = os.environ
+          reply = ""
+          try:
+              data = json.load(open(e.get("EXEC_FILE") or ""))
+              if isinstance(data, dict): data = [data]
+              res = [m for m in data if isinstance(m, dict) and m.get("type") == "result"]
+              if res: reply = (res[-1].get("result") or "").strip()
+              if not reply:
+                  for m in reversed(data):
+                      if m.get("type") == "assistant":
+                          t = [c.get("text", "") for c in m.get("message", {}).get("content", []) if c.get("type") == "text"]
+                          if any(t): reply = "\n".join(t).strip(); break
+          except Exception:
+              pass
+          parts = []
+          if e.get("CLAUDE_OUTCOME") != "success":
+              parts.append("⚠️ Claude завершился с ошибкой (лимит подписки, таймаут или что-то ещё).")
+          if reply: parts.append(reply)
+          if e.get("CHANGED") == "1":
+              stat = open(os.path.join(e["RUNNER_TEMP"], "stat.txt")).read().strip() if os.path.exists(os.path.join(e["RUNNER_TEMP"], "stat.txt")) else ""
+              parts.append(f"✅ Коммит {e['SHA']} в main, сайт обновится примерно через минуту. Откатить: /undo\n{stat}")
+          elif e.get("CLAUDE_OUTCOME") == "success":
+              parts.append("Файлы не менялись.")
+          parts.append("Лог: " + e["RUN_URL"])
+          text = "\n\n".join(parts)
+          if len(text) > 4000: text = text[:3990] + "…"
+          body = urllib.parse.urlencode({"chat_id": e["CHAT_ID"], "text": text, "disable_web_page_preview": "true"}).encode()
+          urllib.request.urlopen(f"https://api.telegram.org/bot{e['TG_TOKEN']}/sendMessage", body)
+          EOF

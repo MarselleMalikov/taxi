@@ -41,6 +41,7 @@ async function setup(url, env) {
 
 const COMMANDS = [
   ["help", "Список команд"],
+  ["ai", "Задача для Claude (можно и без /ai)"],
   ["ls", "Файлы в папке: /ls [папка]"],
   ["get", "Скачать файл: /get [путь]"],
   ["find", "Найти текст: /find [путь] текст"],
@@ -54,7 +55,11 @@ const COMMANDS = [
   ["undo", "Откатить последний коммит"],
 ];
 
-const HELP = `Правка репозитория прямо из Telegram. Каждая правка сразу коммитится в ветку, сайт обновится примерно через минуту.
+const HELP = `<b>🤖 С ИИ</b>
+Просто напиши задачу обычным сообщением, например «сделай прокол в 2 раза реже» или «почему не работает кнопка Гараж?». Claude прочитает проект, внесёт правки, закоммитит в main и пришлёт ответ сюда. Каждая задача — новый разговор, поэтому пиши её целиком.
+
+<b>✍️ Вручную, без ИИ</b>
+Каждая правка сразу коммитится, сайт обновится примерно через минуту.
 
 Если путь не указан, берётся ${DEFAULT_FILE}.
 
@@ -97,7 +102,8 @@ async function handle(update, env) {
   try {
     if (msg.document) return await onDocument(env, msg);
     const text = msg.text || "";
-    if (!text.startsWith("/")) return send(env, chat, "Не понял. /help — список команд.");
+    if (!text.trim()) return send(env, chat, "Пришли текст задачи или команду. /help — список команд.");
+    if (!text.startsWith("/")) return await askClaude(env, chat, text);
     await onCommand(env, chat, text);
   } catch (e) {
     await send(env, chat, "Ошибка: " + esc(e.message || String(e)));
@@ -124,6 +130,12 @@ async function onCommand(env, chat, text) {
   };
 
   switch (cmd) {
+    case "ai": {
+      const task = text.replace(/^\/ai(@\S+)?\s*/i, "");
+      if (!task.trim()) return say("Напиши задачу после /ai или просто обычным сообщением.");
+      return askClaude(env, chat, task);
+    }
+
     case "start":
     case "help":
       return say(HELP);
@@ -293,6 +305,13 @@ async function onDocument(env, msg) {
     ...(sha ? { sha } : {}),
   });
   return send(env, msg.chat.id, `✅ ${esc(path)} ${sha ? "обновлён" : "добавлен"} (${kb(bytes.length)}). Откатить: /undo`);
+}
+
+// Обычный текст — задача для Claude: запускаем workflow .github/workflows/tg-claude.yml
+async function askClaude(env, chat, task) {
+  if (task.length > 8000) return send(env, chat, "Слишком длинно, сократи до 8000 символов.");
+  await gh(env, "dispatches", "POST", { event_type: "tg", client_payload: { text: task, chat_id: String(chat) } });
+  return send(env, chat, `🤖 Claude взял задачу. Обычно это занимает 1–5 минут, ответ придёт сюда.\nХод работы: https://github.com/${env.REPO}/actions`);
 }
 
 // ---------- GitHub ----------
