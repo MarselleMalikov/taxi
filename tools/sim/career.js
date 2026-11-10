@@ -49,9 +49,10 @@ window.__career = function (cfg) {
   return Object.assign(log, { target: cfg.target, early: cfg.early, money, careerShifts: M.careerShifts, rating: getRating() });
 };`;
 const jobs=[];
-for (const target of ["granta","rio","polo","octavia","tiggo4","optima","camry"]) for (const early of [true,false]) for(let i=0;i<N;i++) jobs.push({target,early,ff:4,stop:true});
+const TARGETS=(process.env.TARGETS||"granta,rio,polo,octavia,tiggo4,optima,camry").split(","), MODES=(process.env.EARLY||"1,0").split(",").map(x=>x==="1");
+for (const target of TARGETS) for (const early of MODES) for(let i=0;i<N;i++) jobs.push({target,early,ff:4,stop:true});
 (async()=>{const b=await chromium.launch();const out=[];let k=0;
  await Promise.all([0,1,2,3].map(async()=>{const p=await b.newPage();p.on('pageerror',e=>console.log('ERR',e.message));
   while(k<jobs.length){const j=jobs[k++];await p.goto('file://'+path.resolve(__dirname,'../../index.html'));await p.waitForTimeout(500);await p.addScriptTag({content:BOT});
-   const t=Date.now();const r=await p.evaluate(c=>__career(c),j);r.cpu=Math.round((Date.now()-t)/1000);out.push(r);console.log(j.target,j.early,'bought',r.boughtShift,'paid',r.paidShift,'cpu',r.cpu+'s');}}));
+   const t=Date.now();const r=await p.evaluate(c=>__career(c),j);r.cpu=Math.round((Date.now()-t)/1000);out.push(r);fs.writeFileSync(process.argv[2]||'career.json',JSON.stringify(out));console.log(j.target,j.early,'bought',r.boughtShift,'paid',r.paidShift,'cpu',r.cpu+'s');}}));
  fs.writeFileSync(process.argv[2]||'career.json',JSON.stringify(out));await b.close()})()
