@@ -35,7 +35,7 @@ window.__runShift = function (cfg) {
       if (districtSel) log.distMin += 15;
     }
     if (state === "idle" && online) {
-      if (fuel < 8) { log.refuels++; goRefuel(); continue; }
+      if (fuel < 8) { log.refuels++; goRefuel(); if (!$("ask").hidden) $("askok").click(); continue; }
       if (mood < 35) { if (!hadLunch) { hadLunch = true; log.lunches++; takeBreak("lunch"); } else { log.breaks++; takeBreak("rest"); } continue; }
       if (orders.length) { const o = orders[0]; if (Math.random() < (cfg.acceptRate || 0.92)) { log.accepted++; if (o.airport) log.airport = (log.airport || 0) + 1; acceptOrder(o.id); } else { log.declined++; declineOrder(o.id); } continue; }
     }
