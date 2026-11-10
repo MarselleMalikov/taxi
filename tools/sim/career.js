@@ -28,6 +28,7 @@ window.__career = function (cfg) {
     shiftBtn.click(); ff = cfg.ff; let ticks = 0, hadLunch = false;
     while (!endingShown && ticks < 900000) {
       ticks++;
+      if (evt && evt.call) { $("call").querySelector('[data-call="go"]').click(); continue; }
       if (evt) { const c = evt.choices, t = evt.title; $("evtbtns").querySelectorAll("[data-evt]")[/ТО/.test(t) ? 0 : pick(c.length)].click(); continue; }
       if (dialogue) { chooseAnswer(pick(dialogue.scene.nodes[dialogue.nodeId].choices.length)); continue; }
       if (!online && blockLeft() > 0) { const l = blockLeft(); clock += l; onlineT += l; blockUntil = 0; online = true; continue; }
@@ -43,7 +44,7 @@ window.__career = function (cfg) {
     }
     log.shifts.push(Math.round(shiftNet())); if (cfg.verbose) console.log('shift', s, 'ticks', ticks, 'rides', shiftRides, 'net', Math.round(shiftNet()), 'money', Math.round(money), 'state', state, 'online', online, 'end', endingShown);
     const b = endCard.querySelector('[data-end="newshift"]'); b.click();   // новая смена: платежи, ТО
-    if (evt) { const c = evt.choices; $("evtbtns").querySelectorAll("[data-evt]")[/ТО/.test(evt.title) ? 0 : pick(c.length)].click(); }
+    if (evt && !evt.call) { const c = evt.choices; $("evtbtns").querySelectorAll("[data-evt]")[/ТО/.test(evt.title) ? 0 : pick(c.length)].click(); }
   }
   return Object.assign(log, { target: cfg.target, early: cfg.early, money, careerShifts: M.careerShifts, rating: getRating() });
 };`;

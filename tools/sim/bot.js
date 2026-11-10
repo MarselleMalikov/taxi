@@ -24,7 +24,8 @@ window.__runShift = function (cfg) {
   const pick = n => Math.floor(Math.random() * n);
   while (!endingShown && ticks < 900000) {
     ticks++;
-    if (evt) { const c = evt.choices; $("evtbtns").querySelectorAll("[data-evt]")[pick(c.length)].click(); continue; }
+    if (evt && evt.call) { $("call").querySelector('[data-call="go"]').click(); continue; }
+      if (evt) { const c = evt.choices; $("evtbtns").querySelectorAll("[data-evt]")[pick(c.length)].click(); continue; }
     if (dialogue) { const node = dialogue.scene.nodes[dialogue.nodeId]; chooseAnswer(pick(node.choices.length)); continue; }
     if (!online && blockLeft() > 0) { log.blocks++; const left = blockLeft(); clock += left; onlineT += left; blockUntil = 0; online = true; spawnTimer = 1.5; continue; }
     if (cfg.mode === "smart" && state === "idle" && online && clock >= nextCheck) {   // «Мой район» - только когда в районе машины есть повышенный спрос
