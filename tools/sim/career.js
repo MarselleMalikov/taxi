@@ -12,7 +12,7 @@ window.__career = function (cfg) {
   const target = salonCar(cfg.target), tcls = CARS.find(c => c.id === target.model).t;
   const log = { boughtShift: null, boughtReal: null, paidShift: null, paidReal: null, real: 0, repo: 0, to: 0, broke: 0, earlyPaid: false, shifts: [] };
   const _spend = spend; spend = function (k, a, l) { if (l === "ремонт") log.broke++; if (l === "ТО") log.to++; return _spend(k, a, l); };
-  for (let s = 0; s < (cfg.max || 400); s++) {
+  for (let s = 0; s < (cfg.max || 600); s++) {
     // перед сменой: покупка, когда открыт тариф и хватает на взнос с запасом
     if (!M.own && tariffOpen(tcls) && money >= Math.round(target.price * DOWN) + 15000) {
       const down = Math.round(target.price * DOWN); money -= down;
@@ -49,7 +49,7 @@ window.__career = function (cfg) {
   return Object.assign(log, { target: cfg.target, early: cfg.early, money, careerShifts: M.careerShifts, rating: getRating() });
 };`;
 const jobs=[];
-for (const target of ["rio2021","octavia2021","camry2021"]) for (const early of [true,false]) for(let i=0;i<N;i++) jobs.push({target,early,ff:4,stop:true});
+for (const target of ["granta","rio","polo","octavia","tiggo4","optima","camry"]) for (const early of [true,false]) for(let i=0;i<N;i++) jobs.push({target,early,ff:4,stop:true});
 (async()=>{const b=await chromium.launch();const out=[];let k=0;
  await Promise.all([0,1,2,3].map(async()=>{const p=await b.newPage();p.on('pageerror',e=>console.log('ERR',e.message));
   while(k<jobs.length){const j=jobs[k++];await p.goto('file://'+path.resolve(__dirname,'../../index.html'));await p.waitForTimeout(500);await p.addScriptTag({content:BOT});

@@ -2638,7 +2638,8 @@ function nextPayDay(from) { let d = from; while (!isPayDay(d)) d++; return d; }
 // Цена 2021 года - около 157 аренд этой машины; 2020 год на 12% дешевле, но чаще ломается.
 // Платёж по кредиту дважды в месяц (1 и 15 числа) = аренда минус 30%, за 15 дней
 const DOWN = 0.2;
-const SALON = CARS.map(c => ({ id: c.id, model: c.id, year: "бу", price: Math.round(c.rent * 157.5 / 1000) * 1000, pay: Math.round(c.rent * 0.7 * 15 / 100) * 100 }));   // Б/У машины
+const SALON_PRICE = { granta: 350000, rio: 400000, polo: 450000, octavia: 550000, tiggo4: 800000, optima: 850000, camry: 900000 };
+const SALON = CARS.map(c => ({ id: c.id, model: c.id, year: "бу", price: SALON_PRICE[c.id], pay: Math.round(c.rent * 0.7 * 15 / 100) * 100 }));   // Б/У машины; платёж = аренда x0.7 за 15 дней
 const salonCar = id => SALON.find(s => s.id === id || String(id).startsWith(s.id));
 const ownWear = () => M.own && M.own.year === 2020 ? 1.5 : 1;   // старые сохранения: машина 2020 года ломается чаще
 const UPKEEP = { econ: { to: 2500, rep: [2500, 4500] }, comfort: { to: 3100, rep: [3000, 5500] }, cplus: { to: 3800, rep: [3800, 7000] } };
