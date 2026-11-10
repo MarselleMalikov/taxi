@@ -516,6 +516,13 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .optrow>.ico{width:24px;height:24px;flex:none}.optrow span{flex:1}.optrow b{display:block;font-size:16px}.optrow small{display:block;font-size:14px;color:var(--m)}.optrow.on{border-color:var(--yd);background:#FFFBEA}
 .optrow .swt{display:block}.ctag.vip{background:#FFF1C2;color:#5A4500}
 .sown{font-style:normal;font-size:12.5px;font-weight:600;color:#16883F;margin-left:4px}
+
+/* компактные окна: магазин и смена */
+.scard,.lcard{padding:16px!important}.scard .mhead,.lcard .mhead{position:static;margin-bottom:4px}.scard .mhead b,.lcard .mhead b{display:block;font-size:21px;font-weight:800}
+.scard .sitem{padding:7px 0;gap:10px}.scard .sitem b{font-size:16px!important;line-height:1.2}.scard .sitem small{font-size:14px!important;margin-top:1px;line-height:1.25!important}
+.scard .sitem:last-child{border-bottom:none}.scard .sbuy{min-width:84px;padding:8px 10px;font-size:15px}
+.lcard .lrow{padding:6px 0;font-size:15.5px!important}.lcard .lrow b{font-size:16px}.lcard .lrow.total{padding-top:9px}.lcard .lrow.total span{font-size:17px!important}.lcard .lrow.total b{font-size:19px}
+.lcard .lsub{margin:4px 0 0!important;font-size:14px!important}
 </style></head>
 <body>
 <div id="app">
@@ -559,7 +566,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
     </div>
   </div>
 </div>
-<div id="ledger" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Смена <span id="lday"></span></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="lrows"></div></div></div>
+<div id="ledger" hidden><div class="askback" data-close="1"></div><div class="askcard lcard"><div class="mhead"><b>Смена <span id="lday"></span></b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="lrows"></div></div></div>
 <div id="modes" hidden><div class="askback" data-close="1"></div><div class="askcard"><div class="mhead"><b>Тарифы и режимы</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="modelist"></div></div></div>
 <div id="pause" hidden><div class="askback" data-close="1"></div><div class="askcard pcard"><div class="mhead"><b>Перерыв</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="ponline"><div class="potop"><span>На линии</span><b id="pon"></b></div><span class="pbar"><i id="ponbar"></i></span></div><button class="pact" id="prest"><span class="pico blue" id="prestico"></span><span class="ptxt"><span class="ptop"><b>Отдохнуть</b><span class="pprice">Бесплатно</span></span><span class="ptags"><i>20 мин</i><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path d="M4.4 8.6q2.6 2.2 5.2 0"/></svg><span id="presttag"></span></i></span></span></button><button class="pact" id="plunch"><span class="pico orange" id="plunchico"></span><span class="ptxt"><span class="ptop"><b>Пообедать</b><span class="pprice">350 ₽</span></span><span class="ptags"><i>20 мин</i><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><circle cx="4.9" cy="5.6" r=".5" fill="currentColor"/><circle cx="9.1" cy="5.6" r=".5" fill="currentColor"/><path d="M4.4 8.6q2.6 2.2 5.2 0"/></svg>+20%</i></span></span></button><button class="pact" id="pfuel"><span class="pico green" id="pfuelico"></span><span class="ptxt"><span class="ptop"><b>Заправиться</b><span class="pprice" id="pfuelprice"></span></span><span class="ptags"><i id="pfueltag"></i></span></span></button><p class="pnote" id="pausenote"></p></div></div>
 <div id="garage" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Таксопарк</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="garagelist"></div></div></div>
@@ -569,7 +576,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 <div id="phone" hidden><div class="askback" data-close="1"></div><div class="smart"><div class="sscreen"><div class="sbar"><b class="sclock"></b><span class="island"></span><span class="sicons"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="25" y="4" width="2" height="4" rx="1" opacity=".4"/></svg></span></div><div class="sapp" id="phonelist"></div><button class="shome" data-close="1" aria-label="Закрыть"></button></div></div></div>
 <div id="call" hidden><div class="askback"></div><div class="smart"><div class="sscreen dark"><div class="sbar"><b class="sclock"></b><span class="island"></span><span class="sicons"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="25" y="4" width="2" height="4" rx="1" opacity=".4"/></svg></span></div><div class="callbox" id="callbox"></div><span class="shome"></span></div></div></div>
 <div id="home" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Дом</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="homelist"></div></div></div>
-<div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
+<div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard scard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button></div></div>
 <div id="kef" hidden><div class="askback"></div><div class="askcard gcard kcard" id="kcard"><div class="khead"><button class="kround" data-k="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><b>Угадай где кэф?</b><button class="kround" data-k="info" aria-label="Правила"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></div><div class="krwrap" id="krules"><p class="krules">Выберите от 1 до 10 зон. Из 12 зон 10 окажутся с повышенным спросом и 2 пустыми. Если все ваши зоны с повышенным спросом, ставка умножается на коэффициент. Попалась пустая - ставка проиграна.</p></div><div class="kstats"><div><span>Выбрано зон</span><b id="ksel">0 из 10</b></div><i></i><div><span>Коэффициент</span><b id="kcoef">×1.00</b></div></div><svg id="kfield" viewBox="0 0 193.2 182.5"></svg><div class="khint"><svg class="ktrophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#FFD233" stroke="#E3A600" stroke-width="1.2"/><path d="M7 6H4.5v1.5A3 3 0 0 0 7.6 10.4M17 6h2.5v1.5a3 3 0 0 1-3.1 2.9" fill="none" stroke="#E3A600" stroke-width="1.6"/><path d="M10.5 13.5h3l.5 3.5h-4zM8 19.5h8v1.5H8z" fill="#FFD233" stroke="#E3A600" stroke-width="1"/></svg><span id="khint">Чем больше зон, тем выше коэффициент</span><em>10 зон<br><b>×66.00</b></em></div><div class="kbet"><button data-k="minus" aria-label="Меньше">−</button><b id="kbet"></b><button data-k="plus" aria-label="Больше">+</button><span id="kmoney"></span></div><div class="chips" id="kchips"></div><div class="kbtns"><button class="kgo" id="kgo"></button><button class="krand" id="krand">Случайно</button></div></div></div>
@@ -628,13 +635,13 @@ const CARS = [   // img - рисунок машины в папке cars/
 ];
 // Магазин: покупки для машины, которые остаются навсегда и помогают зарабатывать
 const SHOP = [
-  { id: "kit",    name: "Аптечка и огнетушитель", price: 1200, text: "Проверка на посту ДПС проходит без задержки." },
-  { id: "cam",    name: "Видеорегистратор",       price: 6000, text: "Жалобы пассажиров не снижают приоритет: запись на вашей стороне." },
-  { id: "charge", name: "Зарядки для пассажиров", price: 1500, text: "Пассажиры чаще оставляют чаевые." },
-  { id: "water",  name: "Вода и салфетки в салоне", price: 1000, text: "Оценки 1-2 звезды ставят вдвое реже." },
-  { id: "covers", name: "Чехлы на сиденья",       price: 3000, text: "Химчистка салона обходится на 70% дешевле." },
-  { id: "seat",   name: "Детское кресло",         price: 2500, text: "Заказы с детьми: на 10-15% дороже. Включается в «Тарифы и режимы»." },
-  { id: "thermos", name: "Термос с кофе",          price: 900,  text: "Отдых поднимает настроение на 18% вместо 12%." }
+  { id: "kit", name: "Аптечка и огнетушитель", price: 1200, text: "ДПС проверяет без задержки" },
+  { id: "cam", name: "Видеорегистратор", price: 6000, text: "Жалобы не бьют по приоритету" },
+  { id: "charge", name: "Зарядки для пассажиров", price: 1500, text: "Чаевые оставляют чаще" },
+  { id: "water", name: "Вода и салфетки", price: 1000, text: "Плохие оценки вдвое реже" },
+  { id: "covers", name: "Чехлы на сиденья", price: 3000, text: "Химчистка на 70% дешевле" },
+  { id: "seat", name: "Детское кресло", price: 2500, text: "Заказы с детьми +10–15%" },
+  { id: "thermos", name: "Термос с кофе", price: 900, text: "Отдых +18% вместо 12%" }
 ];
 let owned = {};
 const owns = id => !!owned[id];
@@ -1015,10 +1022,10 @@ const SND = (() => {
     const a = ctx(); if (!a) return;
     try {
       const t = a.currentTime + (at || 0), lp = a.createBiquadFilter(), g = a.createGain();
-      lp.type = "lowpass"; lp.frequency.value = cut || 520; lp.Q.value = 2;
+      lp.type = "lowpass"; lp.frequency.value = cut || 200; lp.Q.value = 0.7;
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.06); g.gain.setValueAtTime(vol, t + dur * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
       lp.connect(g); g.connect(master);
-      for (const [type, k, v] of [["sawtooth", 1, 1], ["square", 0.5, 0.5]]) {
+      for (const [type, k, v] of [["triangle", 1, 1], ["sine", 0.5, 1.2], ["sawtooth", 1, 0.25]]) {
         const o = a.createOscillator(), og = a.createGain(); o.type = type; og.gain.value = v;
         o.frequency.setValueCurveAtTime(new Float32Array(curve.map(f => f * k)), t, dur); o.connect(og); og.connect(lp); o.start(t); o.stop(t + dur + 0.02);
       }
@@ -1030,12 +1037,12 @@ const SND = (() => {
     set(o) { Object.assign(pref, o); save(); if (!pref.on) this.ringStop(); },
     unlock() { ctx(); },
     order() { for (const d of [0, 0.42]) { tone(988, d, 0.16, { vol: 0.22 }); tone(1319, d + 0.13, 0.28, { vol: 0.22 }); } buzz([60, 300, 60]); },   // новый заказ: «динь-динь» дважды
-    engineOn() {   // запуск двигателя: стартер, схватил, перегазовка, холостые
-      for (let i = 0; i < 4; i++) noise(i * 0.13, 0.1, 0.22, 180, 1.5);
-      motor(0, 0.55, [26, 30, 27, 31, 28], 0.18, 380);
-      motor(0.5, 1.5, [38, 95, 120, 80, 58, 52, 50], 0.26, 640);
+    engineOn() {   // запуск двигателя: глухой стартер, схватил, лёгкая перегазовка, низкие холостые
+      for (let i = 0; i < 3; i++) noise(i * 0.15, 0.12, 0.12, 90, 1);
+      motor(0, 0.5, [20, 23, 21, 24, 22], 0.1, 140);
+      motor(0.45, 1.6, [26, 48, 58, 44, 34, 31, 30], 0.16, 220);
     },
-    engineOff() { motor(0, 1.1, [52, 48, 40, 30, 20, 14], 0.22, 520); noise(1.0, 0.08, 0.12, 240, 1.5); },   // глушим: обороты падают, щелчок
+    engineOff() { motor(0, 1.2, [31, 29, 25, 20, 15, 11], 0.14, 180); noise(1.1, 0.1, 0.06, 120, 1); },   // глушим: обороты падают, глухой щелчок
     kPick() { tone(740, 0, 0.09, { type: "triangle", vol: 0.16, f2: 1100 }); },                                         // «Угадай где кэф?»: выбор зоны
     kUnpick() { tone(900, 0, 0.08, { type: "triangle", vol: 0.12, f2: 560 }); },
     kFlip(good) { noise(0, 0.05, 0.16, 2600, 2); tone(good ? 880 : 300, 0.02, 0.12, { type: good ? "sine" : "triangle", vol: good ? 0.1 : 0.14 }); },
@@ -1507,10 +1514,10 @@ function showLedger() {
   const L = ledger, f = v => v.toLocaleString("ru-RU") + " ₽", row = (t, v, minus) => '<div class="lrow' + (minus && v ? " minus" : "") + '"><span>' + t + "</span><b>" + (minus && v ? "−" : "") + f(v) + "</b></div>";
   $("lday").textContent = day;
   $("lrows").innerHTML = row("Заказы (" + shiftRides + ")", L.fares) + row("Чаевые и доплаты", L.tips) + row("Комиссия", L.fee, true) +
-    row("Аренда (" + myCar().name + ")", L.rent, true) + row("Топливо" + (L.fuelL ? " (" + Math.round(L.fuelL) + " л)" : ""), L.fuel, true) + (L.bonus ? row("Бонусы за цели", L.bonus) : "") + (L.fines ? row("Штрафы, обед и прочее", L.fines, true) : "") + (L.casino ? '<div class="lrow' + (L.casino < 0 ? " minus" : "") + '"><span>Казино (не входит в итог)</span><b>' + (L.casino < 0 ? "−" : "+") + f(Math.abs(L.casino)) + "</b></div>" : "") +
+    row("Аренда (" + myCar().name + ")", L.rent, true) + row("Топливо" + (L.fuelL ? " (" + Math.round(L.fuelL) + " л)" : ""), L.fuel, true) + (L.bonus ? row("Бонусы за цели", L.bonus) : "") + (L.fines ? row("Штрафы, обед и прочее", L.fines, true) : "") + "" +
     '<div class="lrow"><span>Чистыми в час</span><b>' + (onlineT >= 1800 ? (shiftNet() < 0 ? "−" : "") + f(Math.abs(Math.round(shiftNet() / (onlineT / 3600)))) : "—") + "</b></div>" +
     '<div class="lrow total"><span>Итого за смену</span><b>' + (shiftNet() < 0 ? "−" : "") + f(Math.abs(shiftNet())) + "</b></div>" +
-    '<div class="lsub">Пробег ' + Math.round(L.km) + " км · в баке " + Math.round(fuel) + " л · на счету " + f(money) + "</div>";
+    '<div class="lsub">Пробег ' + Math.round(L.km) + " км · в баке " + Math.round(fuel) + " л" + "</div>";
   $("ledger").hidden = false;
 }
 $("earn").addEventListener("click", showLedger);
@@ -1593,7 +1600,7 @@ function showPause() {   // окно «Перерыв»: отдых, обед, �
 $("fuelpill").addEventListener("click", showPause);
 $("garagebtn").addEventListener("click", showGarage);
 function showShop() {
-  $("shoplist").innerHTML = '<p class="lsub" style="text-align:left">На счету ' + money.toLocaleString("ru-RU") + " ₽. Покупки остаются навсегда.</p>" + SHOP.map(it =>
+  $("shoplist").innerHTML = '<p class="lsub sal">На счету ' + money.toLocaleString("ru-RU") + " ₽. Покупки навсегда.</p>" + SHOP.map(it =>
     '<div class="sitem"><div><b>' + it.name + "</b><small>" + it.text + '</small></div><button class="sbuy' + (owns(it.id) ? " got" : "") + '" data-buy="' + it.id + '"' + (owns(it.id) || money < it.price ? " disabled" : "") + ">" +
     (owns(it.id) ? "Куплено" : it.price.toLocaleString("ru-RU") + " ₽") + "</button></div>").join("");
   menuEl.hidden = true; $("shop").hidden = false;
