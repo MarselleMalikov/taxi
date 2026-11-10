@@ -17,7 +17,7 @@ export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (req.method === "GET" && url.pathname === "/setup") return setup(url, env);
-    if (req.method !== "POST") return new Response("ok");
+    if (req.method !== "POST") return new Response("taxi-bot работает, версия 3", { headers: { "content-type": "text/plain; charset=utf-8" } });
     if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== env.WEBHOOK_SECRET) return new Response("forbidden", { status: 403 });
     const update = await req.json();
     // Telegram сразу получает 200, иначе при долгой работе он повторит запрос и коммит сделается дважды
