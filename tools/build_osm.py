@@ -3,7 +3,7 @@
 # Сырые выгрузки лежат не в main, а в отдельной ветке osm-data (чтобы сайт на GitHub Pages был лёгким).
 # Достать их в папку osm/:  git fetch origin osm-data && git checkout origin/osm-data -- osm
 # После сборки папку osm/ в main не коммитить.
-# Читает:  osm/nature.json, osm/places.json, osm/buildings_*.json
+# Читает:  osm/nature.json, osm/places.json, osm/buildings_*.json, osm/addresses*.json, osm/airport.json
 # Пишет:   osmmap.js
 #
 # Что делает:
@@ -144,9 +144,45 @@ for f in sorted(glob.glob(os.path.join(OSM, "addresses*.json"))):
         if st not in sidx: sidx[st] = len(streets); streets.append(st)
         addrs.append([round(x), round(y), sidx[st], num, WEIGHT.get(b, 1)])
 
+# ---------- аэропорт (osm/airport.json): лётное поле, полосы, рулёжки, перрон, терминалы ----------
+aero = {"aerodrome": [], "apron": [], "runway": [], "taxiway": []}
+aero_parts = []   # контура лётного поля в выгрузке нет - строим его по полосам, рулёжкам и перрону с запасом
+if os.path.exists(os.path.join(OSM, "airport.json")):
+    for el in load("airport.json"):
+        t = el.get("tags", {}); a = t.get("aeroway")
+        if a in ("aerodrome", "apron"):
+            for p in to_polys(el):
+                aero_parts.append(p.buffer(120))
+                e = enc_poly(p, 4, 500)
+                if e and a == "apron": aero[a].append(e)
+        elif a in ("runway", "taxiway") and el["type"] == "way":
+            g = el.get("geometry") or []
+            if len(g) < 2: continue
+            w = float(str(t.get("width", "45" if a == "runway" else "18")).split()[0] or 0) or (45 if a == "runway" else 18)
+            poly = LineString([xy(q) for q in g]).buffer(w / 2, cap_style=2 if a == "runway" else 1).intersection(BOUND)
+            for q in (poly.geoms if hasattr(poly, "geoms") else [poly]):
+                if isinstance(q, Polygon):
+                    aero_parts.append(q.buffer(160 if a == "runway" else 90))
+                    e = enc_poly(q, 1.5, 40)
+                    if e: aero[a].append(e)
+        elif t.get("building") and el["type"] == "way" and (el["type"], el["id"]) not in seen:
+            seen.add((el["type"], el["id"]))
+            for p in to_polys(el):
+                e = enc_poly(p, 0.8, 12)
+                if e: buildings.append(e)
+        if a == "terminal" and t.get("name") and el["type"] == "node":
+            x, y = xy(el); pois.append([round(x), round(y), "airport", "Аэропорт Уфа, " + t["name"]])
+
+if aero_parts:
+    field = unary_union(aero_parts).buffer(60).buffer(-60).intersection(BOUND)
+    for q in (field.geoms if hasattr(field, "geoms") else [field]):
+        if isinstance(q, Polygon) and q.area > 20000:
+            e = enc_poly(Polygon(q.exterior), 12, 20000)
+            if e: aero["aerodrome"].append(e)
+
 out = {"water": nature["water"], "wood": nature["wood"], "park": nature["park"], "grass": nature["grass"],
        "cemetery": nature["cemetery"], "rivers": rivers, "buildings": buildings, "pois": pois,
-       "streets": streets, "addrs": addrs}   # адрес: [x, y, номер улицы в streets, номер дома, вес]
+       "streets": streets, "addrs": addrs, "aerodrome": aero["aerodrome"], "apron": aero["apron"], "runway": aero["runway"], "taxiway": aero["taxiway"]}   # адрес: [x, y, номер улицы в streets, номер дома, вес]
 js = ("// Реальная карта Уфы из OpenStreetMap (© участники OpenStreetMap, лицензия ODbL).\n"
       "// Сгенерировано скриптом tools/build_osm.py из файлов в папке osm/. Вручную не править.\n"
       "// Контур: [x0, y0, dx1, dy1, ...] в метрах; контур с дырами (двор, остров) - массив таких контуров.\n"

@@ -413,6 +413,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 #garage .gcar{margin-top:5px;padding:2px 10px 2px 6px}#garage .gcar .carimg{width:84px}
 #garage .ginfo b{font-size:16px!important;line-height:1.2}#garage .ginfo em{font-size:15px!important;margin-top:0}
 .gcar.lock{opacity:.5}
+.abadge{font-size:13px;font-weight:700;padding:4px 9px;border-radius:999px;background:#E4EDFF;color:#2456C9;margin-left:auto;margin-right:6px}.abadge+.sbadge{margin-left:0}
 </style></head>
 <body>
 <div id="app">
@@ -983,6 +984,16 @@ function spotIn(reg, cx, cy, dmin, dmax, share) {   // точка внутри �
   for (let t = 0; t < 25; t++) { const sp = randSpot(cx, cy, dmin, dmax, share); if (suburbAt(N[sp.node][0], N[sp.node][1]) === reg) return sp; }
   return null;
 }
+// ====== Аэропорт: заказы туда (дальние, с доплатой) и обратно в город, когда машина рядом с терминалом ======
+const AIRPORT = (() => { const t = typeof OSM !== "undefined" && OSM.pois.find(p => p[2] === "airport"); if (!t) return null;
+  // точка подачи - ближайший к терминалу узел, куда можно и доехать из города, и уехать обратно (у терминала много односторонних проездов)
+  const near = []; for (let i = 0; i < N.length; i++) { const d = Math.hypot(N[i][0] - t[0], N[i][1] - t[1]); if (d < 700) near.push([d, i]); }
+  near.sort((a, b) => a[0] - b[0]);
+  const node = (near.find(([, i]) => findPath(carNode, i) && findPath(i, carNode)) || near[0] || [0, nearest(t[0], t[1])])[1];
+  return { x: t[0], y: t[1], node, n: "Аэропорт Уфа", addr: t[3] }; })();
+const CITY_C = [15571, 19669];   // центр Уфы в метрах карты
+const AIRPORT_FEE = 250, AIRPORT_NEAR = 3000;   // доплата за поездку в аэропорт или из него; «рядом с аэропортом» - ближе 3 км
+const airportShare = () => { const h = hourNow(); return h >= 5 && h < 9 || h >= 17 && h < 21 ? 0.06 : 0.035; };   // утром и вечером в аэропорт едут чаще
 const STORY_CHANCE = 0.06;   // как часто вместо обычного пассажира попадается постоянный со своей историей
 function buildOrder(cx, cy, cnode, pmin, pmax) {
   // постоянные пассажиры со своей историей попадаются редко и только пока история не закончилась
@@ -1006,6 +1017,16 @@ function buildOrder(cx, cy, cnode, pmin, pmax) {
       B = spotIn(reg, N[A.node][0], N[A.node][1], 1200, 7000, 0.3); if (!B) return null; local = true;
     }
   } else suburbName = null;
+  let airport = false;
+  if (AIRPORT && !business && !local) {
+    const near = Math.hypot(cx - AIRPORT.x, cy - AIRPORT.y) < AIRPORT_NEAR;
+    if (near && Math.random() < 0.75) {   // прилетели - нужно в город
+      A = { node: AIRPORT.node, place: { n: "Прилёт", k: "airport" }, addr: AIRPORT.addr };
+      B = randSpot(CITY_C[0], CITY_C[1], 0, 9000, 0.35); airport = true;   // из аэропорта едут в город
+    } else if (!near && Math.random() < airportShare() && Math.hypot(N[A.node][0] - AIRPORT.x, N[A.node][1] - AIRPORT.y) > 7000) {
+      B = { node: AIRPORT.node, place: { n: "Вылет", k: "airport" }, addr: AIRPORT.addr }; airport = true;
+    }
+  }
   if (districtSel && !business) {   // мой район: конец поездки - в выбранных районах
     let ok = districtSel.has(districtAt(N[B.node][0], N[B.node][1]));
     for (let t = 0; t < 12 && !ok; t++) { B = randSpot(N[A.node][0], N[A.node][1], TRIP_MIN, TRIP_MAX, 0.35); ok = districtSel.has(districtAt(N[B.node][0], N[B.node][1])); }
@@ -1030,7 +1051,8 @@ function buildOrder(cx, cy, cnode, pmin, pmax) {
     tripKm: st.km, pickupKm: sp.km, pickupMin: Math.max(1, Math.round(sp.sec / 60)),
     price: 0, tip: 0, mood: 0, ttl: ORDER_TTL, feeRate: feeRate(), local });
   o.cls = cls;
-  const basePrice = Math.round((BASE_FARE + st.km * PER_KM) * TARIFFS[cls].mult / 10) * 10;
+  const basePrice = Math.round((BASE_FARE + st.km * PER_KM + (airport ? AIRPORT_FEE : 0)) * TARIFFS[cls].mult / 10) * 10;
+  o.airport = airport;
   o.surge = orderSurge(N[from][0], N[from][1], st.km);            // повышенный спрос в точке подачи
   o.price = Math.round(basePrice * o.surge / 10) * 10; o.surgeAdd = o.price - basePrice;   // надбавка к обычной цене
   o.runner = o.cash && Math.random() < runnerChance(rating);   // не заплатить может только тот, кто платит наличными
@@ -1937,7 +1959,7 @@ function resultHtml() {   // итог поездки: компактная ка�
 }
 function orderCardHtml(o) {
   const sg = (o.cls && myCar().t !== "econ" ? '<span class="cbadge' + (o.cls === myCar().t ? " own" : "") + '">' + TARIFFS[o.cls].name + "</span>" : "") +
-    (o.surgeAdd > 0 ? '<span class="sbadge">Спрос +' + o.surgeAdd + " ₽</span>" : "");   // полную цену не показываем, только надбавку
+    (o.airport ? '<span class="abadge">Аэропорт</span>' : "") + (o.surgeAdd > 0 ? '<span class="sbadge">Спрос +' + o.surgeAdd + " ₽</span>" : "");   // полную цену не показываем, только надбавку
   return '<div class="ocard' + (o.id === previewId ? " sel" : "") + (o.surgeAdd > 0 ? " surge" : "") + '" data-id="' + o.id + '"><div class="otop"><span class="orate' + (+o.rating < 4.6 ? " low" : "") + '">★ ' + o.rating + "</span>" + sg + '</div><div class="addr"><i class="dotA"></i><div><b>' + (o.fromAddr || addrOf(o.from)) + "</b><small>" + (o.fromPlace ? o.fromPlace.n + " · " : "") + "до клиента " + o.pickupKm.toFixed(1) + " км · " + o.pickupMin +
     ' мин</small></div></div>' + (modeNow() !== "classic" ? '<div class="addr"><i class="dotB"></i><div><b>' + (o.toAddr || addrOf(o.to)) + "</b><small>" + (o.place ? o.place.n + " · " : "") + o.tripKm.toFixed(1) + " км</small></div></div>" : "") + '<div class="ohide"></div><div class="obar"><div class="obarfill" id="bar-' + o.id +
     '"></div></div><div class="obtns"><button class="skip" data-act="decline" data-id="' + o.id + '">Пропустить</button><button class="take" data-act="accept" data-id="' + o.id + '">Принять</button></div></div>';
@@ -2046,8 +2068,12 @@ const LAYERS = HAS_OSM ? [   // порядок = порядок рисовани
   { items: decodeLayer(OSM.cemetery),  fill: "#dde6d9" },
   { items: decodeLayer(OSM.wood),      fill: "#cde5c1" },
   { items: decodeLayer(OSM.park),      fill: "#d2eac6" },
+  { items: decodeLayer(OSM.aerodrome || []), fill: "#e4e9e0", stroke: "#d3dacd" },   // лётное поле аэропорта
   { items: decodeLayer(OSM.water),     fill: "#aad3f2" },
   { items: decodeLayer(OSM.rivers),    line: "#aad3f2", width: 9, minPx: 1.5, open: true },   // небольшие реки линией
+  { items: decodeLayer(OSM.apron || []),   fill: "#d6d9e0" },                    // перрон
+  { items: decodeLayer(OSM.taxiway || []), fill: "#cdd1d9" },                    // рулёжки
+  { items: decodeLayer(OSM.runway || []),  fill: "#aeb3bf", stroke: "#9da3b0" }, // взлётные полосы
   { items: decodeLayer(OSM.buildings), fill: "#dfe1e6", stroke: "#cdd0d7", minScale: 0.09 }
 ] : [];
 // Слой карты рисуем один раз в отдельную картинку с запасом вокруг экрана

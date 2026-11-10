@@ -14,6 +14,7 @@ window.__runShift = function (cfg) {
   const _spend = spend; spend = function (kind, amount, label) { if (kind === "fines") log.costs.push(label + ":" + amount); return _spend(kind, amount, label); };
   const _finish = finishRide; finishRide = function (reason) { const r = _finish(reason); if (lastRide) { for (const f of lastRide.fines) log.fines.push(f); if (lastRide.price === 0 && lastRide.note) log.cashLost++; } return r; };
   for (const n of ["evtTire", "evtCrash", "evtCoffee", "evtHail"]) { const f = window[n]; window[n] = function () { log.events[n] = (log.events[n] || 0) + 1; return f.apply(this, arguments); }; }
+  const _ao = acceptOrder;
   const _sd = startDialogue; startDialogue = function (o, later) { _sd(o, later); const d = dialogue || (current && current.epilogue); if (d) { const id = Object.keys(SCENES).find(k => SCENES[k] === d.scene); log.scenes[id] = (log.scenes[id] || 0) + 1; } };
   shiftBtn.click();   // на линию: аренда списывается
   const startNet = shiftNet();
@@ -34,7 +35,7 @@ window.__runShift = function (cfg) {
     if (state === "idle" && online) {
       if (fuel < 8) { log.refuels++; goRefuel(); continue; }
       if (mood < 35) { if (!hadLunch) { hadLunch = true; log.lunches++; takeBreak("lunch"); } else { log.breaks++; takeBreak("rest"); } continue; }
-      if (orders.length) { const o = orders[0]; if (Math.random() < (cfg.acceptRate || 0.92)) { log.accepted++; acceptOrder(o.id); } else { log.declined++; declineOrder(o.id); } continue; }
+      if (orders.length) { const o = orders[0]; if (Math.random() < (cfg.acceptRate || 0.92)) { log.accepted++; if (o.airport) log.airport = (log.airport || 0) + 1; acceptOrder(o.id); } else { log.declined++; declineOrder(o.id); } continue; }
     }
     if (current && current.nextOffer && !current.next && state === "toDropoff") { log.chainAcc++; current.next = current.nextOffer; current.nextOffer = null; }
     update(0.05);
