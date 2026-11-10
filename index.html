@@ -523,6 +523,24 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .scard .sitem:last-child{border-bottom:none}.scard .sbuy{min-width:84px;padding:8px 10px;font-size:15px}
 .lcard .lrow{padding:6px 0;font-size:15.5px!important}.lcard .lrow b{font-size:16px}.lcard .lrow.total{padding-top:9px}.lcard .lrow.total span{font-size:17px!important}.lcard .lrow.total b{font-size:19px}
 .lcard .lsub{margin:4px 0 0!important;font-size:14px!important}
+
+/* биржа TaxiCoin */
+#trade{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#trade[hidden]{display:none}
+.tcard{padding:16px!important;max-width:400px}.tbal{flex:none;font-size:15px;font-weight:800;padding:7px 11px;border-radius:14px;background:var(--dark);color:#fff;white-space:nowrap}
+.tprice{display:flex;align-items:baseline;gap:8px;margin:10px 2px 6px}.tprice b{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}.tprice small{margin-left:auto;font-size:13px;color:var(--m);font-weight:600}
+.tprice span,#tpnl{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}.up{color:#16883F}.down{color:#C9363B}
+#tchart{display:block;width:100%;height:170px;border-radius:16px;background:#FBFBFC;border:1px solid var(--line)}
+.tbook{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.tbh{display:block;font-size:13px;font-weight:600;color:var(--m);margin:0 2px 3px}
+.trow{position:relative;display:flex;justify-content:space-between;padding:1px 6px;font-size:12.5px;line-height:1.35;font-variant-numeric:tabular-nums;border-radius:4px;overflow:hidden}
+.trow b{font-size:12.5px!important;line-height:1.35}.trow i{position:absolute;right:0;top:0;bottom:0;opacity:.14}.trow span,.trow b{position:relative;font-weight:600}.trow b{color:#4B5260;font-weight:500}
+.trow.ask span{color:#C9363B}.trow.ask i{background:#E5484D}.trow.bid span{color:#16883F}.trow.bid i{background:#1FAF55}
+.tlab{margin:10px 2px 0;font-size:14px;font-weight:600;color:var(--m)}.tcard .kbet{margin-top:4px}.tcard .kbet span{font-size:14px}.tcard .chips{margin-top:6px}.tcard .chip2:disabled{opacity:.4}
+.tbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.tbtns button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:11px 8px;border:none;border-radius:24px;font-family:inherit;font-size:17px;font-weight:800;color:#fff;cursor:pointer;line-height:1.15}
+.tbtns small{font-size:13px;font-weight:500;opacity:.85}.tlong{background:#1FAF55}.tshort{background:#E5484D}.tbtns button:disabled{opacity:.4;cursor:default}
+.tpos{margin-top:10px;padding:12px 14px;border-radius:20px;background:var(--c)}.tptop{display:flex;align-items:center;justify-content:space-between}.tptop i{font-style:normal;font-size:14px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff}
+.tptop i.lg{background:#1FAF55}.tptop i.sh{background:#E5484D}.tptop span{font-size:14px;color:var(--m)}#tpnl{display:block;margin-top:6px;font-size:24px;font-weight:800}
+.tprow{display:flex;justify-content:space-between;margin-top:4px;font-size:14px;color:var(--m);font-variant-numeric:tabular-nums}.tclose{width:100%;margin-top:10px}
 </style></head>
 <body>
 <div id="app">
@@ -578,9 +596,10 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 <div id="home" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Дом</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="homelist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard scard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
-<div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button></div></div>
+<div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Казино</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button><button class="pact" data-game="trade"><span class="pico green"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 8h-1.5v6H6M12 6v12M12 9h1.5v5H12M18 3v14M18 6h-1.5v7H18"/></svg></span><span class="ptxt"><span class="ptop"><b>Биржа TaxiCoin</b></span><span class="ptags"><i>лонг и шорт</i><i>плечо до ×25</i></span></span></button></div></div>
 <div id="kef" hidden><div class="askback"></div><div class="askcard gcard kcard" id="kcard"><div class="khead"><button class="kround" data-k="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><b>Угадай где кэф?</b><button class="kround" data-k="info" aria-label="Правила"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg></button></div><div class="krwrap" id="krules"><p class="krules">Выберите от 1 до 10 зон. Из 12 зон 10 окажутся с повышенным спросом и 2 пустыми. Если все ваши зоны с повышенным спросом, ставка умножается на коэффициент. Попалась пустая - ставка проиграна.</p></div><div class="kstats"><div><span>Выбрано зон</span><b id="ksel">0 из 10</b></div><i></i><div><span>Коэффициент</span><b id="kcoef">×1.00</b></div></div><svg id="kfield" viewBox="0 0 193.2 182.5"></svg><div class="khint"><svg class="ktrophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="#FFD233" stroke="#E3A600" stroke-width="1.2"/><path d="M7 6H4.5v1.5A3 3 0 0 0 7.6 10.4M17 6h2.5v1.5a3 3 0 0 1-3.1 2.9" fill="none" stroke="#E3A600" stroke-width="1.6"/><path d="M10.5 13.5h3l.5 3.5h-4zM8 19.5h8v1.5H8z" fill="#FFD233" stroke="#E3A600" stroke-width="1"/></svg><span id="khint">Чем больше зон, тем выше коэффициент</span><em>10 зон<br><b>×66.00</b></em></div><div class="kbet"><button data-k="minus" aria-label="Меньше">−</button><b id="kbet"></b><button data-k="plus" aria-label="Больше">+</button><span id="kmoney"></span></div><div class="chips" id="kchips"></div><div class="kbtns"><button class="kgo" id="kgo"></button><button class="krand" id="krand">Случайно</button></div></div></div>
 <div id="evt" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="evticon"></div><b id="evttitle"></b><p id="evttext"></p><div class="evtbtns" id="evtbtns"></div></div></div>
+<div id="trade" hidden><div class="askback"></div><div class="askcard gcard tcard"><div class="khead"><button class="kround" data-t2="back" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><b>TaxiCoin</b><span class="tbal" id="tbal"></span></div><div class="tprice"><b id="tpx"></b><span id="tchg"></span><small>TXC / ₽</small></div><canvas id="tchart" width="340" height="170"></canvas><div class="tbook"><div><span class="tbh">Продажа</span><div id="tasks"></div></div><div><span class="tbh">Покупка</span><div id="tbids"></div></div></div><div id="tctl"></div></div></div>
 <div id="ask" hidden><div class="askback"></div><div class="askcard acenter"><div class="askicon" id="askicon"></div><b id="asktitle"></b><p id="asktext"></p>
   <div class="askbtns"><button id="askno">Отмена</button><button id="askok"></button></div></div></div>
 <div id="ending" hidden><div id="endcard"></div></div>
@@ -1686,7 +1705,7 @@ $("games").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("games").hidden = true; return; }
   const g = e.target.closest("[data-game]"); if (!g) return;
   $("games").hidden = true;
-  if (g.dataset.game === "roulette") { $("cres").className = "cres"; showCasino(); } else showKef();
+  if (g.dataset.game === "roulette") { $("cres").className = "cres"; showCasino(); } else if (g.dataset.game === "trade") showTrade(); else showKef();
 });
 $("casino").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { if (!spinning) $("casino").hidden = true; return; }
@@ -1699,6 +1718,100 @@ $("casino").addEventListener("click", e => {
     return showCasino();
   }
   if (e.target.closest("#cspin")) spin();
+});
+
+// ====== Биржа TaxiCoin: свечной график, стакан, лонг и шорт с плечом. Цена - случайное блуждание без перекоса ======
+const TX = { price: 1000, candles: [], cur: null, tick: 0, timer: 0, sum: 1000, lev: 5, pos: null, open0: 1000, last: null };
+const TX_LEVS = [1, 2, 5, 10, 25], TX_FEE = 0.001, TX_TICKS = 10, TX_KEEP = 36;   // комиссия 0.1% от объёма на вход и выход; свеча = 10 тиков по 0.15 с
+function txStep() {   // новый тик цены: обычный шум, иногда резкий скачок; цена не уходит ниже 50 ₽
+  const jump = Math.random() < 0.02 ? (Math.random() - 0.5) * 0.03 : 0;
+  TX.price = Math.max(50, TX.price * Math.exp((Math.random() - 0.5) * 0.0055 + jump));
+  if (!TX.cur) TX.cur = { o: TX.price, h: TX.price, l: TX.price, c: TX.price };
+  TX.cur.c = TX.price; TX.cur.h = Math.max(TX.cur.h, TX.price); TX.cur.l = Math.min(TX.cur.l, TX.price);
+  if (++TX.tick >= TX_TICKS) { TX.candles.push(TX.cur); if (TX.candles.length > TX_KEEP) TX.candles.shift(); TX.cur = null; TX.tick = 0; }
+}
+if (!TX.candles.length) { for (let i = 0; i < TX_KEEP * TX_TICKS; i++) txStep(); TX.open0 = TX.candles[0].o; }   // история при старте
+const txPnl = (p = TX.pos) => p ? p.margin * p.lev * (TX.price / p.entry - 1) * p.dir - p.margin * p.lev * TX_FEE : 0;
+const txLiq = p => p.entry * (1 - p.dir * 0.9 / p.lev);   // цена ликвидации: потеря 90% залога
+const fmtP = v => v.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function txDraw() {
+  const cv = $("tchart"), dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const list = TX.candles.concat(TX.cur ? [TX.cur] : []), lines = TX.pos ? [TX.pos.entry] : [];
+  let lo = Math.min(...list.map(c => c.l), ...lines), hi = Math.max(...list.map(c => c.h), ...lines); const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
+  const PR = 52, cw = (W - PR) / TX_KEEP, y = v => (hi - v) / (hi - lo) * H;
+  g.strokeStyle = "#EEF0F3"; g.lineWidth = 1; g.fillStyle = "#9AA1B2"; g.font = "11px Inter, sans-serif"; g.textAlign = "left"; g.textBaseline = "middle";
+  const tags = [TX.price].concat(lines).map(y);
+  for (let i = 1; i < 4; i++) { const v = lo + (hi - lo) * i / 4, yy = Math.round(y(v)) + .5; g.beginPath(); g.moveTo(0, yy); g.lineTo(W - PR, yy); g.stroke(); if (tags.every(t => Math.abs(t - yy) > 14)) g.fillText(fmtP(v), W - PR + 6, yy); }
+  list.forEach((c, i) => {
+    const x = i * cw + cw / 2, up = c.c >= c.o; g.strokeStyle = g.fillStyle = up ? "#1FAF55" : "#E5484D";
+    g.beginPath(); g.moveTo(Math.round(x) + .5, y(c.h)); g.lineTo(Math.round(x) + .5, y(c.l)); g.stroke();
+    const t = y(Math.max(c.o, c.c)), b = y(Math.min(c.o, c.c)); g.fillRect(x - cw * 0.34, t, cw * 0.68, Math.max(1.5, b - t));
+  });
+  const hl = (v, col, txt, dash) => { const yy = Math.round(y(v)) + .5; g.setLineDash(dash || []); g.strokeStyle = col; g.beginPath(); g.moveTo(0, yy); g.lineTo(W - PR, yy); g.stroke(); g.setLineDash([]);
+    g.fillStyle = col; const tw = PR - 2; g.beginPath(); g.roundRect ? g.roundRect(W - PR + 1, yy - 9, tw, 18, 5) : g.rect(W - PR + 1, yy - 9, tw, 18); g.fill(); g.fillStyle = "#fff"; g.font = "bold 11px Inter, sans-serif"; g.fillText(txt, W - PR + 5, yy); g.font = "11px Inter, sans-serif"; };
+  if (TX.pos) { hl(TX.pos.entry, "#E3A600", fmtP(TX.pos.entry), [4, 3]); const lq = txLiq(TX.pos); if (lq > lo && lq < hi) hl(lq, "#E5484D", "ликв.", [2, 3]); }   // ликвидацию видно, когда цена близко
+  const lc = list[list.length - 1]; hl(TX.price, TX.price >= lc.o ? "#1FAF55" : "#E5484D", fmtP(TX.price), [3, 3]);
+}
+function txBook() {   // стакан: 5 уровней продажи и покупки вокруг цены
+  const lv = side => Array.from({ length: 5 }, (_, i) => ({ p: TX.price * (1 + side * (0.0004 + i * 0.0007)), q: +(0.2 + Math.random() * 6).toFixed(2) }));
+  const asks = lv(1).reverse(), bids = lv(-1), mx = Math.max(...asks.concat(bids).map(x => x.q));
+  const row = (x, cls) => '<div class="trow ' + cls + '"><i style="width:' + Math.round(x.q / mx * 100) + '%"></i><span>' + fmtP(x.p) + "</span><b>" + x.q.toFixed(2) + "</b></div>";
+  $("tasks").innerHTML = asks.map(x => row(x, "ask")).join(""); $("tbids").innerHTML = bids.map(x => row(x, "bid")).join("");
+}
+function txHead() {
+  const ch = (TX.price / TX.open0 - 1) * 100;
+  $("tpx").textContent = fmtP(TX.price) + " ₽"; $("tchg").textContent = (ch >= 0 ? "+" : "−") + Math.abs(ch).toFixed(2) + "%"; $("tchg").className = ch >= 0 ? "up" : "down";
+  $("tbal").textContent = fmtR(money);
+  if (TX.pos) { const p = txPnl(), el = $("tpnl"); if (el) { el.textContent = (p >= 0 ? "+" : "−") + fmtR(Math.abs(p)) + " · " + (p >= 0 ? "+" : "−") + Math.abs(p / TX.pos.margin * 100).toFixed(1) + "%"; el.className = p >= 0 ? "up" : "down"; } }
+}
+function txCtl() {
+  if (TX.pos) {
+    const p = TX.pos;
+    $("tctl").innerHTML = '<div class="tpos"><div class="tptop"><i class="' + (p.dir > 0 ? "lg" : "sh") + '">' + (p.dir > 0 ? "Лонг" : "Шорт") + " ×" + p.lev + "</i><span>залог " + fmtR(p.margin) + '</span></div><b id="tpnl"></b>' +
+      '<div class="tprow"><span>Вход ' + fmtP(p.entry) + '</span><span>Ликвидация ' + fmtP(txLiq(p)) + '</span></div></div><button class="kgo tclose" data-t2="close">Закрыть позицию</button>';
+  } else {
+    TX.sum = Math.max(100, Math.min(TX.sum, Math.max(100, Math.floor(money / 100) * 100)));
+    $("tctl").innerHTML = '<div class="tlab">Сумма</div><div class="kbet"><button data-t2="minus" aria-label="Меньше">−</button><b>' + fmtR(TX.sum) + '</b><button data-t2="plus" aria-label="Больше">+</button>' +
+      '<span>×' + TX.lev + " = " + fmtR(TX.sum * TX.lev) + '</span></div><div class="chips">' + [1000, 5000, 10000, 50000].map(v => '<button class="chip2' + (v === TX.sum ? " on" : "") + '" data-tsum="' + v + '"' + (v > money ? " disabled" : "") + ">" + v.toLocaleString("ru-RU") + "</button>").join("") + "</div>" +
+      '<div class="tlab">Плечо</div><div class="chips">' + TX_LEVS.map(v => '<button class="chip2' + (v === TX.lev ? " on" : "") + '" data-tlev="' + v + '">×' + v + "</button>").join("") + "</div>" +
+      '<div class="tbtns"><button class="tlong" data-t2="long"' + (money < TX.sum ? " disabled" : "") + '>Лонг<small>цена вырастет</small></button><button class="tshort" data-t2="short"' + (money < TX.sum ? " disabled" : "") + ">Шорт<small>цена упадёт</small></button></div>";
+  }
+  txHead();
+}
+function txClose(liq) {
+  const p = TX.pos; if (!p) return; const pnl = liq ? -p.margin : Math.round(txPnl(p)); TX.pos = null;
+  money += p.margin + pnl; ledger.casino = (ledger.casino || 0) + pnl;
+  if (pnl > 500) moodAdd(5); else if (pnl <= -500) moodAdd(-5);
+  if (liq) { SND.bad(); toast("Позиция ликвидирована", "Залог " + fmtR(p.margin) + " потерян", "alert"); }
+  else if (pnl >= 0) { SND.coins(); toast("Позиция закрыта", "Прибыль +" + fmtR(pnl), "goal"); } else { SND.bad(); toast("Позиция закрыта", "Убыток −" + fmtR(-pnl), "alert"); }
+  updateTop(); saveGame(); txCtl(); txDraw();
+}
+function txLoop() {
+  if ($("trade").hidden) { clearInterval(TX.timer); TX.timer = 0; return; }
+  txStep(); if (TX.tick % 3 === 0) txBook();
+  if (TX.pos && txPnl() <= -TX.pos.margin * 0.9) return txClose(true);
+  txHead(); txDraw();
+}
+function showTrade() {
+  menuEl.hidden = true; $("trade").hidden = false; txCtl(); txBook(); txDraw();
+  if (!TX.timer) TX.timer = setInterval(txLoop, 150);
+}
+$("trade").addEventListener("click", e => {
+  const b = e.target.closest("[data-t2],[data-tsum],[data-tlev]"); if (!b || b.disabled) return;
+  const k = b.dataset.t2;
+  if (k === "back") { $("trade").hidden = true; $("games").hidden = false; return; }
+  if (b.dataset.tsum) TX.sum = +b.dataset.tsum;
+  else if (b.dataset.tlev) TX.lev = +b.dataset.tlev;
+  else if (k === "minus") TX.sum = Math.max(100, TX.sum - (TX.sum > 5000 ? 1000 : 100));
+  else if (k === "plus") TX.sum = Math.min(Math.floor(money / 100) * 100, TX.sum + (TX.sum >= 5000 ? 1000 : 100));
+  else if (k === "long" || k === "short") {
+    if (money < TX.sum) return;
+    money -= TX.sum; TX.pos = { dir: k === "long" ? 1 : -1, lev: TX.lev, margin: TX.sum, entry: TX.price }; SND.accept(); updateTop(); saveGame();
+  }
+  else if (k === "close") return txClose(false);
+  txCtl(); txDraw();
 });
 // ====== «Угадай где кэф?»: 12 зон, после открытия 10 фиолетовые и 2 пустые ======
 // Игрок выбирает 1-10 зон; выигрыш, если все выбранные фиолетовые. Коэффициент честный: 1 / шанс выигрыша
