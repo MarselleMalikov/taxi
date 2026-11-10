@@ -494,6 +494,12 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .cbtns button{display:flex;flex-direction:column;align-items:center;gap:8px;border:none;background:none;color:#fff;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer}
 .cbtns i{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center}.cbtns i svg{width:32px;height:32px;color:#fff}
 .cno{background:#E5484D}.cgo{background:#1FAF55}
+
+/* звук в меню */
+.msound{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:18px;background:var(--c)}.msound .ico{width:24px;height:24px;color:var(--dark);flex:none}.msound b{font-size:16px}
+.msound input{flex:1;min-width:0;accent-color:#1E1F23}.msound input:disabled{opacity:.35}
+.swt{flex:none;position:relative;width:48px;height:28px;border:none;border-radius:14px;background:#C9CDD5;cursor:pointer;transition:background .2s}.swt i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.swt.on{background:var(--g)}.swt.on i{transform:translateX(20px)}
 </style></head>
 <body>
 <div id="app">
@@ -523,6 +529,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
       <div class="mfin" id="mfin" hidden></div>
       <div class="mstatus status off" id="mstatus"><span class="dot"></span><span id="statustext">Не на линии</span></div>
       <button class="mbtn dark" id="offbtn" hidden></button>
+      <div class="msound"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><b>Звук</b><input type="range" id="sndvol" min="0" max="100" aria-label="Громкость"><button class="swt" id="sndon" aria-label="Звук вкл/выкл"><i></i></button></div>
       <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Таксопарк</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Казино</button><button class="mtile" id="achbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="trophy"></svg></span>Достижения</button></div>
       <div class="mstats">
         <div><span>Машина</span><b id="mcar"></b></div>
@@ -951,8 +958,64 @@ function checkRating(prev) {   // вызывается после новой о�
 }
 let fuel = TANK, ledger = newLedger();
 const shiftNet = () => ledger.fares + ledger.tips + (ledger.bonus || 0) - ledger.fee - ledger.rent - ledger.fuel - ledger.fines;
+
+// ====== Звуки: генерируются в коде (Web Audio), без файлов. Включаются после первого касания экрана ======
+const SND = (() => {
+  const KEY = "taxi-sound";
+  let pref = { on: true, vol: 0.7 }; try { Object.assign(pref, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+  let ac = null, master = null, ringT = 0;
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(pref)); } catch (e) {} };
+  function ctx() {
+    if (!pref.on || pref.vol <= 0) return null;
+    try {
+      if (!ac) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; ac = new A(); master = ac.createGain(); master.connect(ac.destination); }
+      if (ac.state === "suspended") ac.resume().catch(() => {});
+      master.gain.value = pref.vol; return ac;
+    } catch (e) { return null; }
+  }
+  function tone(f, at, dur, o) {   // одна нота с мягкой атакой и затуханием
+    const a = ctx(); if (!a) return; o = o || {};
+    try {
+      const t = a.currentTime + (at || 0), osc = a.createOscillator(), g = a.createGain();
+      osc.type = o.type || "sine"; osc.frequency.setValueAtTime(f, t); if (o.f2) osc.frequency.exponentialRampToValueAtTime(o.f2, t + dur);
+      const v = (o.vol || 0.2);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + (o.att || 0.008)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(g); g.connect(master); osc.start(t); osc.stop(t + dur + 0.02);
+    } catch (e) {}
+  }
+  function noise(at, dur, vol, freq, q) {   // короткий шум: щелчок, удар шарика
+    const a = ctx(); if (!a) return;
+    try {
+      const t = a.currentTime + (at || 0), n = Math.ceil(a.sampleRate * dur), buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
+      const src = a.createBufferSource(), flt = a.createBiquadFilter(), g = a.createGain();
+      src.buffer = buf; flt.type = "bandpass"; flt.frequency.value = freq || 2500; flt.Q.value = q || 1.2; g.gain.value = vol || 0.3;
+      src.connect(flt); flt.connect(g); g.connect(master); src.start(t);
+    } catch (e) {}
+  }
+  const buzz = p => { try { if (pref.on && navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
+  return {
+    get on() { return pref.on; }, get vol() { return pref.vol; },
+    set(o) { Object.assign(pref, o); save(); if (!pref.on) this.ringStop(); },
+    unlock() { ctx(); },
+    order() { tone(988, 0, 0.16, { vol: 0.22 }); tone(1319, 0.13, 0.28, { vol: 0.22 }); buzz(60); },                    // новый заказ: двойной «динь»
+    accept() { noise(0, 0.05, 0.35, 1800, 2); tone(660, 0.01, 0.09, { type: "triangle", vol: 0.12 }); },               // принят: щелчок
+    coins() { [1568, 2093, 1760, 2349].forEach((f, i) => tone(f, i * 0.06, 0.18, { type: "triangle", vol: 0.12 })); },   // поездка завершена: монеты
+    tip() { tone(2637, 0, 0.12, { vol: 0.1 }); tone(3136, 0.08, 0.22, { vol: 0.1 }); },                                // чаевые: выше и легче
+    notify() { [523, 659, 784].forEach((f, i) => tone(f, i * 0.07, 0.35, { type: "triangle", vol: 0.13 })); },          // уведомление: восходящий аккорд
+    bad() { tone(196, 0, 0.32, { type: "triangle", vol: 0.25, f2: 130 }); buzz([90, 60, 90]); },                       // штраф, жалоба: низкий «бум»
+    tick(v) { noise(0, 0.025, v || 0.08, 3500, 3); },                                                                  // шарик по перегородкам
+    drop() { noise(0, 0.06, 0.35, 1400, 1.5); tone(330, 0.02, 0.15, { type: "triangle", vol: 0.1 }); },                // шарик в лунке
+    ring() {   // входящий звонок: повторяется, пока не ответите
+      this.ringStop(); const one = () => { [0, 0.16, 0.32].forEach(d => { tone(1047, d, 0.13, { vol: 0.16 }); tone(1319, d + 0.06, 0.1, { vol: 0.1 }); }); buzz([200, 120, 200]); };
+      one(); ringT = setInterval(one, 1600);
+    },
+    ringStop() { clearInterval(ringT); ringT = 0; }
+  };
+})();
+document.addEventListener("pointerdown", () => SND.unlock(), { passive: true });
 function spend(kind, amount, label) {   // расход: аренда, топливо, штраф; деньги могут уйти в минус
-  if (amount <= 0) return; money -= amount; ledger[kind] += amount; shiftMoney = shiftNet();
+  if (amount <= 0) return; money -= amount; ledger[kind] += amount; shiftMoney = shiftNet(); if (/штраф|ремонт/.test(label)) SND.bad();
   floaters.push({ text: "-" + amount + " ₽ " + label, x: car.x, y: car.y, age: 0, color: "#c9363b", dy: -4 }); updateTop(); saveGame();
 }
 function loadGame() {
@@ -1064,7 +1127,7 @@ function pickRange(x, y) {
   if (r < farShare + 0.14) return [1200, 2000];               // средняя, по дорогам 2-3 км
   return [200, 1100];                                         // обычная, по дорогам 1-2 км
 }
-function createOrder() { const [a, b] = pickRange(car.x, car.y); const o = buildOrder(car.x, car.y, carNode, a, b); if (o) { orders.push(o); renderPanel(); } }
+function createOrder() { const [a, b] = pickRange(car.x, car.y); const o = buildOrder(car.x, car.y, carNode, a, b); if (o) { orders.push(o); SND.order(); renderPanel(); } }
 // Заказ рядом с точкой (cx, cy): для обычного предложения - от машины, для цепочки - от места высадки текущего пассажира
 // Пригороды и окраины, отделённые от города. Здесь заказы в основном местные: подача рядом, а первые 2-3 заказа подряд
 // и начинаются, и заканчиваются в этом же районе. Дальняя подача (больше 4 км) - редко. Так есть смысл возвращаться в город по делам
@@ -1173,6 +1236,7 @@ function tickOrders(dt) {   // предложения заказов: появл
 }
 function acceptOrder(id) {
   const o = orders.find(x => x.id === id); if (!o || (state !== "idle" && state !== "selfDrive")) return;
+  SND.accept();
   // крупная надбавка за спрос радует, а несколько заказов подряд без спроса - понемногу утомляют
   if (o.local && suburbQuota > 0) suburbQuota--;   // ещё один заказ внутри пригорода
   if (o.surgeAdd > 100) moodAdd(2);
@@ -1191,7 +1255,7 @@ function tickChain(dt) {
   const bx = N[c.to][0], by = N[c.to][1], hx = HEX_BASE.get(hexKey(...hexAt(bx, by)));
   if (Math.random() > 0.15 + 0.35 * (hx ? hx.base : 0) + 0.5 * (surgeAt(bx, by) - 1)) return;
   const o = buildOrder(bx, by, c.to, 200, 2500); if (!o) return;
-  o.chain = true; c.nextOffer = o; renderPanel();
+  o.chain = true; c.nextOffer = o; SND.order(); renderPanel();
 }
 // Сколько ждать следующего предложения после отказа: в центре и при спросе - недолго, на окраине - дольше.
 // Иногда заказы идут друг за другом
@@ -1339,6 +1403,7 @@ function finishRide(reason) {
   const fee = c.noFee ? 0 : Math.round(fare * (c.feeRate || FEE));   // комиссия с заказа; поездка «мимо приложения» - без комиссии
   ledger.fares += fare; ledger.tips += tip; ledger.fee += fee;
   money += fare - fee + tip; ridesDone++; shiftMoney = shiftNet(); shiftRides++;
+  if (fare > 0) SND.coins(); else SND.bad(); if (tip > 0) setTimeout(() => SND.tip(), 320);
   if (c.partial === undefined && mult > 0) { prioAdd(1 + SK("prio")); goalTick(); }   // заказ выполнен до конца - идёт в цель смены
   if (stars > 0) checkRating(ratingWas);
   if (fare > 0) floaters.push({ text: "+" + (fare - fee) + " ₽", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -20 });
@@ -1535,7 +1600,7 @@ function spin() {
   const Wt = t => W0 + w0 * Math.min(t, T) - w0 * Math.min(t, T) ** 2 / (2 * T);
   const R0 = ballA - wheelA, Rf = idx * WSTEP, D = 360 * 7 + ((((R0 - Rf) % 360) + 360) % 360);   // путь шарика относительно колеса
   const Rt = t => { const s = Math.min(1, t / TL); return Rf + D * Math.pow(1 - s, 3.2); };
-  const t0 = performance.now(); let shown = false;
+  const t0 = performance.now(); let shown = false, lastPk = null, lastTick = 0, dropped = false;
   cancelAnimationFrame(spinRaf);
   (function frame(now) {
     const t = (now - t0) / 1000;
@@ -1547,6 +1612,8 @@ function spin() {
       R += 7 * (1 - s) * Math.sin(s * 22);
     } else ballR = 66;
     ballA = wheelA + R; drawWheel();
+    if (t < TL) { const pk = Math.floor((R - (wheelA % 360)) / WSTEP); if (pk !== lastPk) { lastPk = pk; if (now - lastTick > 40) { lastTick = now; SND.tick(t < TD ? 0.05 : 0.11 * (1 - (t - TD) / (TL - TD)) + 0.03); } } }   // треск шарика
+    else if (!dropped) { dropped = true; SND.drop(); }
     if (!shown && t >= TL + .3) { shown = true; ballA = wheelA + Rf; done(); }
     if (t < T) spinRaf = requestAnimationFrame(frame); else { wheelA %= 360; ballA = wheelA + Rf; drawWheel(); }
   })(t0);
@@ -1784,6 +1851,7 @@ function tickEvents(dt, gameDt) {   // вызывается каждый кад�
 let askCb = null;
 let toastT = 0;
 function toast(title, sub, icon) {   // короткое уведомление сверху, само исчезает
+  if (icon === "alert") SND.bad(); else if (icon === "goal" || icon === "star" || icon === "rain") SND.notify();
   const kind = icon === "alert" ? "red" : icon === "rain" ? "blue" : "green";
   $("tico").className = "tico " + kind; $("tico").innerHTML = ico(icon === "goal" ? "star" : icon === "rain" ? "rain" : icon);
   $("ttitle").textContent = title; $("tsub").textContent = sub || ""; const el = $("toast"); el.hidden = false; el.classList.remove("out"); void el.offsetWidth; el.classList.add("in");
@@ -2926,6 +2994,7 @@ function showPhone() {
   $("phonelist").innerHTML = h; $("phone").hidden = false; menuEl.hidden = true;
 }
 function showCall(ct, busy) {   // входящий звонок: экран смартфона, игра на паузе
+  SND.ring();
   evt = { call: true, ct, busy };
   document.querySelectorAll(".sclock").forEach(e => e.textContent = clockTxt(clock));
   $("callbox").innerHTML = '<div class="cin">' + avatar(ct.name, "big") + "<b>" + ct.name + '</b><span>Входящий звонок</span><p>Можете забрать? ' + ct.addr + (busy ? ". Подожду, пока закончите заказ." : "") + "</p></div>" +
@@ -2936,7 +3005,7 @@ const ICON_PICK = '<svg viewBox="0 0 24 24"><path d="M6.6 3.5h2.6l1.4 4.4-2 1.5a
 const ICON_HANG = '<svg viewBox="0 0 24 24"><path d="M3 14.5c5-4.6 13-4.6 18 0l-2.2 2.8-3.6-1.4-.4-2.8a10 10 0 0 0-5.6 0l-.4 2.8-3.6 1.4z" fill="currentColor"/></svg>';
 $("call").addEventListener("click", e => {
   const b = e.target.closest("[data-call]"); if (!b || !evt || !evt.call) return;
-  const { ct, busy } = evt; evt = null; $("call").hidden = true;
+  const { ct, busy } = evt; evt = null; $("call").hidden = true; SND.ringStop();
   if (b.dataset.call === "go") { M.pending = { id: ct.id, deadline: busy ? null : clock + CALL_WAIT }; logCall(ct.name, "go"); }
   else { ct.like -= 0.5; logCall(ct.name, "no"); dropContact(ct); }
   saveGame(); renderPanel();
@@ -2969,6 +3038,10 @@ $("skillsbtn").addEventListener("click", showSkills);
 $("phonebtn").addEventListener("click", showPhone);
 $("achbtn").addEventListener("click", () => toast("Достижения", "Скоро появятся", "star"));
 statusPill.addEventListener("click", renderMenu);
+function renderSound() { $("sndon").classList.toggle("on", SND.on); $("sndvol").value = Math.round(SND.vol * 100); $("sndvol").disabled = !SND.on; }
+statusPill.addEventListener("click", renderSound);
+$("sndon").addEventListener("click", () => { SND.set({ on: !SND.on }); renderSound(); if (SND.on) SND.notify(); });
+$("sndvol").addEventListener("change", e => { SND.set({ vol: e.target.value / 100 }); SND.order(); });
 // ====== Тестовый режим: открыть игру с #test в конце адреса. Панель в меню для быстрой проверки ======
 const TEST_KEY = "taxi-test";
 const testHash = () => { try { if (location.hash === "#test") localStorage.setItem(TEST_KEY, "1"); } catch (e) {} };
