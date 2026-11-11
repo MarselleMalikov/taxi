@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Такси-игра</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500&display=swap" rel="stylesheet">
@@ -627,6 +627,8 @@ html.dark .choice{background:#3A3E49!important;border-color:#4A4F5C!important;co
 html.dark .choice.irritated{color:#FF9DA1!important;border-color:#6A3438!important}
 .money.neg{color:#C9363B!important}
 html.dark .money.neg{color:#FF5A5F!important;text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 -1px 0 #fff,0 1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff}
+html,body,button,#app{touch-action:manipulation}   /* без масштабирования страницы двойным касанием */
+html,body{-webkit-text-size-adjust:100%;overscroll-behavior:none}
 </style></head>
 <body>
 <div id="app">
@@ -1169,6 +1171,16 @@ const SND = (() => {
   };
 })();
 document.addEventListener("pointerdown", () => SND.unlock(), { passive: true });
+// Страница не масштабируется: iPhone не слушается user-scalable=no, поэтому щипок и двойное касание гасим вручную.
+// Карта приближается своими жестами (на холсте карты), а кнопки и панели - нет
+for (const ev of ["gesturestart", "gesturechange", "gestureend"]) document.addEventListener(ev, e => e.preventDefault(), { passive: false });
+document.addEventListener("touchmove", e => { if (e.touches.length > 1 && e.target !== canvas) e.preventDefault(); }, { passive: false });
+let lastTouchEnd = 0;
+document.addEventListener("touchend", e => {
+  const now = Date.now();
+  if (now - lastTouchEnd < 350 && !e.target.closest("input,textarea")) { e.preventDefault(); const b = e.target.closest("button"); if (b && !b.disabled) b.click(); }   // быстрое второе касание - обычное нажатие, без зума
+  lastTouchEnd = now;
+}, { passive: false });
 function spend(kind, amount, label) {   // расход: аренда, топливо, штраф; деньги могут уйти в минус
   if (amount <= 0) return; money -= amount; ledger[kind] += amount; shiftMoney = shiftNet(); if (/штраф|ремонт/.test(label)) SND.bad();
   floaters.push({ text: "-" + amount + " ₽ " + label, x: car.x, y: car.y, age: 0, color: "#c9363b", dy: -4 }); updateTop(); saveGame();
