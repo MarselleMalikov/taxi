@@ -642,6 +642,25 @@ button.x::before{content:"";width:14px;height:14px;background:currentColor;-webk
 /* магазин в тёмной теме: недоступные покупки серые */
 html.dark .sbuy:disabled{background:#383C47!important;color:#7D8494!important}
 html.dark .sbuy.got{background:#24412F!important;color:#5FD38A!important}
+#tut{position:fixed;inset:0;z-index:10000;pointer-events:none}
+#tut .tblk{position:fixed;pointer-events:auto}
+#tut .thole{position:fixed;box-shadow:0 0 0 9999px rgba(15,17,22,.62);pointer-events:none}
+#tut .thole::after{content:"";position:absolute;inset:-5px;border-radius:inherit;border:3px solid #FFD233;box-shadow:0 0 0 6px rgba(255,210,51,.35);animation:tpulse 1.4s ease-in-out infinite}
+@keyframes tpulse{50%{box-shadow:0 0 0 10px rgba(255,210,51,.12)}}
+#tut .tcard{position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;pointer-events:auto;background:#fff;color:var(--ink);border-radius:28px;padding:16px 18px 18px;box-shadow:0 20px 50px rgba(17,24,39,.25)}
+#tut .tn{display:flex;align-items:center;justify-content:space-between;min-height:26px;margin-bottom:6px}
+#tut .tn button{border:none;background:none;padding:4px 0;font-family:inherit;font-size:14px;font-weight:600;color:var(--m);cursor:pointer}
+#tut .tdots{display:flex;gap:5px}#tut .tdots i{width:6px;height:6px;border-radius:3px;background:#E2E5EA}#tut .tdots i.on{width:16px;background:var(--ink)}
+#tut .tt{display:block;font-size:19px;font-weight:800;line-height:1.2;margin-bottom:6px}
+#tut p{margin:0;font-size:16px;line-height:1.3;color:#3A3F4A;text-align:justify;hyphens:none}
+#tut .tlist{display:flex;flex-direction:column;gap:5px;font-size:15.5px;line-height:1.25}
+#tut .tlist div{display:flex;gap:8px}#tut .tlist b{flex:none;width:92px;font-weight:700}#tut .tlist span{color:#3A3F4A}
+#tut .ta{margin-top:12px;display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700}
+#tut .ta i{width:8px;height:8px;border-radius:50%;background:#FFD233;box-shadow:0 0 0 4px rgba(255,210,51,.35)}
+#tut .tgo{margin-top:14px;width:100%;height:50px;border:none;border-radius:28px;background:var(--y);color:#1E1F23;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer}
+.mfull .mtut{align-self:center;border:none;background:var(--c);color:var(--ink);font-family:inherit;font-size:15px;font-weight:600;padding:12px 18px;border-radius:28px;cursor:pointer}
+html.dark #tut .tcard{background:#2D3039;color:#F2F3F5}html.dark #tut p,html.dark #tut .tlist span{color:#C9CED8}html.dark #tut .tn button{color:#A7AEBB}
+html.dark #tut .tdots i{background:#3E4350}html.dark #tut .tdots i.on{background:#F2F3F5}html.dark .mfull .mtut{background:#383C47;color:#F2F3F5}
 </style></head>
 <body>
 <div id="app">
@@ -681,6 +700,7 @@ html.dark .sbuy.got{background:#24412F!important;color:#5FD38A!important}
         <div hidden><span>Смена</span><b id="mday">1</b></div>
       </div>
       <div class="mtest" id="mtest" hidden><b>Тестовый режим</b><div class="mtgrid"><button data-t="money">+100 000 ₽</button><button data-t="open">Открыть тарифы</button><button data-t="rides">+60 поездок</button><button data-t="next">Следующая смена</button><button data-t="pay">До платёжного дня</button><button data-t="km">+6 000 км</button><button data-t="call">Звонок клиента</button><button data-t="number">Просит номер</button><button data-t="rain">Дождь</button><button data-t="tire">Прокол</button><button data-t="crash">ДТП</button><button data-t="hail">Голосующий</button><button data-t="r475">Рейтинг 4.75</button><button data-t="r44">Рейтинг 4.4</button><button data-t="r5">Рейтинг 5.0</button><button data-t="mood">Настроение 20%</button><button data-t="fuel">Бак 3 л</button><button data-t="off">Выключить тест</button></div></div>
+      <button id="tutbtn" class="mtut">Пройти обучение заново</button>
       <button id="reset">Сбросить прогресс</button>
     </div>
   </div>
@@ -2170,7 +2190,7 @@ $("ask").addEventListener("click", e => {
 function update(dt) {
   for (let i = floaters.length - 1; i >= 0; i--) { floaters[i].age += dt; if (floaters[i].age > 1.4) floaters.splice(i, 1); }
   tickClock();
-  if (dialogue || endingShown || evt) return;
+  if (dialogue || endingShown || evt || TUT.hold) return;
   const clock0 = clock;
   updateInner(dt);
   tickEvents(dt, clock - clock0);
@@ -3517,8 +3537,79 @@ function tgSync() {
   const show = !!tgTop(); if (show !== tgShown) { tgShown = show; show ? t.BackButton.show() : t.BackButton.hide(); }
   const busy = state !== "idle" || online; if (busy !== tgConfirm) { tgConfirm = busy; try { busy ? t.enableClosingConfirmation() : t.disableClosingConfirmation(); } catch (e) {} }
 }
+// ====== Обучение: первая смена с подсказками. Карточка над подсвеченной кнопкой, игра на паузе, пока карточка открыта ======
+const TUT_KEY = "taxi-tut", TUT_FRESH = !localStorage.getItem(SAVE_KEY);
+const calm = () => !dialogue && !evt && !endingShown;
+const TUT_STEPS = [
+  { el: () => shiftBtn, click: true, done: () => online || state !== "idle", when: () => calm() && state === "idle" && menuEl.hidden && blockLeft() <= 0,
+    title: "Выход на линию", text: "Нажмите «Катать», чтобы начать смену. Аренду машины спишут сразу, долг закроете первыми заказами.", act: "Нажмите «Катать»" },
+  { el: () => panel.querySelector(".ocard"), click: true, done: () => !!current, when: () => calm() && state === "idle" && orders.length > 0,
+    title: "Первый заказ", text: "Сверху рейтинг клиента, ниже адрес и путь до него. «Спрос» - доплата за повышенный коэффициент в этом месте города. Полоска - время на решение.", act: "Нажмите «Принять»" },
+  { el: () => $("fuelpill"), when: () => calm() && !!current,
+    title: "Бак и настроение", text: "Бензин тратится в пути. Настроение падает от простоя и споров с пассажирами. Нажмите на эту плашку, чтобы заправиться, отдохнуть или пообедать." },
+  { el: () => panel.querySelector('[data-act="offafter"]'), when: () => calm() && !!current,
+    title: "Уйти с линии", text: "Нажмите, и смена закончится после этой поездки. Передумали - нажмите ещё раз." },
+  { el: () => panel.querySelector(".result"), when: () => calm() && state === "idle" && !!lastRide,
+    title: "Поездка завершена", text: "Крупно - сколько вы получили: цена заказа минус комиссия сервиса, плюс чаевые. Ниже оценка пассажира и способ оплаты." },
+  { el: () => $("ratingpill"), when: () => calm() && state === "idle",
+    title: "Рейтинг и тарифы", text: "Рейтинг - среднее последних 150 оценок. Комфорт работает от 4,7, Комфорт+ от 4,8. Ниже 4,5 заказы закроют на 2 часа. Нажмите на плашку, чтобы выбрать тарифы." },
+  { el: () => $("prio"), pad: 6, when: () => calm() && state === "idle",
+    title: "Приоритет", text: "Полоска под рейтингом. Растёт за выполненные заказы, падает за пропущенные. Чем он выше, тем чаще приходят заказы." },
+  { el: () => panel.querySelector(".goalbar"), when: () => calm() && state === "idle",
+    title: "Цель смены", text: "За 20 заказов за смену - премия 1 000 ₽, за 30 заказов - ещё 1 500 ₽." },
+  { el: () => $("menubtn"), click: true, done: () => !menuEl.hidden, when: () => calm(),
+    title: "Меню", text: "Здесь всё, что вне линии: машины, деньги, навыки и настройки.", act: "Откройте меню" },
+  { el: () => menuEl.querySelector(".mtiles"), when: () => !menuEl.hidden,
+    title: "Разделы меню", list: [["Таксопарк", "аренда машин"], ["Автосалон", "покупка своей машины"], ["Банк", "вклад и кредит"], ["Телефон", "звонки постоянных клиентов"], ["Навыки", "улучшения за опыт"], ["Магазин", "вещи для работы"], ["Игры", "рулетка и другие игры"], ["Дом", "жильё и свои машины"]] }
+];
+const TUT = { i: -1, hold: false, box: null };
+const tutEl = document.createElement("div"); tutEl.id = "tut"; tutEl.hidden = true;
+tutEl.innerHTML = '<div class="tblk"></div><div class="tblk"></div><div class="tblk"></div><div class="tblk"></div><div class="thole"></div><div class="tcard"></div>';
+document.body.appendChild(tutEl);
+const tutCard = tutEl.querySelector(".tcard"), tutHole = tutEl.querySelector(".thole"), tutBlk = [...tutEl.querySelectorAll(".tblk")];
+function tutStart() { TUT.i = 0; try { localStorage.removeItem(TUT_KEY); } catch (e) {} tutCheck(); }
+function tutStop() { if (TUT.pad) { TUT.pad.style.paddingBottom = ""; TUT.pad = null; } TUT.i = -1; TUT.hold = false; tutEl.hidden = true; try { localStorage.setItem(TUT_KEY, "done"); } catch (e) {} }
+function tutNext() { TUT.i++; TUT.shown = -1; if (TUT.i >= TUT_STEPS.length) return tutStop(); tutCheck(); }
+function tutCheck() {
+  if (TUT.i < 0) return;
+  while (TUT.i < TUT_STEPS.length && TUT_STEPS[TUT.i].done && TUT_STEPS[TUT.i].done()) TUT.i++;
+  if (TUT.i >= TUT_STEPS.length) return tutStop();
+  const s = TUT_STEPS[TUT.i], el = s.when() && s.el();
+  if (!el || !el.getClientRects().length) { tutEl.hidden = true; TUT.hold = false; return; }
+  if (TUT.shown !== TUT.i) {   // новая карточка
+    TUT.shown = TUT.i; TUT.box = null;
+    const n = TUT_STEPS.length, dots = '<span class="tdots">' + TUT_STEPS.map((_, k) => "<i" + (k === TUT.i ? ' class="on"' : "") + "></i>").join("") + "</span>";
+    const body = s.list ? '<div class="tlist">' + s.list.map(([a, b]) => "<div><b>" + a + "</b><span>" + b + "</span></div>").join("") + "</div>" : "<p>" + s.text + "</p>";
+    tutCard.innerHTML = '<div class="tn">' + dots + (TUT.i < n - 1 ? '<button data-tut="skip">Пропустить</button>' : "") + '</div><b class="tt">' + s.title + "</b>" + body +
+      (s.click ? '<div class="ta"><i></i>' + s.act + "</div>" : '<button class="tgo" data-tut="next">' + (TUT.i < n - 1 ? "Далее" : "Готово") + "</button>");
+    if (s.list) { const sc = el.closest(".mfull") || el.parentElement; sc.style.paddingBottom = "70vh"; TUT.pad = sc; el.style.scrollMarginTop = "14px"; el.scrollIntoView({ block: "start" }); }
+  }
+  tutEl.hidden = false; TUT.hold = true;
+  const r = el.getBoundingClientRect(), p = s.pad || 4, W = innerWidth, H = innerHeight;
+  const x = r.left - p, y = r.top - p, w = r.width + p * 2, h = r.height + p * 2;
+  const key = [x, y, w, h].map(Math.round).join();
+  if (key !== TUT.box) {
+    TUT.box = key;
+    Object.assign(tutHole.style, { left: x + "px", top: y + "px", width: w + "px", height: h + "px", borderRadius: (parseFloat(getComputedStyle(el).borderTopLeftRadius) || 8) + p + "px" });
+    // на шагах с нажатием кнопка открыта, всё остальное закрыто; на шагах «Далее» закрыто всё
+    const hole = s.click ? [x, y, w, h] : [0, 0, 0, 0];
+    const set = (b, l, t, ww, hh) => Object.assign(b.style, { left: l + "px", top: t + "px", width: Math.max(0, ww) + "px", height: Math.max(0, hh) + "px" });
+    set(tutBlk[0], 0, 0, W, s.click ? hole[1] : H); set(tutBlk[1], 0, hole[1] + hole[3], W, H - hole[1] - hole[3]);
+    set(tutBlk[2], 0, hole[1], hole[0], hole[3]); set(tutBlk[3], hole[0] + hole[2], hole[1], W - hole[0] - hole[2], hole[3]);
+    const ch = tutCard.offsetHeight, above = y - 16 - ch, below = y + h + 16;
+    tutCard.style.top = (above >= 8 && !(below + ch <= H - 8 && y < H / 3) ? above : below + ch <= H - 8 ? below : Math.max(8, H - ch - 8)) + "px";
+  }
+}
+tutCard.addEventListener("click", e => {
+  const b = e.target.closest("[data-tut]"); if (!b) return;
+  if (b.dataset.tut === "skip") return tutStop();
+  tutNext();
+});
+setInterval(tutCheck, 150);
+$("tutbtn").addEventListener("click", () => { menuEl.hidden = true; tutStart(); });
 for (const sv of document.querySelectorAll("svg[data-ic]")) sv.innerHTML = ICON[sv.dataset.ic];
 loadGame(); camX = car.x; camY = car.y; updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
+if (TUT_FRESH) tutStart();
 // при сворачивании и закрытии сохраняем, чтобы машина осталась на месте
 document.addEventListener("visibilitychange", () => { if (document.hidden) saveGame(); }); window.addEventListener("pagehide", saveGame);
 setInterval(() => { if (state !== "idle" || online) saveGame(); }, 5000);
