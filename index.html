@@ -3606,7 +3606,7 @@ function showNick(then, rename, left) {
   $("nkt").textContent = rename ? "Новый ник" : "Придумайте ник";
   $("nkp").textContent = rename ? "Ник можно менять 3 раза в сутки" + (left !== undefined ? ", осталось " + left : "") + ". " + NICK_RULES : "Его увидят другие игроки в рейтинге. " + NICK_RULES;
   nkIn.value = rename && PLAYER ? PLAYER.name : ""; nkGo.textContent = rename ? "Сохранить" : "Продолжить";
-  $("nkoff").textContent = rename ? "Отмена" : "Играть без рейтинга"; $("nkoff").hidden = !rename;
+  $("nkoff").textContent = rename ? "Отмена" : "Играть без рейтинга"; $("nkoff").hidden = false;
   nkIn.disabled = rename && left === 0;
   if (nkIn.disabled) return nkSay("Сегодня ник уже меняли 3 раза. Попробуйте завтра", "bad");
   setTimeout(() => nkIn.focus(), 50);
