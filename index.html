@@ -1147,7 +1147,12 @@ const SND = (() => {
   return {
     get on() { return pref.on; }, get vol() { return pref.vol; },
     set(o) { Object.assign(pref, o); save(); if (!pref.on) this.ringStop(); },
-    unlock() { ctx(); },
+    unlock() {   // iPhone: звук разрешается только внутри касания, и нужно сразу сыграть хоть что-то (тишину)
+      try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}   // играть и при беззвучном режиме
+      const a = ctx(); if (!a || this._ok) return;
+      try { const b = a.createBuffer(1, 1, 22050), src = a.createBufferSource(); src.buffer = b; src.connect(a.destination); src.start(0); } catch (e) {}
+      if (a.state === "running") this._ok = true;
+    },
     order() { for (const d of [0, 0.45]) { tone(659, d, 0.2, { vol: 0.17, att: 0.02 }); tone(880, d + 0.14, 0.32, { vol: 0.17, att: 0.02 }); } buzz([60, 300, 60]); },   // новый заказ: «динь-динь» дважды
     engineOn() { [587, 784, 1175].forEach((f, i) => tone(f, i * 0.09, 0.32, { vol: 0.13 })); buzz(40); },             // на линию: мягкий восходящий сигнал
     engineOff() { [880, 659, 440].forEach((f, i) => tone(f, i * 0.1, 0.34, { vol: 0.11 })); },                         // с линии: тот же сигнал вниз
@@ -1170,7 +1175,7 @@ const SND = (() => {
     ringStop() { clearInterval(ringT); ringT = 0; }
   };
 })();
-document.addEventListener("pointerdown", () => SND.unlock(), { passive: true });
+for (const ev of ["pointerdown", "touchend", "click"]) document.addEventListener(ev, () => SND.unlock(), { passive: true, capture: true });
 // Страница не масштабируется: iPhone не слушается user-scalable=no, поэтому щипок и двойное касание гасим вручную.
 // Карта приближается своими жестами (на холсте карты), а кнопки и панели - нет
 for (const ev of ["gesturestart", "gesturechange", "gestureend"]) document.addEventListener(ev, e => e.preventDefault(), { passive: false });
