@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS players (
   week_earned INTEGER NOT NULL DEFAULT 0,
   week_rides  INTEGER NOT NULL DEFAULT 0,
   strikes     INTEGER NOT NULL DEFAULT 0,    -- сколько раз присылал невозможные цифры
-  last_at     INTEGER NOT NULL DEFAULT 0     -- когда пришла последняя засчитанная смена (0 - ни одной)
+  last_at     INTEGER NOT NULL DEFAULT 0,    -- когда пришла последняя засчитанная смена (0 - ни одной)
+  name_changed INTEGER NOT NULL DEFAULT 0,   -- начало суток, в которые меняли ник (0 - не меняли)
+  name_count  INTEGER NOT NULL DEFAULT 0     -- сколько раз меняли ник в эти сутки
 );
 CREATE UNIQUE INDEX IF NOT EXISTS players_ext ON players(platform, ext_id) WHERE ext_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS players_earned ON players(earned DESC);
