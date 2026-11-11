@@ -1053,7 +1053,10 @@ const SND = (() => {
       }
     } catch (e) {}
   }
-  const buzz = p => { try { if (pref.on && navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
+  const buzz = p => { try {   // вибрация: в Telegram - через его отклик (работает и на iPhone), в браузере - через vibrate
+    if (!pref.on) return; const H = window.TG && TG.HapticFeedback;
+    if (H) { const strong = Array.isArray(p) && p.length > 1; strong ? H.notificationOccurred("warning") : H.impactOccurred("medium"); } else if (navigator.vibrate) navigator.vibrate(p);
+  } catch (e) {} };
   return {
     get on() { return pref.on; }, get vol() { return pref.vol; },
     set(o) { Object.assign(pref, o); save(); if (!pref.on) this.ringStop(); },
@@ -3315,6 +3318,41 @@ $("mtest").addEventListener("click", e => {
 });
 
 
+
+// ====== Telegram Mini App: игра открыта внутри Telegram ======
+// SDK подключается только внутри Telegram (в адресе есть tgWebAppData), в обычном браузере ничего не грузится
+window.TG = null;
+(() => {
+  if (!/tgWebApp/.test(location.hash + location.search) && !window.TelegramWebviewProxy) return;
+  const sc = document.createElement("script"); sc.src = "https://telegram.org/js/telegram-web-app.js";
+  sc.onload = () => {
+    const t = window.Telegram && Telegram.WebApp; if (!t) return; window.TG = t;
+    try {
+      t.ready(); t.expand();
+      if (t.disableVerticalSwipes) t.disableVerticalSwipes();   // свайп по карте не сворачивает игру
+      if (t.setHeaderColor) t.setHeaderColor("#ffffff"); if (t.setBackgroundColor) t.setBackgroundColor("#f0f1f4");
+      document.documentElement.classList.add("in-tg");
+      t.BackButton.onClick(tgBack);
+      setInterval(tgSync, 300);
+    } catch (e) {}
+  };
+  document.head.appendChild(sc);
+})();
+// Кнопка «Назад» в шапке Telegram закрывает верхнее окно; во время заказа закрытие игры просит подтверждение
+const TG_LAYERS = ["kef", "trade", "games", "casino", "salon", "bank", "skills", "phone", "home", "shop", "garage", "ledger", "modes", "pause", "menu"];
+function tgTop() { return TG_LAYERS.map(id => $(id)).find(el => el && !el.hidden) || null; }
+function tgBack() {
+  const el = tgTop(); if (!el) return;
+  if (el.id === "kef" && kBusy) return; if (el.id === "casino" && spinning) return;
+  el.hidden = true; if (el.id === "kef" || el.id === "trade") $("games").hidden = false;
+  tgSync();
+}
+let tgShown = null, tgConfirm = null;
+function tgSync() {
+  const t = window.TG; if (!t) return;
+  const show = !!tgTop(); if (show !== tgShown) { tgShown = show; show ? t.BackButton.show() : t.BackButton.hide(); }
+  const busy = state !== "idle" || online; if (busy !== tgConfirm) { tgConfirm = busy; try { busy ? t.enableClosingConfirmation() : t.disableClosingConfirmation(); } catch (e) {} }
+}
 for (const sv of document.querySelectorAll("svg[data-ic]")) sv.innerHTML = ICON[sv.dataset.ic];
 loadGame(); camX = car.x; camY = car.y; updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
 // при сворачивании и закрытии сохраняем, чтобы машина осталась на месте
