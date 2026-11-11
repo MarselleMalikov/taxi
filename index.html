@@ -625,6 +625,8 @@ html.dark .said{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 1p
 html.dark .who{color:#C9CDD6!important}
 html.dark .choice{background:#3A3E49!important;border-color:#4A4F5C!important;color:#fff!important}html.dark .choice:hover{background:#434855!important}
 html.dark .choice.irritated{color:#FF9DA1!important;border-color:#6A3438!important}
+.money.neg{color:#C9363B!important}
+html.dark .money.neg{color:#FF5A5F!important;text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 -1px 0 #fff,0 1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff}
 </style></head>
 <body>
 <div id="app">
@@ -2380,7 +2382,7 @@ function updateTop() {
   $("prion").textContent = Math.round(priority); $("priofill").style.width = (priority / PRIO_MAX * 100) + "%";
   $("prio").className = "prow" + (priority < 25 ? " low" : priority >= PRIO_MAX ? " high" : "");
   updateFuel();
-  moneyEl.textContent = money.toLocaleString("ru-RU") + " ₽"; moneyEl.style.color = money < 0 ? "#c9363b" : ""; ridesEl.textContent = ridesDone; ratingEl.textContent = getRating().toFixed(2);
+  moneyEl.textContent = money.toLocaleString("ru-RU") + " ₽"; moneyEl.style.color = ""; moneyEl.classList.toggle("neg", money < 0); ridesEl.textContent = ridesDone; ratingEl.textContent = getRating().toFixed(2);
   goalText.textContent = fmtHM(onlineT) + " из " + fmtHM(onlineLimit());
   $("mcar").textContent = myCar().name + (typeof driveOwn === "function" && driveOwn() ? " · своя" + (curOwn().gbo ? " · ГБО" : "") : "") + " · " + myTariff().name;
   $("mmoney").textContent = moneyEl.textContent; $("mshift").textContent = shiftMoney.toLocaleString("ru-RU") + " ₽";
@@ -3023,7 +3025,7 @@ const SKILLS = [
   { id: "prio",   name: "Приоритет",      v: [1, 2, 3],          t: "Приоритет за заказ ", u: x => "+" + (1 + x) }
 ];
 const SK = id => { const s = SKILLS.find(x => x.id === id), l = M.skills[id] || 0; return l ? s.v[l - 1] : 0; };
-const pointNeed = n => 60 + 30 * (n - 1);   // поездок на n-е очко
+const pointNeed = n => 60 + 20 * (n - 1);   // поездок на n-е очко
 function pointsInfo() {   // заработано очков, сколько поездок до следующего
   let n = 0, cum = 0; while (n < SKILLS.length * 3 && cum + pointNeed(n + 1) <= ridesDone) { cum += pointNeed(n + 1); n++; }
   const spent = SKILLS.reduce((a, s) => a + (M.skills[s.id] || 0), 0);
