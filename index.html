@@ -609,10 +609,22 @@ html.dark .mreq i{border-color:#6B7080}
 html.dark .eopen{background:#3A3627}
 
 .mtheme{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:18px;background:var(--c)}.mtheme b{font-size:16px}
-.seg{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:3px;border-radius:14px;background:rgba(0,0,0,.06)}
-.seg button{min-width:0;padding:7px 2px;border:none;border-radius:11px;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--m);cursor:pointer;white-space:nowrap}
+.seg{flex:1;display:grid;grid-template-columns:repeat(2,1fr);gap:4px;padding:3px;border-radius:14px;background:rgba(0,0,0,.06)}
+.seg button{min-width:0;padding:8px 2px;font-size:14px!important;border:none;border-radius:11px;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--m);cursor:pointer;white-space:nowrap}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
 .gtop em{font-size:16px;color:#1E1F23!important;text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 -1px 0 #fff,0 1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff}
+
+html.dark .evtbtns button:first-child,html.dark #askok,html.dark .endbtn.main,html.dark .dsave,html.dark .callchip button,html.dark .mstage,html.dark .seg button.on,html.dark .bbtn,html.dark .kgo:not(:disabled){color:#1E1F23!important}
+html.dark .evtbtns button:first-child small{color:#3D3410!important}
+html.dark .evtbtns button:not(:first-child){background:#3A3E49!important;color:#F2F3F5!important}html.dark .evtbtns button:not(:first-child) small{color:#C9CDD6!important}
+html.dark .kbadge{background:#FFD233!important;color:#1E1F23!important}html.dark .kbadge .ico{color:#1E1F23!important}
+html.dark .paychip.kid{background:#FFD233!important;color:#1E1F23!important}
+html.dark .stopinfo{background:#5A4A1E!important;color:#FFE7A0!important;font-weight:700}
+html.dark .dialog{background:#2D3039!important;border-color:#3E4350!important}
+html.dark .said{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 1px #000}
+html.dark .who{color:#C9CDD6!important}
+html.dark .choice{background:#3A3E49!important;border-color:#4A4F5C!important;color:#fff!important}html.dark .choice:hover{background:#434855!important}
+html.dark .choice.irritated{color:#FF9DA1!important;border-color:#6A3438!important}
 </style></head>
 <body>
 <div id="app">
@@ -641,7 +653,7 @@ html.dark .eopen{background:#3A3627}
       <div class="mprof"><div class="mprow"><span class="mstage" id="mstage">Новичок</span><span class="mdate" id="mdate"></span></div><div class="mpbig"><b id="mmoney">0 ₽</b><span>на счету</span></div><div id="mnextbox"></div></div>
       <div class="mfin" id="mfin" hidden></div>
       <span id="mstatus" hidden></span><span id="statustext" hidden></span><button id="offbtn" hidden></button>
-      <div class="mtheme"><b>Тема</b><div class="seg" id="themeseg"><button data-th="light">Светлая</button><button data-th="dark">Тёмная</button><button data-th="night">Ночью</button><button data-th="auto">Авто</button></div></div>
+      <div class="mtheme"><b>Тема</b><div class="seg" id="themeseg"><button data-th="light">Светлая</button><button data-th="dark">Тёмная</button></div></div>
       <div class="msound"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><b>Звук</b><input type="range" id="sndvol" min="0" max="100" aria-label="Громкость"><button class="swt" id="sndon" aria-label="Звук вкл/выкл"><i></i></button></div>
       <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Таксопарк</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Казино</button><button class="mtile" id="homebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="home"></svg></span>Дом</button></div>
       <div class="mstats">
@@ -3410,17 +3422,12 @@ $("mtest").addEventListener("click", e => {
 
 
 // ====== Тёмная тема: «Светлая», «Тёмная», «Ночью» (тёмная с 20:00 до 6:00 игрового времени), «Авто» (как в телефоне или в Telegram) ======
-const THEME = { pref: "auto", dark: false };
-try { THEME.pref = localStorage.getItem("taxi-theme") || "auto"; } catch (e) {}
+const THEME = { pref: "light", dark: false };
+try { THEME.pref = localStorage.getItem("taxi-theme") === "dark" ? "dark" : "light"; } catch (e) {}
 const MAP_LIGHT = { bg: MAP_BG, fill: FILL.slice(), edge: EDGE.slice(), layers: LAYERS.map(l => [l.fill, l.line, l.stroke]) };
 const MAP_DARK = { bg: "#262930", fill: ["#4A4F5C", "#474C58", "#434754", "#40444F", "#3C404A", "#383C46"], edge: ["#555A68", "#525764", "#4E5260", "#4A4E5A", "#464A55", "#41454F"],
   col: { "#dfe1e6": "#30343D", "#aad3f2": "#2A3B52", "#e2efd8": "#2B3530", "#dde6d9": "#2C332F", "#cde5c1": "#2A3A2F", "#d2eac6": "#2B3A2F", "#e4e9e0": "#2D332F", "#d6d9e0": "#363A44", "#cdd1d9": "#3D414C", "#aeb3bf": "#4E5361" } };
-function wantDark() {
-  if (THEME.pref === "dark") return true; if (THEME.pref === "light") return false;
-  if (THEME.pref === "night") { const h = hourNow() % 24; return h >= 20 || h < 6; }
-  if (window.TG && TG.colorScheme) return TG.colorScheme === "dark";
-  return !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
-}
+const wantDark = () => THEME.pref === "dark";
 function applyTheme(force) {
   const d = wantDark(); if (d === THEME.dark && !force) return; THEME.dark = d;
   document.documentElement.classList.toggle("dark", d);
@@ -3435,8 +3442,6 @@ function applyTheme(force) {
 function renderThemeSeg() { for (const b of document.querySelectorAll("#themeseg [data-th]")) b.classList.toggle("on", b.dataset.th === THEME.pref); }
 $("themeseg").addEventListener("click", e => { const b = e.target.closest("[data-th]"); if (!b) return; THEME.pref = b.dataset.th; try { localStorage.setItem("taxi-theme", THEME.pref); } catch (er) {} applyTheme(true); renderThemeSeg(); });
 statusPill.addEventListener("click", renderThemeSeg);
-if (window.matchMedia) try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => applyTheme()); } catch (e) {}
-setInterval(() => applyTheme(), 2000);   // «Ночью» и тема Telegram проверяются раз в 2 секунды
 applyTheme(true);
 // ====== Telegram Mini App: игра открыта внутри Telegram ======
 // SDK подключается только внутри Telegram (в адресе есть tgWebAppData), в обычном браузере ничего не грузится
