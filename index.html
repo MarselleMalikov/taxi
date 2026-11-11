@@ -1031,7 +1031,7 @@ function checkDps() {   // машина проезжает пост: иногд�
     if (Math.hypot(p.x - car.x, p.y - car.y) > 60) continue;
     if (p.seen) return;
     p.seen = true;
-    if (dpsStops < 3 && Math.random() < 0.3) { dpsStops++; moodAdd(-3); const id = fresh(DPS); dialogue = { scene: SCENES[id], nodeId: SCENES[id].start }; renderPanel(); }
+    if (dpsStops < 1 && Math.random() < 0.15) { dpsStops++; moodAdd(-3); const id = fresh(DPS); dialogue = { scene: SCENES[id], nodeId: SCENES[id].start }; renderPanel(); }
     return;
   }
 }
@@ -3413,7 +3413,7 @@ statusPill.addEventListener("click", renderMenu);
 const ICON_SND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>';
 function renderSound() {   // громкость кнопками - и + (по 10%), отдельная кнопка «без звука»
   const v = Math.round(SND.vol * 100), on = SND.on && v > 0;
-  $("sndval").textContent = on ? v + "%" : "выкл"; $("sndminus").disabled = !on || v <= 10; $("sndplus").disabled = v >= 100 && SND.on;
+  $("sndval").textContent = on ? v + "%" : ""; $("sndminus").disabled = !on || v <= 10; $("sndplus").disabled = v >= 100 && SND.on;
   $("sndon").classList.toggle("muted", !on); $("sndon").innerHTML = ICON_SND + (on ? '<path d="M15.5 9a4 4 0 0 1 0 6"/></svg>' : '<path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>');
 }
 statusPill.addEventListener("click", renderSound);
