@@ -690,6 +690,9 @@ html.dark #nkin{background:#262930;color:#F2F3F5;border-color:#3E4350}html.dark 
 html.dark .mlead{background:#2D3039;border-color:#3E4350;color:#F2F3F5}html.dark .mlead .mti{background:#3A3627;color:#FFD233}
 html.dark .lbrow.me{background:#3A3627;border-color:#E3B000!important}html.dark .lbrow+.lbrow{border-color:#3E4350}html.dark .lbn{background:#383C47;color:#F2F3F5}
 html.dark .lbn.p1{background:#FFD233}html.dark .lbn.p2{background:#DDE1E7}html.dark .lbn.p3{background:#EFC39B}html.dark .lbn.p1,html.dark .lbn.p2,html.dark .lbn.p3{color:#1E1F23}html.dark .lbseg button.on{background:#FFD233;color:#1E1F23}
+html.dark .dback{background:#383C47;color:#F2F3F5}
+html.dark #fuelpill:not(.low):not(.gbo) #fuelfill{background:#D7DBE2}
+.lrow.lleft span{color:var(--ink);font-weight:600}.lrow.lleft b{font-variant-numeric:tabular-nums}html.dark .lrow.lleft span{color:#F2F3F5}
 </style></head>
 <body>
 <div id="app">
@@ -1300,7 +1303,12 @@ const DISTRICTS = [
 const DISTRICT_FEE = [0, 0.09, 0.05, 0.01];   // по числу выбранных районов: один +9%, два +5%, все три +1%
 let districtSel = null;   // выбранные районы (Set) или null - режим выключен
 function inPoly(x, y, P) { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > y) !== (P[j][1] > y) && x < (P[j][0] - P[i][0]) * (y - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; }
-function districtAt(x, y) { for (const d of DISTRICTS) if (inPoly(x, y, d.pts)) return d.id; return null; }   // вне районов - null
+// Поправка границ (по разметке пользователя): эти соты отошли Северу и Центру, Юг стал чуть меньше
+const DIST_MOVE = new Map([...[130024, 140024, 180029, 190028, 130025, 140025, 140027, 140026, 160028, 150027, 150025, 150026, 170028, 120024].map(k => [k, "north"]), ...[220023, 220022, 210021, 230022, 240023, 210022, 230023].map(k => [k, "center"])]);
+function districtAt(x, y) {   // вне районов - null
+  for (const d of DISTRICTS) if (inPoly(x, y, d.pts)) return DIST_MOVE.get(hexKey(...hexAt(x, y))) || d.id;
+  return null;
+}
 const districtFee = n => DISTRICT_FEE[Math.min(n, 3)];
 const feeRate = () => FEE + (business ? 0.09 : districtSel ? districtFee(districtSel.size) : workMode === "flex" ? 0.05 : 0);
 const modeNow = () => business ? "business" : districtSel ? "district" : workMode;
@@ -1642,7 +1650,7 @@ function finishRide(reason) {
   // Оценку ставят не все: довольные - примерно каждый третий, недовольные - чаще. Явная оценка из диалога ставится всегда
   // в Комфорт+ пассажиры требовательнее: оценивают чаще и строже
   const T = TARIFFS[c.cls || "econ"], strict = c.cls === "cplus" && c.mood < 0 ? 1 : 0;
-  let stars = c.stars !== undefined ? c.stars : Math.random() < (c.mood < 0 ? 0.7 : T.rateChance) ? Math.max(1, 5 + Math.min(0, c.mood) - strict) : 0;
+  let stars = c.offApp ? 0 : c.stars !== undefined ? c.stars : Math.random() < (c.mood < 0 ? 0.7 : T.rateChance) ? Math.max(1, 5 + Math.min(0, c.mood) - strict) : 0;
   if (stars > 0 && stars <= 2 && c.stars === undefined && owns("water") && Math.random() < 0.5) stars = 3;   // вода и салфетки смягчают пассажира
   const ratingWas = getRating();
   if (stars > 0) { rates.push(stars); if (rates.length > 150) rates.shift(); }
@@ -1710,8 +1718,9 @@ endCard.addEventListener("click", e => {
 function showLedger() {
   const L = ledger, f = v => v.toLocaleString("ru-RU") + " ₽", row = (t, v, minus) => '<div class="lrow' + (minus && v ? " minus" : "") + '"><span>' + t + "</span><b>" + (minus && v ? "−" : "") + f(v) + "</b></div>";
   $("lday").textContent = day;
-  $("lrows").innerHTML = row("Заказы (" + shiftRides + ")", L.fares) + row("Чаевые и доплаты", L.tips) + row("Комиссия", L.fee, true) +
-    row("Аренда (" + myCar().name + ")", L.rent, true) + row("Топливо" + (L.fuelL ? " (" + Math.round(L.fuelL) + " л)" : ""), L.fuel, true) + (L.bonus ? row("Бонусы за цели", L.bonus) : "") + (L.fines ? row("Штрафы, обед и прочее", L.fines, true) : "") + "" +
+  const left = Math.max(0, onlineLimit() - onlineT), hm = Math.floor(left / 3600) + " ч " + Math.floor(left % 3600 / 60) + " мин";
+  $("lrows").innerHTML = '<div class="lrow lleft"><span>До конца смены</span><b>' + hm + "</b></div>" + row("Заказы (" + shiftRides + ")", L.fares) + row("Чаевые и доплаты", L.tips) + row("Комиссия", L.fee, true) +
+    row("Аренда (" + myCar().name + ")", L.rent, true) + row("Топливо" + (L.fuelL ? " (" + Math.round(L.fuelL) + " л)" : ""), L.fuel, true) + (L.bonus ? row("Бонусы за цели", L.bonus) : "") + (L.fines ? row("Прочие затраты", L.fines, true) : "") + "" +
     '<div class="lrow"><span>Чистыми в час</span><b>' + (onlineT >= 1800 ? (shiftNet() < 0 ? "−" : "") + f(Math.abs(Math.round(shiftNet() / (onlineT / 3600)))) : "—") + "</b></div>" +
     '<div class="lrow total"><span>Итого за смену</span><b>' + (shiftNet() < 0 ? "−" : "") + f(Math.abs(shiftNet())) + "</b></div>" +
     '<div class="lsub">Пробег ' + Math.round(L.km) + " км · в баке " + Math.round(fuel) + " л" + "</div>";
@@ -2886,8 +2895,8 @@ function drawDistricts(sel, picking) {
   for (const on of [false, true]) {
     if (!picking && !on) continue;
     ctx.beginPath(); for (const o of distHex) if (sel.has(o.d) === on) hexPath(o.h, HEX_R);
-    ctx.fillStyle = on ? "rgba(30,31,35,.30)" : "rgba(124,92,230,.20)"; ctx.fill();
-    ctx.lineWidth = 0.6 / scale; ctx.strokeStyle = on ? "rgba(30,31,35,.35)" : "rgba(124,92,230,.35)"; ctx.stroke();
+    ctx.fillStyle = MAPC.dark ? (on ? "rgba(255,210,51,.30)" : "rgba(150,120,255,.30)") : on ? "rgba(30,31,35,.30)" : "rgba(124,92,230,.20)"; ctx.fill();   // в тёмной теме: выбранные - жёлтые, остальные - светлее
+    ctx.lineWidth = 0.6 / scale; ctx.strokeStyle = MAPC.dark ? (on ? "rgba(255,210,51,.45)" : "rgba(170,150,255,.45)") : on ? "rgba(30,31,35,.35)" : "rgba(124,92,230,.35)"; ctx.stroke();
   }
   ctx.beginPath();
   for (const o of distHex) for (const i of o.edges) {
@@ -2895,7 +2904,7 @@ function drawDistricts(sel, picking) {
     const a0 = Math.PI / 6 + i * Math.PI / 3, a1 = a0 + Math.PI / 3;
     ctx.moveTo(o.h.x + Math.cos(a0) * HEX_R, o.h.y + Math.sin(a0) * HEX_R); ctx.lineTo(o.h.x + Math.cos(a1) * HEX_R, o.h.y + Math.sin(a1) * HEX_R);
   }
-  ctx.lineWidth = (picking ? 2.4 : 1.6) / scale; ctx.strokeStyle = "#1E1F23"; ctx.lineJoin = "round"; ctx.stroke();
+  ctx.lineWidth = (picking ? 2.4 : 1.6) / scale; ctx.strokeStyle = MAPC.dark ? "#E6E8EC" : "#1E1F23"; ctx.lineJoin = "round"; ctx.stroke();
 }
 
 function drawDistrictLabels() {   // названия районов поверх дорог и машины
