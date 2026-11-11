@@ -661,6 +661,35 @@ html.dark .sbuy.got{background:#24412F!important;color:#5FD38A!important}
 .mfull .mtut{align-self:center;border:none;background:var(--c);color:var(--ink);font-family:inherit;font-size:15px;font-weight:600;padding:12px 18px;border-radius:28px;cursor:pointer}
 html.dark #tut .tcard{background:#2D3039;color:#F2F3F5}html.dark #tut p,html.dark #tut .tlist span{color:#C9CED8}html.dark #tut .tn button{color:#A7AEBB}
 html.dark #tut .tdots i{background:#3E4350}html.dark #tut .tdots i.on{background:#F2F3F5}html.dark .mfull .mtut{background:#383C47;color:#F2F3F5}
+#nick,#leaders{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}#nick[hidden],#leaders[hidden]{display:none}#nick{z-index:10001}
+.nkcard{border-radius:28px;padding:20px 18px 18px;max-width:380px}
+.nkt{font-size:21px;font-weight:800;line-height:1.2}
+.nkcard .nkp{margin:6px 0 14px;font-size:15px;line-height:1.3;color:var(--m)}
+#nkin{width:100%;box-sizing:border-box;height:52px;border:2px solid var(--line);border-radius:16px;padding:0 14px;font-family:inherit;font-size:18px;font-weight:600;color:var(--ink);background:#fff;outline:none}
+#nkin:focus{border-color:var(--yd)}#nkin.bad{border-color:#C9363B}#nkin.good{border-color:#1FAF55}
+.nkmsg{min-height:20px;margin:6px 2px 10px;font-size:14px;font-weight:600;color:var(--m)}.nkmsg.bad{color:#C9363B}.nkmsg.good{color:#1FAF55}
+.nkgo{width:100%;height:50px;border:none;border-radius:28px;background:var(--y);color:#1E1F23;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer}.nkgo:disabled{opacity:.45}
+.nkoff{display:block;margin:10px auto 0;border:none;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--m);text-decoration:underline;cursor:pointer}
+.mlead{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:20px;background:#fff;font-family:inherit;text-align:left;cursor:pointer;color:var(--ink)}
+.mlead .mti{flex:none;width:46px;height:46px;border-radius:50%;background:#FFF4CC;color:#B98A00;display:flex;align-items:center;justify-content:center}.mlead .mti .ico{width:24px;height:24px}
+.mltx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.mltx b{font-size:17px;font-weight:700}.mltx small{font-size:14.5px;color:var(--m)}
+.mlarr{flex:none;width:20px;height:20px;color:var(--m)}
+.lbcard{max-width:420px;border-radius:28px;padding:16px 16px 12px;max-height:calc(100vh - 32px);display:flex;flex-direction:column}
+.lbseg{flex:none;margin:12px 0 8px;grid-template-columns:repeat(2,1fr)}
+#lblist{overflow-y:auto;margin:0 -4px;padding:0 4px;min-height:120px}
+.lbrow{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:16px}
+.lbrow+.lbrow{border-top:1px solid var(--line)}.lbrow.me{background:#FFFBEA;border:2px solid var(--yd)!important;padding:7px 6px}.lbrow.me+.lbrow{border-top:none}
+.lbn{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--ink);background:var(--c);font-variant-numeric:tabular-nums}
+.lbn.p1{background:#FFD233}.lbn.p2{background:#DDE1E7}.lbn.p3{background:#EFC39B}.lbn.far{width:auto;min-width:30px;padding:0 6px;border-radius:15px;font-size:13px}
+.lbw{flex:1;min-width:0}.lbw b{display:block;font-size:16px!important;font-weight:700!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lbw small{display:block;font-size:13.5px;color:var(--m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lbm{flex:none;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.lbgap{text-align:center;color:var(--m);font-size:15px;padding:2px 0;letter-spacing:2px}
+.lbnote{padding:18px 6px;text-align:left;color:var(--m);font-size:15px;line-height:1.3}.lbnote button{display:block;margin-top:12px;height:46px;padding:0 20px;border:none;border-radius:28px;background:var(--y);color:#1E1F23;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer}
+.lbfoot{flex:none;padding:8px 4px 0;font-size:13px;color:var(--m)}
+html.dark #nkin{background:#262930;color:#F2F3F5;border-color:#3E4350}html.dark #nkin:focus{border-color:#E3B000}
+html.dark .mlead{background:#2D3039;border-color:#3E4350;color:#F2F3F5}html.dark .mlead .mti{background:#3A3627;color:#FFD233}
+html.dark .lbrow.me{background:#3A3627;border-color:#E3B000!important}html.dark .lbrow+.lbrow{border-color:#3E4350}html.dark .lbn{background:#383C47;color:#F2F3F5}
+html.dark .lbn.p1{background:#FFD233}html.dark .lbn.p2{background:#DDE1E7}html.dark .lbn.p3{background:#EFC39B}html.dark .lbn.p1,html.dark .lbn.p2,html.dark .lbn.p3{color:#1E1F23}html.dark .lbseg button.on{background:#FFD233;color:#1E1F23}
 </style></head>
 <body>
 <div id="app">
@@ -687,6 +716,7 @@ html.dark #tut .tdots i{background:#3E4350}html.dark #tut .tdots i.on{background
     <div class="mfull">
       <div class="mtop"><b>Меню</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
       <div class="mprof"><div class="mprow"><span class="mstage" id="mstage">Новичок</span><span class="mdate" id="mdate"></span></div><div class="mpbig"><b id="mmoney">0 ₽</b><span>на счету</span></div><div id="mnextbox"></div></div>
+      <button class="mlead" id="leadbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="cup"></svg></span><span class="mltx"><b>Рейтинг игроков</b><small id="leadsub">Соревнуйтесь с другими водителями</small></span><svg class="mlarr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
       <div class="mfin" id="mfin" hidden></div>
       <span id="mstatus" hidden></span><span id="statustext" hidden></span><button id="offbtn" hidden></button>
       <div class="mtheme"><b>Тема</b><div class="seg" id="themeseg"><button data-th="light">Светлая</button><button data-th="dark">Тёмная</button></div></div>
@@ -715,6 +745,8 @@ html.dark #tut .tdots i{background:#3E4350}html.dark #tut .tdots i.on{background
 <div id="phone" hidden><div class="askback" data-close="1"></div><div class="smart"><div class="sscreen"><div class="sbar"><b class="sclock"></b><span class="island"></span><span class="sicons"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="25" y="4" width="2" height="4" rx="1" opacity=".4"/></svg></span></div><div class="sapp" id="phonelist"></div><button class="shome" data-close="1" aria-label="Закрыть"></button></div></div></div>
 <div id="call" hidden><div class="askback"></div><div class="smart"><div class="sscreen dark"><div class="sbar"><b class="sclock"></b><span class="island"></span><span class="sicons"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="25" y="4" width="2" height="4" rx="1" opacity=".4"/></svg></span></div><div class="callbox" id="callbox"></div><span class="shome"></span></div></div></div>
 <div id="home" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Дом</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="homelist"></div></div></div>
+<div id="nick" hidden><div class="askback"></div><div class="askcard nkcard"><div class="nkt">Придумайте ник</div><p class="nkp">Его увидят другие игроки в рейтинге. От 3 до 16 знаков: буквы, цифры и _.</p><input id="nkin" maxlength="16" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Например, Ринат_02"><div class="nkmsg" id="nkmsg"></div><button class="nkgo" id="nkgo" disabled>Продолжить</button><button class="nkoff" id="nkoff" hidden>Играть без рейтинга</button></div></div>
+<div id="leaders" hidden><div class="askback" data-close="1"></div><div class="askcard lbcard"><div class="mhead"><b>Рейтинг игроков</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="seg lbseg" id="lbseg"><button data-p="week" class="on">Неделя</button><button data-p="all">Всё время</button></div><div id="lblist"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard scard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Игры</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button><button class="pact" data-game="trade"><span class="pico green"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 8h-1.5v6H6M12 6v12M12 9h1.5v5H12M18 3v14M18 6h-1.5v7H18"/></svg></span><span class="ptxt"><span class="ptop"><b>Биржа TaxiCoin</b></span><span class="ptags"><i>лонг и шорт</i><i>плечо до ×25</i></span></span></button></div></div>
@@ -1714,6 +1746,7 @@ const ICON = {
   dice: '<rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="9" cy="9" r=".8" fill="currentColor"/><circle cx="15" cy="15" r=".8" fill="currentColor"/><circle cx="15" cy="9" r=".8" fill="currentColor"/><circle cx="9" cy="15" r=".8" fill="currentColor"/>',
   trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M10.5 13h3l.5 4h-4zM8 20h8"/>',
   home: '<path d="M4 11 12 4l8 7M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>',
+  cup: '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5a3.5 3.5 0 0 1-3.5 3.5M12 14v3M8.5 20h7M9.5 17h5v3h-5z"/>',
   seat: '<path d="M8 4h5a3 3 0 0 1 3 3v6H9a3 3 0 0 1-3-3V6a2 2 0 0 1 2-2z"/><path d="M9 13l-2 6h11l-2-6M10 8h4"/>',
   chev: '<path d="M9 6l6 6-6 6"/>',
   coffee: '<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M9 3.5v2.5M12.5 3.5v2.5"/>',
@@ -3136,7 +3169,7 @@ function askTO() {
 }
 const toLeftTxt = c => { c = c || curOwn(); return !c ? "" : c.km >= c.toKm ? "ТО просрочено" : "до ТО " + Math.round(c.toKm - c.km).toLocaleString("ru-RU") + " км"; };
 const fmtR = v => Math.round(v).toLocaleString("ru-RU") + " ₽";
-function onShiftEnd() { M.careerShifts++; const o = checkUnlock(true); return o; }
+function onShiftEnd() { M.careerShifts++; const o = checkUnlock(true); queueShift(); return o; }
 
 // ---------- Телефон: постоянные пассажиры ----------
 const CALL_WAIT = 15 * 60, MAX_CONTACTS = 12;   // 15 игровых минут, чтобы поехать за клиентом
@@ -3525,7 +3558,7 @@ window.TG = null;
   document.head.appendChild(sc);
 })();
 // Кнопка «Назад» в шапке Telegram закрывает верхнее окно; во время заказа закрытие игры просит подтверждение
-const TG_LAYERS = ["kef", "trade", "games", "casino", "salon", "bank", "skills", "phone", "home", "shop", "garage", "ledger", "modes", "pause", "menu"];
+const TG_LAYERS = ["leaders", "kef", "trade", "games", "casino", "salon", "bank", "skills", "phone", "home", "shop", "garage", "ledger", "modes", "pause", "menu"];
 function tgTop() { return TG_LAYERS.map(id => $(id)).find(el => el && !el.hidden) || null; }
 function tgBack() {
   const el = tgTop(); if (!el) return;
@@ -3539,6 +3572,105 @@ function tgSync() {
   const show = !!tgTop(); if (show !== tgShown) { tgShown = show; show ? t.BackButton.show() : t.BackButton.hide(); }
   const busy = state !== "idle" || online; if (busy !== tgConfirm) { tgConfirm = busy; try { busy ? t.enableClosingConfirmation() : t.disableClosingConfirmation(); } catch (e) {} }
 }
+// ====== Рейтинг игроков: ник, отправка итогов смены, таблица лидеров (сервер в папке server/) ======
+const API = "https://taxi-ufa.barsuk5656.workers.dev/api", PLAYER_KEY = "taxi-player", PEND_KEY = "taxi-pending-shift";
+const STAGE_RU = { novice: "Новичок", driver: "Водитель", pro: "Профи" };
+const NICK_RE = /^[A-Za-zА-Яа-яЁё0-9_]{3,16}$/;
+let PLAYER = null, nickSkip = false, afterNick = null;
+try { PLAYER = JSON.parse(localStorage.getItem(PLAYER_KEY) || "null"); } catch (e) {}
+async function api(path, body) {
+  const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 9000);
+  try {
+    const r = await fetch(API + path, { method: body ? "POST" : "GET", signal: ctl.signal,
+      headers: { ...(body ? { "Content-Type": "application/json" } : {}), ...(PLAYER ? { Authorization: "Bearer " + PLAYER.token } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    let d = {}; try { d = await r.json(); } catch (e) {}
+    return { status: r.status, ...d };
+  } catch (e) { return { status: 0, error: "net" }; } finally { clearTimeout(tm); }
+}
+const needNick = () => !PLAYER && !nickSkip;
+// ---------- окно «Придумайте ник» ----------
+const nkIn = $("nkin"), nkMsg = $("nkmsg"), nkGo = $("nkgo");
+let nkTimer = 0, nkSeq = 0;
+function nkSay(text, cls) { nkMsg.textContent = text; nkMsg.className = "nkmsg" + (cls ? " " + cls : ""); nkIn.classList.toggle("bad", cls === "bad"); nkIn.classList.toggle("good", cls === "good"); }
+function showNick(then) { afterNick = then || null; $("nick").hidden = false; nkSay(""); nkGo.disabled = true; setTimeout(() => nkIn.focus(), 50); }
+nkIn.addEventListener("input", () => {
+  const n = nkIn.value.trim(); clearTimeout(nkTimer); nkGo.disabled = true; const seq = ++nkSeq;
+  if (!n) return nkSay("");
+  if (!NICK_RE.test(n)) return nkSay(n.length < 3 ? "Минимум 3 знака" : "Только буквы, цифры и _", "bad");
+  nkSay("Проверяем…");
+  nkTimer = setTimeout(async () => {
+    const r = await api("/name?n=" + encodeURIComponent(n)); if (seq !== nkSeq) return;
+    if (r.status === 0) { nkSay("Нет связи с сервером", "bad"); $("nkoff").hidden = false; return; }
+    if (r.free) { nkSay("Ник свободен", "good"); nkGo.disabled = false; } else nkSay(r.text || "Ник занят", "bad");
+  }, 400);
+});
+nkIn.addEventListener("keydown", e => { if (e.key === "Enter" && !nkGo.disabled) nkGo.click(); });
+nkGo.addEventListener("click", async () => {
+  const n = nkIn.value.trim(); nkGo.disabled = true; nkSay("Сохраняем…");
+  const r = await api("/register", { name: n, platform: "web" });
+  if (r.status === 0) { nkSay("Нет связи с сервером", "bad"); $("nkoff").hidden = false; nkGo.disabled = false; return; }
+  if (!r.token) { nkSay(r.text || "Не получилось", "bad"); return; }
+  PLAYER = { id: r.id, token: r.token, name: r.name };
+  try { localStorage.setItem(PLAYER_KEY, JSON.stringify(PLAYER)); } catch (e) {}
+  $("nick").hidden = true; SND.accept(); toast("Ник сохранён", r.name + ", удачной смены", "star"); flushShift();
+  const f = afterNick; afterNick = null; if (f) f();
+});
+$("nkoff").addEventListener("click", () => { nickSkip = true; $("nick").hidden = true; const f = afterNick; afterNick = null; if (f) f(); });
+// ---------- итог смены: в очередь и на сервер. Неотправленная смена ждёт связи; хранится только последняя ----------
+function queueShift() {
+  if (testOn()) return;   // в тестовом режиме в рейтинг ничего не уходит
+  const s = { n: M.careerShifts, money: Math.round(shiftNet()), rides: shiftRides, rating: +getRating().toFixed(2), stage: stageNow().id };
+  try { localStorage.setItem(PEND_KEY, JSON.stringify(s)); } catch (e) {}
+  flushShift();
+}
+async function flushShift() {
+  if (!PLAYER) return; let s = null;
+  try { s = JSON.parse(localStorage.getItem(PEND_KEY) || "null"); } catch (e) {}
+  if (!s) return;
+  const r = await api("/shift", s);
+  if (r.status === 0 || r.status >= 500) return;   // нет связи - отправим позже
+  if (r.status === 401) { PLAYER = null; try { localStorage.removeItem(PLAYER_KEY); } catch (e) {} return; }
+  try { localStorage.removeItem(PEND_KEY); } catch (e) {}
+}
+// ---------- таблица лидеров ----------
+let lbPeriod = "week";
+const rub = v => (v < 0 ? "−" : "") + Math.abs(v).toLocaleString("ru-RU") + " ₽";
+const ridesWord = n => n % 10 === 1 && n % 100 !== 11 ? "поездка" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? "поездки" : "поездок";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+function lbRow(p, place, isMe) {
+  const money = lbPeriod === "week" ? p.weekEarned : p.earned, rides = lbPeriod === "week" ? p.weekRides : p.rides;
+  return '<div class="lbrow' + (isMe ? " me" : "") + '"><span class="lbn' + (place <= 3 ? " p" + place : place > 99 ? " far" : "") + '">' + place + '</span><span class="lbw"><b>' + esc(p.name) + (isMe ? " (вы)" : "") +
+    "</b><small>" + (STAGE_RU[p.stage] || "Новичок") + " · " + rides + " " + ridesWord(rides) + '</small></span><span class="lbm">' + rub(money) + "</span></div>";
+}
+async function showLeaders() {
+  menuEl.hidden = true; $("leaders").hidden = false; renderLeaders();
+}
+async function renderLeaders() {
+  const box = $("lblist"); [...$("lbseg").children].forEach(b => b.classList.toggle("on", b.dataset.p === lbPeriod));
+  box.innerHTML = '<div class="lbnote">Загружаем…</div>';
+  const period = lbPeriod, r = await api("/top?period=" + period + "&limit=50"); if (period !== lbPeriod) return;
+  if (r.status === 0 || !r.list) { box.innerHTML = '<div class="lbnote">Нет связи с сервером. Попробуйте позже.</div>'; return; }
+  let html = "", meIn = false;
+  r.list.forEach((p, i) => { const me = PLAYER && p.id === PLAYER.id; if (me) meIn = true; html += lbRow(p, i + 1, me); });
+  const myPlace = r.place ? r.place[period] : null;
+  if (PLAYER && r.me && !meIn && myPlace) html += '<div class="lbgap">···</div>' + lbRow(r.me, myPlace, true);
+  if (!r.list.length) html = '<div class="lbnote">' + (period === "week" ? "На этой неделе ещё никто не закончил смену." : "Пока никого нет.") + " Закончите смену, и вы попадёте в рейтинг.</div>";
+  if (!PLAYER) html += '<div class="lbnote">Придумайте ник, чтобы попасть в рейтинг.<button data-lb="nick">Придумать ник</button></div>';
+  else if (!myPlace && r.list.length) html += '<div class="lbnote">Вас здесь пока нет: в рейтинг попадает каждая законченная смена.</div>';
+  box.innerHTML = html;
+  $("leadsub").textContent = PLAYER ? PLAYER.name + (myPlace ? " · " + myPlace + "-е место " + (period === "week" ? "за неделю" : "за всё время") : "") : "Соревнуйтесь с другими водителями";
+}
+$("leaders").addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { $("leaders").hidden = true; return; }
+  const b = e.target.closest("[data-p]"); if (b) { lbPeriod = b.dataset.p; renderLeaders(); return; }
+  if (e.target.closest('[data-lb="nick"]')) { nickSkip = false; showNick(renderLeaders); }
+});
+$("leadbtn").addEventListener("click", showLeaders);
+statusPill.addEventListener("click", async () => {   // в меню - мой ник и место за неделю
+  if (!PLAYER) { $("leadsub").textContent = "Соревнуйтесь с другими водителями"; return; }
+  $("leadsub").textContent = PLAYER.name;
+  const r = await api("/me"); if (r.place && r.place.week) $("leadsub").textContent = PLAYER.name + " · " + r.place.week + "-е место за неделю";
+});
 // ====== Обучение: первая смена с подсказками. Карточка над подсвеченной кнопкой, игра на паузе, пока карточка открыта ======
 const TUT_KEY = "taxi-tut", TUT_FRESH = !localStorage.getItem(SAVE_KEY);
 const calm = () => !dialogue && !evt && !endingShown;
@@ -3633,7 +3765,8 @@ setInterval(tutCheck, 150);
 $("tutbtn").addEventListener("click", () => { menuEl.hidden = true; tutStart(); });
 for (const sv of document.querySelectorAll("svg[data-ic]")) sv.innerHTML = ICON[sv.dataset.ic];
 loadGame(); camX = car.x; camY = car.y; updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
-if (TUT_FRESH) tutStart(true);
+if (needNick()) showNick(TUT_FRESH ? () => tutStart(true) : null); else if (TUT_FRESH) tutStart(true);
+flushShift();
 // при сворачивании и закрытии сохраняем, чтобы машина осталась на месте
 document.addEventListener("visibilitychange", () => { if (document.hidden) saveGame(); }); window.addEventListener("pagehide", saveGame);
 setInterval(() => { if (state !== "idle" || online) saveGame(); }, 5000);
