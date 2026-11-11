@@ -800,14 +800,14 @@ const TARIFFS = {
   comfort: { name: "Комфорт",   mult: 1.36, tipMult: 1.4, rateChance: 0.42 },
   cplus:   { name: "Комфорт+",  mult: 1.53, tipMult: 1.9, rateChance: 0.5 }
 };
-const CARS = [   // img - рисунок машины в папке cars/
-  { id: "granta",  t: "econ",    name: "Lada Granta",   rent: 1850, fuel: 0.066 },
-  { id: "rio",     t: "econ",    name: "Kia Rio",       rent: 2000, fuel: 0.063 },
-  { id: "polo",    t: "comfort", name: "Volkswagen Polo", rent: 2200, fuel: 0.063 },
-  { id: "octavia", t: "comfort", name: "Skoda Octavia", rent: 2350, fuel: 0.066 },
-  { id: "tiggo4",  t: "cplus",   name: "Chery Tiggo 4", rent: 2660, fuel: 0.072, isNew: true },
-  { id: "optima",  t: "cplus",   name: "Kia K5",        rent: 2760, fuel: 0.077 },
-  { id: "camry",   t: "cplus",   name: "Toyota Camry",  rent: 2850, fuel: 0.078 }
+const CARS = [   // img - рисунок машины в папке cars/; fuel - литров на км (расход поднят на 25%)
+  { id: "granta",  t: "econ",    name: "Lada Granta",   rent: 1850, fuel: 0.0825 },
+  { id: "rio",     t: "econ",    name: "Kia Rio",       rent: 2000, fuel: 0.0788 },
+  { id: "polo",    t: "comfort", name: "Volkswagen Polo", rent: 2200, fuel: 0.0788 },
+  { id: "octavia", t: "comfort", name: "Skoda Octavia", rent: 2350, fuel: 0.0825 },
+  { id: "tiggo4",  t: "cplus",   name: "Chery Tiggo 4", rent: 2660, fuel: 0.09, isNew: true },
+  { id: "optima",  t: "cplus",   name: "Kia K5",        rent: 2760, fuel: 0.0963 },
+  { id: "camry",   t: "cplus",   name: "Toyota Camry",  rent: 2850, fuel: 0.0975 }
 ];
 // Магазин: покупки для машины, которые остаются навсегда и помогают зарабатывать
 const SHOP = [
@@ -838,7 +838,7 @@ function pickOrderClass() {
 }
 const FEE = 0.25;             // комиссия таксопарка и сервиса с каждого заказа (с чаевых не берётся)
 const FUEL_PRICE = 65;        // цена бензина, ₽ за литр
-// расход бензина у каждой машины свой (CARS.fuel); у Kia Rio 6,3 л на 100 км - за смену около 30 л
+// расход бензина у каждой машины свой (CARS.fuel, литров на км); у Kia Rio 7,9 л на 100 км
 const TANK = 50;              // объём бака, литров
 const LOW_FUEL = 4;           // с таким остатком новые заказы не берём - нужно на заправку
 
