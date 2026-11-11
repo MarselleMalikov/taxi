@@ -1,0 +1,11 @@
+name = "taxi-ufa"
+main = "src/worker.js"
+compatibility_date = "2025-06-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "taxi-ufa"
+database_id = "00000000-0000-0000-0000-000000000000"   # заменить на id базы после «wrangler d1 create taxi-ufa»
+
+# Секреты (не в этом файле, а командой «wrangler secret put ИМЯ»):
+#   TG_BOT_TOKEN - токен бота Telegram, нужен для входа через Telegram

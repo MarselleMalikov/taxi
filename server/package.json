@@ -1,0 +1,11 @@
+{
+  "name": "taxi-ufa-server",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "db:local": "wrangler d1 execute taxi-ufa --local --file=schema.sql",
+    "db:remote": "wrangler d1 execute taxi-ufa --remote --file=schema.sql",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": { "wrangler": "^4" }
+}
