@@ -581,8 +581,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
       <div class="mtop"><b>Меню</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
       <div class="mprof"><div class="mprow"><span class="mstage" id="mstage">Новичок</span><span class="mdate" id="mdate"></span></div><div class="mpbig"><b id="mmoney">0 ₽</b><span>на счету</span></div><div id="mnextbox"></div></div>
       <div class="mfin" id="mfin" hidden></div>
-      <div class="mstatus status off" id="mstatus"><span class="dot"></span><span id="statustext">Не на линии</span></div>
-      <button class="mbtn dark" id="offbtn" hidden></button>
+      <span id="mstatus" hidden></span><span id="statustext" hidden></span><button id="offbtn" hidden></button>
       <div class="msound"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><b>Звук</b><input type="range" id="sndvol" min="0" max="100" aria-label="Громкость"><button class="swt" id="sndon" aria-label="Звук вкл/выкл"><i></i></button></div>
       <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Таксопарк</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Казино</button><button class="mtile" id="homebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="home"></svg></span>Дом</button></div>
       <div class="mstats">
@@ -1975,8 +1974,8 @@ $("modes").addEventListener("click", e => {
 $("ratingpill").addEventListener("click", showModes);
 $("pickcancel").addEventListener("click", () => { picking = false; $("pickbar").hidden = true; });
 let offAfter = false;   // уйти с линии, как только закончится текущий заказ
-function updateOffBtn() {
-  const b = $("offbtn"); b.hidden = !online;
+function updateOffBtn() {   // кнопка в меню больше не показывается: уход с линии - на нижней панели
+  const b = $("offbtn"); b.hidden = true;
   b.textContent = state === "idle" ? "Уйти с линии" : offAfter ? "Отменить: остаться на линии" : "Уйти с линии после заказа";
 }
 $("offbtn").addEventListener("click", () => {
@@ -2433,8 +2432,8 @@ panel.addEventListener("click", e => {
 });
 
 // ====== Рисование ======
-const MAP_BG = "#f0f1f4";   // фон карты (светло-серый, как в навигаторе)
-const FILL = ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#fbfbfc"],   // заливка дорог: все белые, как в навигаторе
+let MAP_BG = "#f0f1f4";   // фон карты (светло-серый, как в навигаторе)
+let FILL = ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#fbfbfc"],   // заливка дорог: все белые, как в навигаторе
       EDGE = ["#a9b3c0", "#b1bac6", "#bec5cf", "#c6ccd5", "#cdd2da", "#d6dae0"],   // обводка: у крупных дорог чуть темнее
       WPX = [5.5, 4.5, 3.6, 3, 2.4, 1.6];   // толщина в пикселях: магистраль, главная, средняя, обычная, жилая, двор
 // ====== Реальная карта: вода, зелень, дома (из osmmap.js, данные OpenStreetMap) ======
