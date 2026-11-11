@@ -693,6 +693,7 @@ html.dark .lbn.p1{background:#FFD233}html.dark .lbn.p2{background:#DDE1E7}html.d
 html.dark .dback{background:#383C47;color:#F2F3F5}
 html.dark #fuelpill:not(.low):not(.gbo) #fuelfill{background:#D7DBE2}
 .lrow.lleft span{color:var(--ink);font-weight:600}.lrow.lleft b{font-variant-numeric:tabular-nums}html.dark .lrow.lleft span{color:#F2F3F5}
+#evt #evttext.just{text-align:justify!important;text-align-last:left;hyphens:none}
 </style></head>
 <body>
 <div id="app">
@@ -1156,11 +1157,11 @@ function checkRating(prev) {   // вызывается после новой о�
   if (rt < LOSE_RATING) return ratingLost();
   if (prev >= BLOCK_RATING && rt < BLOCK_RATING) {   // рейтинг упал ниже 4.5 - доступ к заказам закрыт на 2 часа, пассажиры чаще отменяют
     blockUntil = clock + BLOCK_LEN; online = false; orders = []; previewId = null; SND.bad();
-    showEvt({ icon: "alert", color: "red", title: "Доступ закрыт на 2 часа", text: "Рейтинг ниже 4,5. Время блокировки идёт в счёт смены. Пока рейтинг не поднимется, пассажиры будут чаще отменять поездки: каждый десятый отменит заказ, когда вы уже приедете.",
+    showEvt({ icon: "alert", color: "red", just: true, title: "Доступ закрыт на 2 часа", text: "Рейтинг ниже 4,5. Время блокировки идёт в счёт смены. Пока рейтинг не поднимется, пассажиры будут чаще отменять поездки: каждый десятый отменит заказ, когда вы уже приедете.",
       choices: [{ t: "Понятно", go: () => {} }] });
   } else if (prev >= 4 && rt < 4) {
     SND.bad();
-    showEvt({ icon: "alert", color: "red", title: "Рейтинг ниже 4", text: "Теперь отменяет каждый пятый пассажир, когда вы приезжаете за ним. При рейтинге ниже 3,5 вас отключат от заказов.",
+    showEvt({ icon: "alert", color: "red", just: true, title: "Рейтинг ниже 4", text: "Теперь отменяет каждый пятый пассажир, когда вы приезжаете за ним. При рейтинге ниже 3,5 вас отключат от заказов.",
       choices: [{ t: "Понятно", go: () => {} }] });
   }
 }
@@ -1169,9 +1170,9 @@ const LOSE_RATING = 3.5, LOSE_TRIES = 3, COURSE_RATING = 4.6;
 function ratingLost() {
   online = false; orders = []; previewId = null; SND.bad();
   const left = LOSE_TRIES - (M.recovers || 0);
-  if (left <= 0) return showEvt({ icon: "alert", color: "red", title: "Игра проиграна", text: "Рейтинг ниже 3,5, а попытки восстановиться закончились. Прогресс сбрасывается: деньги, машины, навыки и карьера. Ник в рейтинге игроков останется.",
+  if (left <= 0) return showEvt({ icon: "alert", color: "red", just: true, title: "Игра проиграна", text: "Рейтинг ниже 3,5, а попытки восстановиться закончились. Прогресс сбрасывается: деньги, машины, навыки и карьера. Ник в рейтинге игроков останется.",
     choices: [{ t: "Начать заново", go: resetGame }] });
-  showEvt({ icon: "alert", color: "red", title: "Вас отключили от заказов", text: "Рейтинг ниже 3,5. Пройдите курс водителя, чтобы вернуться к работе: рейтинг станет 4,60. Попыток осталось: " + left + " из " + LOSE_TRIES + ". Когда они закончатся, игра будет проиграна.",
+  showEvt({ icon: "alert", color: "red", just: true, title: "Вас отключили от заказов", text: "Рейтинг ниже 3,5. Пройдите курс водителя, чтобы вернуться к работе: рейтинг станет 4,60. Попыток осталось: " + left + " из " + LOSE_TRIES + ". Когда они закончатся, игра будет проиграна.",
     choices: [{ t: "Пройти курс", sub: "рейтинг 4,60 · попыток останется " + (left - 1), go: () => {
       M.recovers = (M.recovers || 0) + 1; rates = Array(150).fill(COURSE_RATING); blockUntil = 0; enforceRatingCls(true); saveGame(); updateTop();
       toast("Курс пройден", "Рейтинг 4,60. Попыток осталось: " + (left - 1), "star");
@@ -2195,7 +2196,7 @@ let evt = null, hailCool = 0;
 const EVT_RATE = { tire: 0.015, crash: 0.02 };   // шанс в час езды: прокол - редко (раз в несколько смен), ДТП - чуть чаще
 function showEvt(e) {
   evt = e; $("evticon").className = "askicon " + (e.color || ""); $("evticon").innerHTML = ico(e.icon);
-  $("evttitle").textContent = e.title; $("evttext").textContent = e.text;
+  $("evttitle").textContent = e.title; $("evttext").textContent = e.text; $("evttext").classList.toggle("just", !!e.just);   // just - текст по ширине
   $("evtbtns").innerHTML = e.choices.map((c, i) => '<button data-evt="' + i + '">' + c.t + (c.sub ? "<small>" + c.sub + "</small>" : "") + "</button>").join("");
   $("evt").hidden = false;
 }
