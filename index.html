@@ -732,7 +732,7 @@ html.dark #fuelpill:not(.low):not(.gbo) #fuelfill{background:#D7DBE2}
         <div><span>Поездок всего</span><b id="rides">0</b></div>
         <div hidden><span>Смена</span><b id="mday">1</b></div>
       </div>
-      <div class="mtest" id="mtest" hidden><b>Тестовый режим</b><div class="mtgrid"><button data-t="money">+100 000 ₽</button><button data-t="open">Открыть тарифы</button><button data-t="rides">+60 поездок</button><button data-t="next">Следующая смена</button><button data-t="pay">До платёжного дня</button><button data-t="km">+6 000 км</button><button data-t="call">Звонок клиента</button><button data-t="number">Просит номер</button><button data-t="rain">Дождь</button><button data-t="tire">Прокол</button><button data-t="crash">ДТП</button><button data-t="hail">Голосующий</button><button data-t="r475">Рейтинг 4.75</button><button data-t="r44">Рейтинг 4.4</button><button data-t="r5">Рейтинг 5.0</button><button data-t="mood">Настроение 20%</button><button data-t="fuel">Бак 3 л</button><button data-t="off">Выключить тест</button></div></div>
+      <div class="mtest" id="mtest" hidden><b>Тестовый режим</b><div class="mtgrid"><button data-t="money">+100 000 ₽</button><button data-t="open">Открыть тарифы</button><button data-t="rides">+60 поездок</button><button data-t="next">Следующая смена</button><button data-t="pay">До платёжного дня</button><button data-t="km">+6 000 км</button><button data-t="call">Звонок клиента</button><button data-t="number">Просит номер</button><button data-t="rain">Дождь</button><button data-t="tire">Прокол</button><button data-t="crash">ДТП</button><button data-t="hail">Голосующий</button><button data-t="r475">Рейтинг 4.75</button><button data-t="r44">Рейтинг 4.4</button><button data-t="r39">Рейтинг 3.9</button><button data-t="r34">Рейтинг 3.4</button><button data-t="r5">Рейтинг 5.0</button><button data-t="mood">Настроение 20%</button><button data-t="fuel">Бак 3 л</button><button data-t="off">Выключить тест</button></div></div>
       <button id="tutbtn" class="mtut">Пройти обучение заново</button>
       <button id="reset">Сбросить прогресс</button>
     </div>
@@ -1107,7 +1107,7 @@ let carNode = nearest(xs[xs.length >> 1], ys[ys.length >> 1]);
 const car = { x: N[carNode][0], y: N[carNode][1], angle: 0 };
 let route = [];
 
-function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority, rain, goalRides, blockUntil, clsAutoOff, carNode, meta: M })); } catch (e) {} }
+function saveGame() { if (resetting) return; try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority, rain, goalRides, blockUntil, clsAutoOff, carNode, meta: M })); } catch (e) {} }
 // Детализация смены: всё, что пришло и ушло
 const newLedger = () => ({ fares: 0, tips: 0, fee: 0, rent: 0, fuel: 0, fuelL: 0, fines: 0, km: 0, bonus: 0 });
 // ====== Дождь: примерно раз в 2-3 смены, на 1-3 часа; спрос по всему городу x1.4, машина едет как обычно ======
@@ -1153,10 +1153,37 @@ function checkRating(prev) {   // вызывается после новой о�
     else if (clsRatingOk(c) && clsAutoOff[c]) { delete clsAutoOff[c]; if (clsAllowed(c)) { clsOn[c] = true; toast("Тариф " + TARIFFS[c].name + " снова включён", "Рейтинг " + rt.toFixed(2), "star"); } }
   }
   ensureCls(); orders = orders.filter(o => clsActive(o.cls || "econ")); if (!orders.some(o => o.id === previewId)) previewId = null;
-  if (prev >= BLOCK_RATING && rt < BLOCK_RATING) {   // рейтинг упал ниже 4.5 - доступ к заказам закрыт на 2 часа
-    blockUntil = clock + BLOCK_LEN; online = false; orders = []; previewId = null;
-    toast("Доступ к заказам закрыт на 2 часа", "Рейтинг ниже " + BLOCK_RATING + ". Время блокировки идёт в счёт смены", "alert");
+  if (rt < LOSE_RATING) return ratingLost();
+  if (prev >= BLOCK_RATING && rt < BLOCK_RATING) {   // рейтинг упал ниже 4.5 - доступ к заказам закрыт на 2 часа, пассажиры чаще отменяют
+    blockUntil = clock + BLOCK_LEN; online = false; orders = []; previewId = null; SND.bad();
+    showEvt({ icon: "alert", color: "red", title: "Доступ закрыт на 2 часа", text: "Рейтинг ниже 4,5. Время блокировки идёт в счёт смены. Пока рейтинг не поднимется, пассажиры будут чаще отменять поездки: каждый десятый отменит заказ, когда вы уже приедете.",
+      choices: [{ t: "Понятно", go: () => {} }] });
+  } else if (prev >= 4 && rt < 4) {
+    SND.bad();
+    showEvt({ icon: "alert", color: "red", title: "Рейтинг ниже 4", text: "Теперь отменяет каждый пятый пассажир, когда вы приезжаете за ним. При рейтинге ниже 3,5 вас отключат от заказов.",
+      choices: [{ t: "Понятно", go: () => {} }] });
   }
+}
+// Ниже 3.5: отключение от заказов. Можно 3 раза пройти курс и вернуться с рейтингом 4.60, потом - проигрыш и сброс прогресса
+const LOSE_RATING = 3.5, LOSE_TRIES = 3, COURSE_RATING = 4.6;
+function ratingLost() {
+  online = false; orders = []; previewId = null; SND.bad();
+  const left = LOSE_TRIES - (M.recovers || 0);
+  if (left <= 0) return showEvt({ icon: "alert", color: "red", title: "Игра проиграна", text: "Рейтинг ниже 3,5, а попытки восстановиться закончились. Прогресс сбрасывается: деньги, машины, навыки и карьера. Ник в рейтинге игроков останется.",
+    choices: [{ t: "Начать заново", go: resetGame }] });
+  showEvt({ icon: "alert", color: "red", title: "Вас отключили от заказов", text: "Рейтинг ниже 3,5. Пройдите курс водителя, чтобы вернуться к работе: рейтинг станет 4,60. Попыток осталось: " + left + " из " + LOSE_TRIES + ". Когда они закончатся, игра будет проиграна.",
+    choices: [{ t: "Пройти курс", sub: "рейтинг 4,60 · попыток останется " + (left - 1), go: () => {
+      M.recovers = (M.recovers || 0) + 1; rates = Array(150).fill(COURSE_RATING); blockUntil = 0; enforceRatingCls(true); saveGame(); updateTop();
+      toast("Курс пройден", "Рейтинг 4,60. Попыток осталось: " + (left - 1), "star");
+    } }] });
+}
+// Пассажир отменяет заказ, когда водитель уже приехал: ниже 4.5 - каждый десятый, ниже 4 - каждый пятый
+const cancelChance = () => { const r = getRating(); return r < 4 ? 0.2 : r < BLOCK_RATING ? 0.1 : 0; };
+function passengerCancel() {
+  current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); lastRide = null; moodAdd(-3); SND.bad();
+  toast("Пассажир отменил заказ", "Вы приехали, а клиент передумал. При рейтинге ниже 4,5 так бывает чаще", "alert");
+  if (offAfter) { offAfter = false; online = false; orders = []; SND.engineOff(); }
+  updateTop(); saveGame(); renderPanel();
 }
 let fuel = TANK, ledger = newLedger();
 const shiftNet = () => ledger.fares + ledger.tips + (ledger.bonus || 0) - ledger.fee - ledger.rent - ledger.fuel - ledger.fines;
@@ -1276,7 +1303,8 @@ function loadGame() {
     rain = d.rain === undefined ? rollRain() : d.rain; goalRides = d.goalRides || 0; blockUntil = d.blockUntil || 0; clsAutoOff = d.clsAutoOff || {};
   } catch (e) {}
 }
-function resetGame() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); }
+let resetting = false;   // после сброса больше не сохраняем, иначе при перезагрузке страница запишет старую игру обратно
+function resetGame() { resetting = true; try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); }
 const getRating = () => rates.reduce((a, b) => a + b, 0) / rates.length, getAff = n => affection[n] || 0;
 function changeAff(n, d) { affection[n] = Math.max(AFF_MIN, Math.min(AFF_MAX, getAff(n) + d)); }
 function ratingFactor() { const r = getRating(); return r >= 4.8 ? 0.7 : r < 4.3 ? 1.6 : 1; }
@@ -1601,6 +1629,7 @@ function chooseAnswer(i) {
 }
 function arrive() {
   if (state === "selfDrive") { state = "idle"; selfTarget = null; checkBusinessDone(); renderPanel(); return; }
+  if (state === "toPickup" && !current.tut && !current.offApp && Math.random() < cancelChance()) return passengerCancel();
   if (state === "toPickup") { state = "boarding"; boardTimer = 1.2 + current.late; boardT = 0; renderPanel(); }
   else if (state === "toFuel") refuel();
   else if (state === "toCafe") { spend("fines", LUNCH_PRICE, "обед"); state = "break"; breakT = 0; renderPanel(); }
@@ -3513,7 +3542,7 @@ $("mtest").addEventListener("click", e => {
   else if (t === "tire") { menuEl.hidden = true; evtTire(); }
   else if (t === "crash") { menuEl.hidden = true; evtCrash(); }
   else if (t === "hail") { if (!online || state !== "idle") return toast("Нужно быть на линии без заказа", "", "alert"); menuEl.hidden = true; evtHail(); }
-  else if (t === "r475" || t === "r44" || t === "r5") { const w = getRating(); rates = Array(150).fill({ r475: 4.75, r44: 4.4, r5: 5 }[t]); checkRating(w); }
+  else if (t === "r475" || t === "r44" || t === "r39" || t === "r34" || t === "r5") { const w = getRating(); rates = Array(150).fill({ r475: 4.75, r44: 4.4, r39: 3.9, r34: 3.4, r5: 5 }[t]); menuEl.hidden = true; checkRating(w); }
   else if (t === "mood") { mood = 20; updateMood(); }
   else if (t === "fuel") { fuel = 3; updateFuel(); }
   else if (t === "off") { try { localStorage.removeItem(TEST_KEY); } catch (e) {} if (location.hash === "#test") history.replaceState(null, "", location.pathname + location.search); }
@@ -3645,7 +3674,10 @@ $("nkoff").addEventListener("click", () => { if (nickRename) { $("nick").hidden 
 // ---------- итог смены: в очередь и на сервер. Неотправленная смена ждёт связи; хранится только последняя ----------
 function queueShift() {
   if (testOn()) return;   // в тестовом режиме в рейтинг ничего не уходит
-  const s = { n: M.careerShifts, money: Math.round(shiftNet()), rides: shiftRides, rating: +getRating().toFixed(2), stage: stageNow().id };
+  // номер смены для сервера - сквозной, при сбросе прогресса не обнуляется (иначе сервер посчитает новые смены уже учтёнными)
+  let seq = 0; try { seq = +localStorage.getItem("taxi-shift-seq") || 0; } catch (e) {}
+  const n = Math.max(seq + 1, M.careerShifts); try { localStorage.setItem("taxi-shift-seq", n); } catch (e) {}
+  const s = { n, money: Math.round(shiftNet()), rides: shiftRides, rating: +getRating().toFixed(2), stage: stageNow().id };
   try { localStorage.setItem(PEND_KEY, JSON.stringify(s)); } catch (e) {}
   flushShift();
 }
@@ -3720,7 +3752,7 @@ const TUT_STEPS = [
   { el: () => panel.querySelector(".result"), when: () => calm() && state === "idle" && !!lastRide,
     title: "Поездка завершена", text: "Крупно - сколько вы получили: цена заказа минус комиссия сервиса, плюс чаевые. Ниже оценка пассажира и способ оплаты." },
   { el: () => $("ratingpill"), when: () => calm() && state === "idle",
-    title: "Рейтинг и тарифы", text: "Рейтинг - среднее последних 150 оценок. Комфорт работает от 4,7, Комфорт+ от 4,8. Если рейтинг ниже 4,5, доступ к заказам закроют на 2 часа. Нажмите на плашку, чтобы выбрать тарифы." },
+    title: "Рейтинг и тарифы", text: "Рейтинг - среднее последних 150 оценок. Комфорт работает от 4,7, Комфорт+ от 4,8. Если рейтинг ниже 4,5, доступ к заказам закроют на 2 часа, а пассажиры станут чаще отменять поездки. При рейтинге ниже 3,5 игра проиграна. Нажмите на плашку, чтобы выбрать тарифы." },
   { el: () => $("prio"), pad: 6, when: () => calm() && state === "idle",
     title: "Приоритет", text: "Полоска под рейтингом. Растёт за выполненные заказы, снижается за пропуск заказов. Чем он выше, тем чаще приходят заказы." },
   { el: () => panel.querySelector(".goalbar"), when: () => calm() && state === "idle",
