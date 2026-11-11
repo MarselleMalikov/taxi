@@ -759,7 +759,8 @@ const clsAllowed = c => TORDER.indexOf(c) <= TORDER.indexOf(myCar().t) && tariff
 const clsActive = c => clsAllowed(c) && clsOn[c];
 function ensureCls() { if (!TORDER.some(clsActive)) clsOn[typeof clsRatingOk === "function" && !clsRatingOk(myCar().t) ? "econ" : myCar().t] = true; }   // хотя бы свой тариф машины всегда включён
 const myCar = () => CARS.find(c => c.id === carId) || CARS[1];
-const carImg = (c, w) => '<img class="carimg" src="cars/' + c.id + '.webp" alt="" width="' + w + '" loading="lazy">';
+const carSrc = id => "cars/" + (document.documentElement.classList.contains("dark") ? "dark/" : "") + id + ".webp";   // в тёмной теме - рисунки без подложки
+const carImg = (c, w) => '<img class="carimg" data-car-id="' + c.id + '" src="' + carSrc(c.id) + '" alt="" width="' + w + '" loading="lazy">';
 const myTariff = () => TARIFFS[myCar().t];
 // Класс заказа: машина высокого класса получает и свои заказы (реже), и заказы классом ниже (дешевле)
 function pickOrderClass() {
@@ -3457,6 +3458,7 @@ function applyTheme(force) {
   try { if (window.TG) { TG.setHeaderColor(d ? "#2D3039" : "#ffffff"); TG.setBackgroundColor(d ? "#262930" : "#f0f1f4"); } } catch (e) {}
   const mc = document.querySelector('meta[name="theme-color"]'); if (mc) mc.content = d ? "#262930" : "#ffffff";
   if (!$("kef").hidden) drawKef();
+  for (const im of document.querySelectorAll("img[data-car-id]")) im.src = carSrc(im.dataset.carId);
 }
 function renderThemeSeg() { for (const b of document.querySelectorAll("#themeseg [data-th]")) b.classList.toggle("on", b.dataset.th === THEME.pref); }
 $("themeseg").addEventListener("click", e => { const b = e.target.closest("[data-th]"); if (!b) return; THEME.pref = b.dataset.th; try { localStorage.setItem("taxi-theme", THEME.pref); } catch (er) {} applyTheme(true); renderThemeSeg(); });
