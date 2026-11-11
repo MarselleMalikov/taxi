@@ -880,7 +880,7 @@ function randSpot(cx, cy, dmin, dmax, placeShare) {
   return { node, place: null, addr: addrNear(N[node][0], N[node][1]) || addrOf(node) };   // не нашли - любая улица рядом
 }
 // Ближайшее подходящее место для заезда по просьбе пассажира
-const STOP_KIND = { "аптека": ["pharmacy"], "банкомат": ["bank"], "магазин": ["shop"], "цветочный магазин": ["shop", "mall"], "пункт выдачи": ["shop", "mall"] };
+const STOP_KIND = { "заправка": ["fuel"], "аптека": ["pharmacy"], "банкомат": ["bank"], "магазин": ["shop"], "цветочный магазин": ["shop", "mall"], "пункт выдачи": ["shop", "mall"] };
 function stopSpot(label) {
   const kinds = STOP_KIND[label] || ["shop", "pharmacy", "cafe", "food"];
   let best = null, bd = 1e18;
@@ -1217,7 +1217,9 @@ function spotIn(reg, cx, cy, dmin, dmax, share) {   // точка внутри �
 // ====== Аэропорт: заказы туда (дальние, с доплатой) и обратно в город, когда машина рядом с терминалом ======
 const AIRPORT = (() => { const t = typeof OSM !== "undefined" && OSM.pois.find(p => p[2] === "airport"); if (!t) return null;
   // точка подачи - ближайший к терминалу узел, куда можно и доехать из города, и уехать обратно (у терминала много односторонних проездов)
-  const near = []; for (let i = 0; i < N.length; i++) { const d = Math.hypot(N[i][0] - t[0], N[i][1] - t[1]); if (d < 700) near.push([d, i]); }
+  const curb = new Set(), nm = D.names.indexOf("улица Аэропорт");   // подача к терминалу - на петле «улица Аэропорт», а не на служебных проездах
+  if (nm >= 0) for (const e of D.edges) if (e[4] === nm) { curb.add(e[0]); curb.add(e[1]); }
+  const near = []; for (let i = 0; i < N.length; i++) { const d = Math.hypot(N[i][0] - t[0], N[i][1] - t[1]); if (d < 700 && (!curb.size || curb.has(i))) near.push([d, i]); }
   near.sort((a, b) => a[0] - b[0]);
   const node = (near.find(([, i]) => findPath(carNode, i) && findPath(i, carNode)) || near[0] || [0, nearest(t[0], t[1])])[1];
   return { x: t[0], y: t[1], node, n: "Аэропорт Уфа", addr: t[3] }; })();
@@ -1363,7 +1365,11 @@ function pickScene(o, later) {
 }
 function fresh(pool) {   // диалог, который ещё не встречался; когда все пройдены, круг начинается заново
   let left = pool.filter(id => !seen[id]);
-  if (!left.length) { pool.forEach(id => delete seen[id]); left = pool; }
+  if (!left.length) {   // новый круг; редкая сцена (rare) попадает в него только с вероятностью rare
+    pool.forEach(id => delete seen[id]); left = pool;
+    for (const r of pool) if (SCENES[r] && SCENES[r].rare && Math.random() > SCENES[r].rare) seen[r] = 1;
+    left = pool.filter(id => !seen[id]); if (!left.length) left = pool;
+  }
   const id = left[Math.floor(Math.random() * left.length)]; seen[id] = 1; return id;
 }
 // Реплики-прощания и события «после поездки» нельзя показывать посреди пути: их откладываем до прибытия
@@ -1385,7 +1391,8 @@ function chooseAnswer(i) {
   // pay: доля оплаты. По карте деньги списываются сами, поэтому не заплатить или заплатить меньше можно только наличными
   if (ch.pay !== undefined && (current.cash || ch.offApp || ch.pay > 1)) current.payMult = ch.pay;
   if (ch.stars !== undefined) current.stars = ch.stars;    // оценка пассажира (0 = не оценит)
-  if (ch.stop) current.stopNow = ch.stop;                     // stop: после разговора машина остановится
+  if (ch.stop) { const q = [].concat(ch.stop); current.stopNow = q.shift(); current.stopQueue = q; }   // stop: заезд или несколько заездов по очереди
+  if (ch.fuelAt) current.fuelAt = ch.fuelAt;   // пассажир зальёт бензин на заправке
   if (ch.gift) current.gift = (current.gift || 0) + ch.gift;   // gift: точная доплата или благодарность сверх цены
   if (ch.giftR) current.gift = (current.gift || 0) + Math.round((ch.giftR[0] + Math.random() * (ch.giftR[1] - ch.giftR[0])) / 50) * 50;   // случайная благодарность
   if (ch.rateHit) { const w = getRating(); rates.push(ch.rateHit); if (rates.length > 150) rates.shift(); updateTop(); toast("Жалоба на водителя", "В рейтинг ушла оценка " + ch.rateHit, "alert"); checkRating(w); }
@@ -1437,7 +1444,7 @@ function startDetour(label) {   // пассажир попросил заеха�
   if (!there || !back) return renderPanel();   // не нашли, куда заехать: едем дальше
   const extra = Math.max(0, sumPath(there).km + sumPath(back).km - remainingLen() / 1000);   // крюк оплачивается по километражу
   current.extraFare = (current.extraFare || 0) + Math.round(extra * PER_KM / 10) * 10;
-  current.stopAddr = spot ? addrNear(spot.x, spot.y) : addrNear(N[sn][0], N[sn][1]); current.stopNode = sn; current.stopLabel = spot ? spot.n : typeof label === "string" ? label : "остановка"; startLeg(sn, "toStop");
+  current.stopAddr = spot ? addrNear(spot.x, spot.y) : addrNear(N[sn][0], N[sn][1]); current.stopNode = sn; current.stopLabel = spot ? spot.n : typeof label === "string" ? label : "остановка"; current.stopKind = label; startLeg(sn, "toStop");
 }
 function remainingLen() {
   let r = route.length ? Math.hypot(N[route[0].n][0] - car.x, N[route[0].n][1] - car.y) : 0;
@@ -2095,7 +2102,12 @@ function updateInner(dt) {
     const fee = Math.max(0, Math.floor(stopT - FREE_WAIT)) * WAIT_RATE, w = $("wait");
     const rp = $("rprice"); if (rp) rp.textContent = liveFare() + " ₽";
     if (w) w.textContent = stopT < FREE_WAIT ? "Бесплатное ожидание: ещё " + Math.ceil(FREE_WAIT - stopT) + " с" : "Платное ожидание: +" + fee + " ₽";
-    if (stopT >= stopDur) { current.waitFee = (current.waitFee || 0) + fee; startLeg(current.to, "toDropoff"); current.rideLen = remainingLen(); }
+    if (stopT >= stopDur) {
+      current.waitFee = (current.waitFee || 0) + fee;
+      if (current.fuelAt && current.stopKind === "заправка") { fuel = Math.min(TANK, fuel + current.fuelAt); updateFuel(); floaters.push({ text: "+" + current.fuelAt + " л от пассажира", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -20 }); current.fuelAt = 0; }
+      if (current.stopQueue && current.stopQueue.length) { startLeg(current.to, "toDropoff"); current.rideLen = remainingLen(); return startDetour(current.stopQueue.shift()); }   // следующий заезд
+      startLeg(current.to, "toDropoff"); current.rideLen = remainingLen();
+    }
   } else {
     if (state === "toDropoff" && current.sickAt && 1 - remainingLen() / current.rideLen >= current.sickAt) {   // укачало: остановка на 5-7 секунд
       current.sickAt = null; current.stopNode = carNode; current.stopAddr = addrNear(car.x, car.y) || addrOf(carNode); current.stopLabel = "ребёнка укачало";
@@ -2919,7 +2931,7 @@ const SKILLS = [
   { id: "nerves", name: "Железные нервы", v: [0.1, 0.2, 0.3],    t: "Усталость меньше на ", u: pct },
   { id: "ace",    name: "Ас дорог",       v: [0.2, 0.35, 0.5],   t: "Штрафы реже на ", u: pct },
   { id: "eco",    name: "Экономная езда", v: [0.05, 0.1, 0.15],  t: "Расход меньше на ", u: pct },
-  { id: "prio",   name: "Приоритет",      v: [0.2, 0.4, 0.6],    t: "Приоритет за заказ ", u: x => "+" + (1 + x).toFixed(1).replace(".", ",") }
+  { id: "prio",   name: "Приоритет",      v: [1, 2, 3],          t: "Приоритет за заказ ", u: x => "+" + (1 + x) }
 ];
 const SK = id => { const s = SKILLS.find(x => x.id === id), l = M.skills[id] || 0; return l ? s.v[l - 1] : 0; };
 const pointNeed = n => 60 + 30 * (n - 1);   // поездок на n-е очко
