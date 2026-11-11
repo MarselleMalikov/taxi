@@ -1304,9 +1304,9 @@ const DISTRICT_FEE = [0, 0.09, 0.05, 0.01];   // по числу выбранн�
 let districtSel = null;   // выбранные районы (Set) или null - режим выключен
 function inPoly(x, y, P) { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > y) !== (P[j][1] > y) && x < (P[j][0] - P[i][0]) * (y - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; }
 // Поправка границ (по разметке пользователя): эти соты отошли Северу и Центру, Юг стал чуть меньше
-const DIST_MOVE = new Map([...[130024, 140024, 180029, 190028, 130025, 140025, 140027, 140026, 160028, 150027, 150025, 150026, 170028, 120024].map(k => [k, "north"]), ...[220023, 220022, 210021, 230022, 240023, 210022, 230023].map(k => [k, "center"])]);
+const DIST_MOVE = new Map([...[130024, 140024, 180029, 190028, 130025, 140025, 140027, 140026, 160028, 150027, 150025, 150026, 170028, 120024].map(k => [k, "north"]), ...[220023, 220022, 210021, 230022, 240023, 210022, 230023].map(k => [k, "center"]), ...[90031, 100032, 80031, 80032, 120034, 120033, 110034, 100035, 100036, 100037, 130034, 110035, 110036, 110032, 140034, 130033, 110033, 100033, 70031, 90032, 90036].map(k => [k, "none"])]);   // none - северо-восток за новой границей Севера, вне районов
 function districtAt(x, y) {   // вне районов - null
-  for (const d of DISTRICTS) if (inPoly(x, y, d.pts)) return DIST_MOVE.get(hexKey(...hexAt(x, y))) || d.id;
+  for (const d of DISTRICTS) if (inPoly(x, y, d.pts)) { const m = DIST_MOVE.get(hexKey(...hexAt(x, y))); return m === "none" ? null : m || d.id; }
   return null;
 }
 const districtFee = n => DISTRICT_FEE[Math.min(n, 3)];
@@ -2428,7 +2428,7 @@ function updateMood() {
   $("mouth").setAttribute("d", mood >= 55 ? "M4.4 8.6q2.6 2.2 5.2 0" : mood >= 30 ? "M4.6 9.2h4.8" : "M4.4 10q2.6-2.2 5.2 0");
 }
 function updateFuel() {
-  $("fuelL").textContent = Math.round(fuel) + " л"; $("fuelfill").style.width = (fuel / TANK * 100) + "%";
+  $("fuelL").textContent = (Math.floor(fuel * 10) / 10).toLocaleString("ru-RU", { maximumFractionDigits: 1 }) + " л"; $("fuelfill").style.width = (fuel / TANK * 100) + "%";
   $("fuelpill").classList.toggle("low", fuel < LOW_FUEL * 2); $("fuelpill").classList.toggle("gbo", typeof gboOn === "function" && gboOn());
 }
 function nearestFuel() {   // ближайшая заправка по прямой
