@@ -653,8 +653,8 @@ html.dark .sbuy.got{background:#24412F!important;color:#5FD38A!important}
 #tut .tdots{display:flex;gap:5px}#tut .tdots i{width:6px;height:6px;border-radius:3px;background:#E2E5EA}#tut .tdots i.on{width:16px;background:var(--ink)}
 #tut .tt{display:block;font-size:19px;font-weight:800;line-height:1.2;margin-bottom:6px}
 #tut p{margin:0;font-size:16px;line-height:1.3;color:#3A3F4A;text-align:justify;hyphens:none}
-#tut .tlist{display:flex;flex-direction:column;gap:5px;font-size:15.5px;line-height:1.25}
-#tut .tlist div{display:flex;gap:8px}#tut .tlist b{flex:none;width:92px;font-weight:700}#tut .tlist span{color:#3A3F4A}
+#tut .tlist{display:flex;flex-direction:column;gap:8px;font-size:15.5px;line-height:1.25}
+#tut .tlist div{display:block}#tut .tlist b{display:block;width:auto!important;margin-bottom:1px}#tut .tlist p{font-size:15px}#tut .tlist b{flex:none;width:92px;font-weight:700}#tut .tlist span{color:#3A3F4A}
 #tut .ta{margin-top:12px;display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700}
 #tut .ta i{width:8px;height:8px;border-radius:50%;background:#FFD233;box-shadow:0 0 0 4px rgba(255,210,51,.35)}
 #tut .tgo{margin-top:14px;width:100%;height:50px;border:none;border-radius:28px;background:var(--y);color:#1E1F23;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer}
@@ -1044,7 +1044,8 @@ function placeDps() {
   }
   dpsPosts = out; dpsDay = day; dpsStops = 0;
 }
-function checkDps() {   // машина проезжает пост: иногда остановят (каждый пост - не больше раза за смену, всего не больше 3 остановок)
+function checkDps() {   // машина проезжает пост: иногда остановят (не больше одной остановки за смену)
+  if (current && current.tut) return;
   if (dpsDay !== day) placeDps();
   if (!current || dialogue || (state !== "toDropoff" && state !== "toPickup")) return;
   for (const p of dpsPosts) {
@@ -1334,7 +1335,7 @@ function pickRange(x, y) {
   if (r < farShare + 0.14) return [1200, 2000];               // средняя, по дорогам 2-3 км
   return [200, 1100];                                         // обычная, по дорогам 1-2 км
 }
-function createOrder() { const [a, b] = pickRange(car.x, car.y); const o = buildOrder(car.x, car.y, carNode, a, b); if (o) { orders.push(o); SND.order(); renderPanel(); } }
+function createOrder() { if (TUT.ride) return tutOrder(); const [a, b] = pickRange(car.x, car.y); const o = buildOrder(car.x, car.y, carNode, a, b); if (o) { orders.push(o); SND.order(); renderPanel(); } }
 // Заказ рядом с точкой (cx, cy): для обычного предложения - от машины, для цепочки - от места высадки текущего пассажира
 // Пригороды и окраины, отделённые от города. Здесь заказы в основном местные: подача рядом, а первые 2-3 заказа подряд
 // и начинаются, и заканчиваются в этом же районе. Дальняя подача (больше 4 км) - редко. Так есть смысл возвращаться в город по делам
@@ -1513,7 +1514,7 @@ const ARRIVAL_RE = /(приехали|доехали|довез|довёз|мн�
 for (const id in SCENES) for (const k in SCENES[id].nodes) if (ARRIVAL_RE.test(SCENES[id].nodes[k].text)) SCENES[id].nodes[k].atEnd = true;
 const arrivedYet = () => !(state === "toDropoff" || state === "toStop" || state === "stopped" || state === "boarding");
 function startDialogue(o, later) {
-  const id = pickScene(o, later), sc = id && SCENES[id]; if (!sc) return; if (o.passenger.scenes) met[o.name] = true;
+  const id = o.tut ? "f_hockey" : pickScene(o, later), sc = id && SCENES[id]; if (!sc) return; if (o.passenger.scenes) met[o.name] = true;
   if ((sc.atEnd || sc.nodes[sc.start].atEnd) && !arrivedYet()) { current.epilogue = { scene: sc, nodeId: sc.start }; return; }   // сцена целиком - по прибытии
   dialogue = { scene: sc, nodeId: sc.start };
 }
@@ -1624,7 +1625,7 @@ function finishRide(reason) {
   if (fare > 0) floaters.push({ text: "+" + (fare - fee) + " ₽", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -20 });
   if (tip > 0) floaters.push({ text: "+" + tip + " ₽ чаевые", x: car.x, y: car.y, age: 0, color: "#b8860b", dy: 6 });
   lastRide = { name: c.name, cash: c.cash, offApp: c.offApp, fines: c.fineList || [], price: fare, fee, tip, stars, mood: c.mood, note: reason ? reason + (mult === 0 ? ", оплаты нет" : c.partial !== undefined ? ", оплата за проеханное" : "") : mult === 0 ? "Пассажир не заплатил" : "", wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
-  afterRide(c);
+  afterRide(c); if (c.tut) TUT.ride = false;
   if (offAfter || blockLeft() > 0) { c.next = null; c.nextOffer = null; }
   const chained = c.next, pendingNext = !c.next && c.nextOffer;   // предложенный, но ещё не принятый следующий заказ
   current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); checkBusinessDone(); updateTop(); saveGame();
@@ -2160,6 +2161,7 @@ function evtHail() {
     { t: "Проехать мимо", sub: "", go: () => {} }] });
 }
 function tickEvents(dt, gameDt) {   // вызывается каждый кадр
+  if (current && current.tut) return;   // в учебной поездке без случайных событий
   if (evt || dialogue || endingShown) return;
   tickPhone(); if (evt) return;
   const moving = state === "toPickup" || state === "toDropoff" || state === "selfDrive" || state === "toFuel" || state === "toCafe";
@@ -2231,8 +2233,8 @@ function updateInner(dt) {
       const r = +current.rating, g = route.reduce((a, s) => a + s.t, 0) / 60;   // длительность поездки в игровых минутах
       const story = current.passenger.scenes && (storyStep[current.name] || 0) < current.passenger.scenes.length;
       current.talkAt = []; current.talkIdx = 0; current.sickAt = current.child && Math.random() < 0.35 ? 0.25 + Math.random() * 0.45 : null;   // ребёнка может укачать
-      if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
-      if (g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
+      if (current.tut) { current.talkAt = [0.15]; current.sickAt = null; } else if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
+      if (!current.tut && g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
       renderPanel();
     }
   } else if (state === "stopped") {   // остановка по просьбе пассажира
@@ -2254,7 +2256,7 @@ function updateInner(dt) {
     if (state === "toDropoff" && current.talkIdx < current.talkAt.length && 1 - remainingLen() / current.rideLen >= current.talkAt[current.talkIdx]) {
       startDialogue(current, current.talkIdx > 0); current.talkIdx++; renderPanel(); if (dialogue) return;   // разговор по ходу поездки
     }
-    if (state === "toDropoff" && current) tickChain(dt);
+    if (state === "toDropoff" && current && !current.tut) tickChain(dt);
     if (state === "selfDrive") { if (shiftOver) { state = "idle"; route = []; return; } tickOrders(dt); }
     let t = dt * ff; clock += t * legScale;   // перемотка (ff) ускоряет и машину, и игровые часы, так что время смены тратится честно
     // едем по шагам маршрута; скорость зависит от типа дороги и ускорения времени
@@ -2441,7 +2443,7 @@ function updateTop() {
 function updateStatus() {
   const idle = state === "idle", cls = !idle ? "ride" : online ? "on" : "off";
   statusPill.className = "pill status " + cls; $("mstatus").className = "mstatus status " + cls; statusText.textContent = !idle ? "В заказе" : online ? "На линии" : "Не на линии";
-  $("ff").hidden = !(state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel" || state === "selfDrive" || state === "toCafe"); $("ff").textContent = "»\u00a0×" + ff;
+  $("ff").hidden = !(TUT.ffShow || state === "toPickup" || state === "toDropoff" || state === "toStop" || state === "toFuel" || state === "selfDrive" || state === "toCafe"); $("ff").textContent = "»\u00a0×" + ff;
   shiftBtn.style.display = idle ? "block" : "none"; if (state === "break") shiftBtn.style.display = "none"; shiftBtn.className = online ? "on" : "off";
   shiftBtn.innerHTML = online ? '<span><i class="sdot"></i>На линии</span><small>нажмите, чтобы закончить смену</small>' : '<span><i class="sdot" style="background:#9AA3B2"></i>Катать</span>';
 }
@@ -3540,52 +3542,74 @@ function tgSync() {
 // ====== Обучение: первая смена с подсказками. Карточка над подсвеченной кнопкой, игра на паузе, пока карточка открыта ======
 const TUT_KEY = "taxi-tut", TUT_FRESH = !localStorage.getItem(SAVE_KEY);
 const calm = () => !dialogue && !evt && !endingShown;
+const tiles = (k0, k1) => () => [...menuEl.querySelectorAll(".mtiles .mtile")].slice(k0, k1);
 const TUT_STEPS = [
   { el: () => shiftBtn, click: true, done: () => online || state !== "idle", when: () => calm() && state === "idle" && menuEl.hidden && blockLeft() <= 0,
-    title: "Выход на линию", text: "Нажмите «Катать», чтобы начать смену. Аренду машины спишут сразу, долг закроете первыми заказами.", act: "Нажмите «Катать»" },
+    title: "Выход на линию", text: "Нажмите «Катать», чтобы начать смену. Аренду машины спишут сразу, долг закроете первыми заказами. Смена длится не более 13 игровых часов.", act: "Нажмите «Катать»" },
   { el: () => panel.querySelector(".ocard"), click: true, done: () => !!current, when: () => calm() && state === "idle" && orders.length > 0,
     title: "Первый заказ", text: "Сверху рейтинг клиента, ниже адрес и путь до него. «Спрос» - доплата за повышенный коэффициент в этом месте города. Полоска - время на решение.", act: "Нажмите «Принять»" },
   { el: () => $("fuelpill"), when: () => calm() && !!current,
-    title: "Бак и настроение", text: "Бензин тратится в пути. Настроение падает от простоя и споров с пассажирами. Нажмите на эту плашку, чтобы заправиться, отдохнуть или пообедать." },
+    title: "Бак и настроение", text: "Бензин тратится в пути. Настроение падает от простоя и споров с пассажирами. Нельзя допускать снижения настроения до 10%, в таком случае смена заканчивается преждевременно. Нажмите на эту плашку, чтобы заправиться, отдохнуть или пообедать." },
   { el: () => panel.querySelector('[data-act="offafter"]'), when: () => calm() && !!current,
     title: "Уйти с линии", text: "Нажмите, и смена закончится после этой поездки. Передумали - нажмите ещё раз." },
+  { el: () => panel.querySelector(".dialog"), click: true, done: () => TUT.talked && !dialogue || !TUT.ride && !dialogue, when: () => !!dialogue && !!current && current.tut && (TUT.talked = true),
+    title: "Разговор с пассажиром", text: "Пассажиры иногда заговаривают с водителем. От ответа зависят настроение пассажира, его оценка и чаевые. Иногда ответ меняет и саму поездку.", act: "Выберите ответ" },
   { el: () => panel.querySelector(".result"), when: () => calm() && state === "idle" && !!lastRide,
     title: "Поездка завершена", text: "Крупно - сколько вы получили: цена заказа минус комиссия сервиса, плюс чаевые. Ниже оценка пассажира и способ оплаты." },
+  { el: () => $("ff"), ff: true, when: () => calm() && state === "idle",
+    title: "Ускорение времени", text: "Во время поездки здесь появляется кнопка ускорения. Нажимайте её, чтобы ехать быстрее: ×2 и ×4. Время смены при этом тоже идёт быстрее." },
   { el: () => $("ratingpill"), when: () => calm() && state === "idle",
-    title: "Рейтинг и тарифы", text: "Рейтинг - среднее последних 150 оценок. Комфорт работает от 4,7, Комфорт+ от 4,8. Ниже 4,5 заказы закроют на 2 часа. Нажмите на плашку, чтобы выбрать тарифы." },
+    title: "Рейтинг и тарифы", text: "Рейтинг - среднее последних 150 оценок. Комфорт работает от 4,7, Комфорт+ от 4,8. Если рейтинг ниже 4,5, доступ к заказам закроют на 2 часа. Нажмите на плашку, чтобы выбрать тарифы." },
   { el: () => $("prio"), pad: 6, when: () => calm() && state === "idle",
-    title: "Приоритет", text: "Полоска под рейтингом. Растёт за выполненные заказы, падает за пропущенные. Чем он выше, тем чаще приходят заказы." },
+    title: "Приоритет", text: "Полоска под рейтингом. Растёт за выполненные заказы, снижается за пропуск заказов. Чем он выше, тем чаще приходят заказы." },
   { el: () => panel.querySelector(".goalbar"), when: () => calm() && state === "idle",
-    title: "Цель смены", text: "За 20 заказов за смену - премия 1 000 ₽, за 30 заказов - ещё 1 500 ₽." },
+    title: "Цель смены", text: "За 20 заказов за смену - премия 1 000 ₽, за 30 заказов - 1 500 ₽." },
   { el: () => $("menubtn"), click: true, done: () => !menuEl.hidden, when: () => calm(),
     title: "Меню", text: "Здесь всё, что вне линии: машины, деньги, навыки и настройки.", act: "Откройте меню" },
-  { el: () => menuEl.querySelector(".mtiles"), when: () => !menuEl.hidden,
-    title: "Разделы меню", list: [["Таксопарк", "аренда машин"], ["Автосалон", "покупка своей машины"], ["Банк", "вклад и кредит"], ["Телефон", "звонки постоянных клиентов"], ["Навыки", "улучшения за опыт"], ["Магазин", "вещи для работы"], ["Игры", "рулетка и другие игры"], ["Дом", "жильё и свои машины"]] }
+  { el: tiles(0, 4), scroll: true, when: () => !menuEl.hidden,
+    title: "Разделы меню", list: [["Таксопарк", "Здесь можно взять авто в аренду."], ["Автосалон", "А здесь вы сможете приобрести свой автомобиль."], ["Банк", "При необходимости можно взять взаймы или положить деньги на вклад."], ["Телефон", "Контакты постоянных клиентов, они копятся по ходу игры."]] },
+  { el: tiles(4, 8), when: () => !menuEl.hidden,
+    title: "Разделы меню", list: [["Навыки", "Скиллы, которые развиваются по ходу игры и помогают больше зарабатывать."], ["Магазин", "Детское кресло, видеорегистратор и другие предметы для работы."], ["Игры", "Здесь можно провести свободное время."], ["Дом", "Гараж с вашими автомобилями."]] }
 ];
-const TUT = { i: -1, hold: false, box: null };
+const TUT = { i: -1, hold: false, box: null, ride: false, talked: false, ffShow: false };
+// Учебный заказ. В первый раз - всегда один и тот же (одинаковый случайный ряд от стартовой точки), при повторе - рядом с машиной
+function seeded(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
+function tutOrder() {
+  if (orders.length || current) return;
+  const rnd = Math.random, wasOn = { ...clsOn }; let o = null;
+  for (const c in clsOn) clsOn[c] = c === "econ";
+  try { for (let k = 1; k <= 30 && !o; k++) { if (TUT.fixed) Math.random = seeded(k * 7919); o = buildOrder(car.x, car.y, carNode, 300, 900); } } finally { Math.random = rnd; Object.assign(clsOn, wasOn); }
+  if (!o) return;
+  o.tut = true; o.runner = false; o.late = 0; o.child = false; if (TUT.fixed) { o.name = "Артур"; o.passenger = { name: "Артур" }; o.rating = "4.92"; o.cash = false; o.price = 540; o.surgeAdd = 60; }
+  orders.push(o); SND.order(); renderPanel();
+}
 const tutEl = document.createElement("div"); tutEl.id = "tut"; tutEl.hidden = true;
 tutEl.innerHTML = '<div class="tblk"></div><div class="tblk"></div><div class="tblk"></div><div class="tblk"></div><div class="thole"></div><div class="tcard"></div>';
 document.body.appendChild(tutEl);
 const tutCard = tutEl.querySelector(".tcard"), tutHole = tutEl.querySelector(".thole"), tutBlk = [...tutEl.querySelectorAll(".tblk")];
-function tutStart() { TUT.i = 0; try { localStorage.removeItem(TUT_KEY); } catch (e) {} tutCheck(); }
-function tutStop() { if (TUT.pad) { TUT.pad.style.paddingBottom = ""; TUT.pad = null; } TUT.i = -1; TUT.hold = false; tutEl.hidden = true; try { localStorage.setItem(TUT_KEY, "done"); } catch (e) {} }
+function tutStart(first) { TUT.i = 0; TUT.fixed = !!first; TUT.talked = false; TUT.ride = !current; if (TUT.ride && state === "idle") { orders = []; previewId = null; spawnTimer = 1.5; renderPanel(); } try { localStorage.removeItem(TUT_KEY); } catch (e) {} tutCheck(); }
+function tutStop() { TUT.ride = false; TUT.ffShow = false; updateStatus(); if (TUT.pad) { TUT.pad.style.paddingBottom = ""; TUT.pad = null; } TUT.i = -1; TUT.hold = false; tutEl.hidden = true; try { localStorage.setItem(TUT_KEY, "done"); } catch (e) {} }
 function tutNext() { TUT.i++; TUT.shown = -1; if (TUT.i >= TUT_STEPS.length) return tutStop(); tutCheck(); }
 function tutCheck() {
   if (TUT.i < 0) return;
   while (TUT.i < TUT_STEPS.length && TUT_STEPS[TUT.i].done && TUT_STEPS[TUT.i].done()) TUT.i++;
   if (TUT.i >= TUT_STEPS.length) return tutStop();
-  const s = TUT_STEPS[TUT.i], el = s.when() && s.el();
+  const s = TUT_STEPS[TUT.i];
+  if (!!s.ff !== TUT.ffShow) { TUT.ffShow = !!s.ff; updateStatus(); }
+  const got = s.when() && s.el(), els = !got ? [] : Array.isArray(got) ? got : [got], el = els[0];
   if (!el || !el.getClientRects().length) { tutEl.hidden = true; TUT.hold = false; return; }
   if (TUT.shown !== TUT.i) {   // новая карточка
     TUT.shown = TUT.i; TUT.box = null;
     const n = TUT_STEPS.length, dots = '<span class="tdots">' + TUT_STEPS.map((_, k) => "<i" + (k === TUT.i ? ' class="on"' : "") + "></i>").join("") + "</span>";
-    const body = s.list ? '<div class="tlist">' + s.list.map(([a, b]) => "<div><b>" + a + "</b><span>" + b + "</span></div>").join("") + "</div>" : "<p>" + s.text + "</p>";
+    const body = s.list ? '<div class="tlist">' + s.list.map(([a, b]) => "<div><b>" + a + "</b><p>" + b + "</p></div>").join("") + "</div>" : "<p>" + s.text + "</p>";
     tutCard.innerHTML = '<div class="tn">' + dots + (TUT.i < n - 1 ? '<button data-tut="skip">Пропустить</button>' : "") + '</div><b class="tt">' + s.title + "</b>" + body +
       (s.click ? '<div class="ta"><i></i>' + s.act + "</div>" : '<button class="tgo" data-tut="next">' + (TUT.i < n - 1 ? "Далее" : "Готово") + "</button>");
-    if (s.list) { const sc = el.closest(".mfull") || el.parentElement; sc.style.paddingBottom = "70vh"; TUT.pad = sc; el.style.scrollMarginTop = "14px"; el.scrollIntoView({ block: "start" }); }
+    if (s.scroll) { const sc = el.closest(".mfull") || el.parentElement; sc.style.paddingBottom = "70vh"; TUT.pad = sc; const mt = el.closest(".mtiles"); mt.style.scrollMarginTop = "14px"; mt.scrollIntoView({ block: "start" }); }
   }
   tutEl.hidden = false; TUT.hold = true;
-  const r = el.getBoundingClientRect(), p = s.pad || 4, W = innerWidth, H = innerHeight;
+  const rs = els.map(e => e.getBoundingClientRect()), r = { left: Math.min(...rs.map(q => q.left)), top: Math.min(...rs.map(q => q.top)) };
+  r.width = Math.max(...rs.map(q => q.right)) - r.left; r.height = Math.max(...rs.map(q => q.bottom)) - r.top;
+  const p = s.pad || 4, W = innerWidth, H = innerHeight;
   const x = r.left - p, y = r.top - p, w = r.width + p * 2, h = r.height + p * 2;
   const key = [x, y, w, h].map(Math.round).join();
   if (key !== TUT.box) {
@@ -3609,7 +3633,7 @@ setInterval(tutCheck, 150);
 $("tutbtn").addEventListener("click", () => { menuEl.hidden = true; tutStart(); });
 for (const sv of document.querySelectorAll("svg[data-ic]")) sv.innerHTML = ICON[sv.dataset.ic];
 loadGame(); camX = car.x; camY = car.y; updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
-if (TUT_FRESH) tutStart();
+if (TUT_FRESH) tutStart(true);
 // при сворачивании и закрытии сохраняем, чтобы машина осталась на месте
 document.addEventListener("visibilitychange", () => { if (document.hidden) saveGame(); }); window.addEventListener("pagehide", saveGame);
 setInterval(() => { if (state !== "idle" || online) saveGame(); }, 5000);
