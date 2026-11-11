@@ -629,6 +629,19 @@ html.dark .choice.irritated{color:#FF9DA1!important;border-color:#6A3438!importa
 html.dark .money.neg{color:#FF5A5F!important;text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 -1px 0 #fff,0 1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff}
 html,body,button,#app{touch-action:manipulation}   /* без масштабирования страницы двойным касанием */
 html,body{-webkit-text-size-adjust:100%;overscroll-behavior:none}
+
+/* звук: кнопки вместо ползунка */
+.msound{gap:10px}.msound b{flex:1}
+.sndctl{display:flex;align-items:center;gap:6px}.sndctl b{min-width:46px;text-align:center;font-size:15px;font-variant-numeric:tabular-nums}
+.sndctl button{width:40px;height:36px;border:none;border-radius:12px;background:#fff;font-family:inherit;font-size:20px;font-weight:700;line-height:1;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sndctl button:disabled{opacity:.4}.sndmute svg{width:20px;height:20px}.sndmute.muted{background:#FDE7E7!important;color:#C9363B!important}
+html.dark .sndctl button{background:#454A56;color:#F2F3F5}html.dark .sndmute.muted{background:#4A2A2D!important;color:#FF8A8F!important}
+/* крестики: рисованные, ровно по центру на любых телефонах */
+button.x{font-size:0!important;line-height:0!important;padding:0!important;display:flex!important;align-items:center;justify-content:center}
+button.x::before{content:"";width:14px;height:14px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2 2l10 10M12 2L2 12' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2 2l10 10M12 2L2 12' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+/* магазин в тёмной теме: недоступные покупки серые */
+html.dark .sbuy:disabled{background:#383C47!important;color:#7D8494!important}
+html.dark .sbuy.got{background:#24412F!important;color:#5FD38A!important}
 </style></head>
 <body>
 <div id="app">
@@ -658,7 +671,7 @@ html,body{-webkit-text-size-adjust:100%;overscroll-behavior:none}
       <div class="mfin" id="mfin" hidden></div>
       <span id="mstatus" hidden></span><span id="statustext" hidden></span><button id="offbtn" hidden></button>
       <div class="mtheme"><b>Тема</b><div class="seg" id="themeseg"><button data-th="light">Светлая</button><button data-th="dark">Тёмная</button></div></div>
-      <div class="msound"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><b>Звук</b><input type="range" id="sndvol" min="0" max="100" aria-label="Громкость"><button class="swt" id="sndon" aria-label="Звук вкл/выкл"><i></i></button></div>
+      <div class="msound"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><b>Звук</b><span class="sndctl"><button id="sndminus" aria-label="Тише">−</button><b id="sndval">70%</b><button id="sndplus" aria-label="Громче">+</button><button id="sndon" class="sndmute" aria-label="Без звука"></button></span></div>
       <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Таксопарк</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Казино</button><button class="mtile" id="homebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="home"></svg></span>Дом</button></div>
       <div class="mstats">
         <div><span>Машина</span><b id="mcar"></b></div>
@@ -2446,7 +2459,7 @@ function ridePanelHtml() {
   const chip = state === "toPickup" ? '<span class="chip">Едем к клиенту</span>' : state === "boarding" ? '<span class="chip green">' + (current.late > 0 ? "Пассажир опаздывает…" : "Пассажир садится…") + "</span>" : state === "toStop" ? '<span class="chip">Заезд: ' + current.stopLabel + "</span>" : state === "stopped" ? '<span class="chip">Ждём: ' + current.stopLabel + "</span>" : current.jam ? '<span class="chip red">Пробка</span>' : current.fast ? '<span class="chip green">Объезд</span>' : '<span class="chip green">В пути</span>';
   const known = state !== "toPickup";   // цену и способ оплаты узнаём, только когда приехали к клиенту
   const pay = (current.child ? '<span class="paychip kid">Детское кресло</span>' : "") + (known ? '<span class="paychip">' + (current.cash ? "Наличные" : "Карта") + "</span>" : "") + (current.surgeAdd > 0 ? '<span class="paychip blue">Повышенный спрос +' + current.surgeAdd + " ₽</span>" : "");
-  const off = '<button class="offbtn2' + (offAfter ? " on" : "") + '" data-act="offafter">' + (offAfter ? "Остаться на линии" : "Уйти после заказа") + "</button>";
+  const off = '<button class="offbtn2' + (offAfter ? " on" : "") + '" data-act="offafter">' + (offAfter ? "Остаться на линии" : "Уйти с линии") + "</button>";
   return '<div class="ridehead">' + chip + '<span class="rrate">★ ' + current.rating + '</span><span class="rprice" id="rprice">' + (known ? liveFare() + " ₽" : "") + "</span></div>" + (pay ? '<div class="paychips">' + pay + "</div>" : "") +
     (state === "toDropoff" ? B + '<div class="ridebtns"><button class="kick" data-act="kick">Высадить</button>' + off + "</div>" : state === "toPickup" ? A + '<div class="ridebtns">' + off + "</div>" : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : state === "boarding" ? A + '<div class="stopinfo" id="bwait">Бесплатное ожидание: ещё ' + PICK_FREE + " с</div>" : A) + (offAfter && state !== "toDropoff" && state !== "toPickup" ? '<div class="offnote">После этого заказа вы уйдёте с линии</div>' : "");
 }
@@ -3397,10 +3410,16 @@ $("skillsbtn").addEventListener("click", showSkills);
 $("phonebtn").addEventListener("click", showPhone);
 $("homebtn").addEventListener("click", showHome);
 statusPill.addEventListener("click", renderMenu);
-function renderSound() { $("sndon").classList.toggle("on", SND.on); $("sndvol").value = Math.round(SND.vol * 100); $("sndvol").disabled = !SND.on; }
+const ICON_SND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>';
+function renderSound() {   // громкость кнопками - и + (по 10%), отдельная кнопка «без звука»
+  const v = Math.round(SND.vol * 100), on = SND.on && v > 0;
+  $("sndval").textContent = on ? v + "%" : "выкл"; $("sndminus").disabled = !on || v <= 10; $("sndplus").disabled = v >= 100 && SND.on;
+  $("sndon").classList.toggle("muted", !on); $("sndon").innerHTML = ICON_SND + (on ? '<path d="M15.5 9a4 4 0 0 1 0 6"/></svg>' : '<path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>');
+}
 statusPill.addEventListener("click", renderSound);
-$("sndon").addEventListener("click", () => { SND.set({ on: !SND.on }); renderSound(); if (SND.on) SND.notify(); });
-$("sndvol").addEventListener("change", e => { SND.set({ vol: e.target.value / 100 }); SND.order(); });
+$("sndon").addEventListener("click", () => { const on = !(SND.on && SND.vol > 0); SND.set({ on, vol: on && SND.vol <= 0 ? 0.5 : SND.vol }); renderSound(); if (on) SND.notify(); });
+$("sndminus").addEventListener("click", () => { SND.set({ vol: Math.max(0.1, Math.round(SND.vol * 10 - 1) / 10) }); renderSound(); SND.accept(); });
+$("sndplus").addEventListener("click", () => { SND.set({ on: true, vol: Math.min(1, Math.round(SND.vol * 10 + 1) / 10) }); renderSound(); SND.accept(); });
 // ====== Тестовый режим: открыть игру с #test в конце адреса. Панель в меню для быстрой проверки ======
 const TEST_KEY = "taxi-test";
 const testHash = () => { try { if (location.hash === "#test") localStorage.setItem(TEST_KEY, "1"); } catch (e) {} };
