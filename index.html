@@ -1246,6 +1246,16 @@ function ratingLost() {
 }
 // Пассажир отменяет заказ, когда водитель уже приехал: ниже 4.5 - каждый десятый, ниже 4 - каждый пятый
 const cancelChance = () => { const r = getRating(); return r < 4 ? 0.2 : r < BLOCK_RATING ? 0.1 : 0; };
+// Водитель сам отменяет заказ, пока едет к клиенту или ждёт его: денег нет, приоритет ниже
+const CANCEL_PRIO = 10;
+function driverCancel() {
+  if (!current || (state !== "toPickup" && state !== "boarding")) return;
+  const ct = current.contactId && M.contacts.find(x => x.id === current.contactId); if (ct) ct.like -= 1;   // постоянный клиент обидится
+  current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); lastRide = null; prioAdd(-CANCEL_PRIO); SND.bad();
+  toast("Заказ отменён", "Приоритет −" + CANCEL_PRIO, "alert");
+  if (offAfter) { offAfter = false; online = false; orders = []; SND.engineOff(); }
+  updateTop(); saveGame(); renderPanel();
+}
 function passengerCancel() {
   current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); lastRide = null; moodAdd(-3); SND.bad();
   toast("Пассажир отменил заказ", "Вы приехали, а клиент передумал. При рейтинге ниже 4,5 так бывает чаще", "alert");
@@ -1668,7 +1678,8 @@ for (const id in SCENES) for (const k in SCENES[id].nodes) if (ARRIVAL_RE.test(S
 const arrivedYet = () => !(state === "toDropoff" || state === "toStop" || state === "stopped" || state === "boarding");
 function startDialogue(o, later) {
   const id = o.tut ? "f_hockey" : pickScene(o, later), sc = id && SCENES[id]; if (!sc) return;
-  if (SCENE_STOP.has(id)) o.askedStop = true;   // вторая просьба остановиться в этой поездке не выпадет if (o.passenger.scenes) met[o.name] = true;
+  if (SCENE_STOP.has(id)) o.askedStop = true;
+  { const h = gameHour(), rush = (h >= 7 && h < 10) || (h >= 17 && h < 20); o.askAmt = rush ? 200 + 50 * Math.floor(Math.random() * 3) : 150 + 50 * Math.floor(Math.random() * 2); }   // вторая просьба остановиться в этой поездке не выпадет if (o.passenger.scenes) met[o.name] = true;
   if ((sc.atEnd || sc.nodes[sc.start].atEnd) && !arrivedYet()) { current.epilogue = { scene: sc, nodeId: sc.start }; return; }   // сцена целиком - по прибытии
   dialogue = { scene: sc, nodeId: sc.start };
 }
@@ -1687,6 +1698,7 @@ function chooseAnswer(i) {
   if (ch.wait) current.waitNow = [ch.wait, ch.waitWhy || "остановка"];   // wait: остановиться прямо здесь на столько секунд   // пассажир зальёт бензин на заправке
   if (ch.gift) current.gift = (current.gift || 0) + ch.gift;   // gift: точная доплата или благодарность сверх цены
   if (ch.giftP && Math.random() < ch.giftP[0]) current.gift = (current.gift || 0) + Math.round((ch.giftP[1] + Math.random() * (ch.giftP[2] - ch.giftP[1])) / 50) * 50;   // доплатит с шансом
+  if (ch.giftAsk !== undefined) current.gift = (current.gift || 0) + (current.askAmt || 200) + ch.giftAsk;   // giftAsk: сумма, которую водитель попросил чаевыми (+ сверху)
   if (ch.giftR) current.gift = (current.gift || 0) + Math.round((ch.giftR[0] + Math.random() * (ch.giftR[1] - ch.giftR[0])) / 50) * 50;   // случайная благодарность
   if (ch.rateHit) { const w = getRating(); rates.push(ch.rateHit); if (rates.length > 150) rates.shift(); updateTop(); toast("Жалоба на водителя", "В рейтинг ушла оценка " + ch.rateHit, "alert"); checkRating(w); }
   if (ch.prio) { if (owns("cam")) floaters.push({ text: "запись регистратора помогла", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -30 }); else { prioAdd(ch.prio); toast("Жалоба в сервис", "Приоритет " + ch.prio, "alert"); } }
@@ -2285,8 +2297,8 @@ statusPill.addEventListener("click", () => { updateOffBtn(); updateTop(); update
 menuEl.addEventListener("click", e => { if (e.target.closest("[data-close]")) menuEl.hidden = true; });
 resetBtn.addEventListener("click", () => askConfirm("Сбросить весь прогресс?", "Деньги, рейтинг, поездки и истории пассажиров начнутся заново. Это нельзя отменить.", "Сбросить", resetGame, "alert"));
 // Своё окно подтверждения: стандартное окно браузера (confirm) на некоторых страницах запрещено и молча отвечает «нет»
-function askConfirm(title, text, okText, onOk, icon) {
-  const el = $("ask"); $("askicon").className = "askicon"; $("askicon").innerHTML = ico(icon || "briefcase"); $("asktitle").textContent = title; $("asktext").textContent = text; $("askok").textContent = okText;
+function askConfirm(title, text, okText, onOk, icon, noText) {   // noText - надпись второй кнопки (по умолчанию «Отмена»)
+  const el = $("ask"); $("askicon").className = "askicon"; $("askicon").innerHTML = ico(icon || "briefcase"); $("asktitle").textContent = title; $("asktext").textContent = text; $("askok").textContent = okText; $("askno").textContent = noText || "Отмена";
   el.hidden = false; askCb = onOk; $("askok").style.background = "";
 }
 
@@ -2656,8 +2668,9 @@ function ridePanelHtml() {
   const known = state !== "toPickup";   // цену и способ оплаты узнаём, только когда приехали к клиенту
   const pay = (current.child ? '<span class="paychip kid">Детское кресло</span>' : "") + (known ? '<span class="paychip">' + (current.cash ? "Наличные" : "Карта") + "</span>" : "") + (current.surgeAdd > 0 ? '<span class="paychip blue">Повышенный спрос +' + current.surgeAdd + " ₽</span>" : "");
   const off = '<button class="offbtn2' + (offAfter ? " on" : "") + '" data-act="offafter">' + (offAfter ? "Остаться на линии" : "Уйти с линии") + "</button>";
+  const cancelBtn = '<button class="kick" data-act="cancelorder">Отменить заказ</button>';
   return '<div class="ridehead">' + chip + '<span class="rrate">★ ' + current.rating + '</span><span class="rprice" id="rprice">' + (known ? liveFare() + " ₽" : "") + "</span></div>" + (pay ? '<div class="paychips">' + pay + "</div>" : "") +
-    (state === "toDropoff" ? B + '<div class="ridebtns"><button class="kick" data-act="kick">Высадить</button>' + off + "</div>" : state === "toPickup" ? A + '<div class="ridebtns">' + off + "</div>" : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : state === "boarding" ? A + '<div class="stopinfo" id="bwait">Бесплатное ожидание: ещё ' + PICK_FREE + " с</div>" : A) + (offAfter && state !== "toDropoff" && state !== "toPickup" ? '<div class="offnote">После этого заказа вы уйдёте с линии</div>' : "");
+    (state === "toDropoff" ? B + '<div class="ridebtns"><button class="kick" data-act="kick">Высадить</button>' + off + "</div>" : state === "toPickup" ? A + '<div class="ridebtns">' + cancelBtn + off + "</div>" : state === "toStop" ? S : state === "stopped" ? S + '<div class="stopinfo" id="wait">Бесплатное ожидание: ещё ' + FREE_WAIT + " с</div>" : state === "boarding" ? A + '<div class="stopinfo" id="bwait">Бесплатное ожидание: ещё ' + PICK_FREE + " с</div>" + '<div class="ridebtns">' + cancelBtn + off + "</div>" : A) + (offAfter && state !== "toDropoff" && state !== "toPickup" ? '<div class="offnote">После этого заказа вы уйдёте с линии</div>' : "");
 }
 function chainHtml() {
   const c = current; if (!c) return "";
@@ -2696,8 +2709,9 @@ function renderPanel() {
     html = '<div class="ridehead"><span class="chip">Едем на заправку</span></div><div class="addr" style="margin-top:12px"><i class="dotS"></i><div><b>' + fuelStop.n + "</b><small>" + (fuelStop.addr || "") + "</small></div></div>";
   } else if (dialogue) {
     const node = dialogue.scene.nodes[dialogue.nodeId];
-    html = '<div class="dialog"><div class="who">Пассажир · ' + (current.cash ? "наличные" : "карта") + " · едем: " + destLabel(current) + '</div><div class="said">' + node.text + "</div>";
-    node.choices.forEach((c, i) => { html += '<button class="choice" data-choice="' + i + '">' + c.text + "</button>"; });
+    const fill = s => s.replace(/\{ask\}/g, current.askAmt || 200).replace(/\{askMore\}/g, (current.askAmt || 200) + 100);   // сумма, которую водитель просит чаевыми
+    html = '<div class="dialog"><div class="who">Пассажир · ' + (current.cash ? "наличные" : "карта") + " · едем: " + destLabel(current) + '</div><div class="said">' + fill(node.text) + "</div>";
+    node.choices.forEach((c, i) => { html += '<button class="choice" data-choice="' + i + '">' + fill(c.text) + "</button>"; });
     if (mood < 30 && !current.arrived) html += '<button class="choice irritated" data-choice="-1">' + IRRITATED[current.id % IRRITATED.length] + "</button>";
     html += "</div>";
   } else html = ridePanelHtml() + (state === "toDropoff" ? chainHtml() : "");
@@ -2709,6 +2723,7 @@ panel.addEventListener("click", e => {
     if (btn.dataset.choice !== undefined) return chooseAnswer(Number(btn.dataset.choice));
     if (btn.dataset.act === "closeResult") { lastRide = null; return renderPanel(); }
     if (btn.dataset.act === "kick") return kickOut();
+    if (btn.dataset.act === "cancelorder") return askConfirm("Отменить заказ?", "Пассажира заберёт другая машина. Приоритет снизится на " + CANCEL_PRIO + ".", "Отменить заказ", driverCancel, "alert", "Нет, еду");
     if (btn.dataset.act === "offafter") { offAfter = !offAfter; if (offAfter && current) current.nextOffer = null; return renderPanel(); }
     if (btn.dataset.act === "dall") { DISTRICTS.forEach(d => districtPick.add(d.id)); return renderPanel(); }
     if (btn.dataset.act === "dcancel") { endDistrictPick(); return renderPanel(); }
