@@ -6,6 +6,7 @@
 //   POST /api/rename              { name } -> { name, left } - сменить ник (3 раза в сутки)
 //   GET  /api/me                  мои цифры и места (нужен ключ)
 //   POST /api/shift               итог смены (нужен ключ)
+//   POST /api/delete              удалить свои данные из рейтинга (нужен ключ)
 //   GET  /api/top?limit=50        таблица лидеров по лучшей смене (+ моё место, если передан ключ)
 //
 // Ключ игрока передаётся заголовком Authorization: Bearer <token>.
@@ -42,6 +43,7 @@ export default {
       if (path === "/api/register" && req.method === "POST") return register(env, await body(req));
       if (path === "/api/me" && req.method === "GET") return me(env, await auth(env, req));
       if (path === "/api/shift" && req.method === "POST") return shift(env, await auth(env, req), await body(req));
+      if (path === "/api/delete" && req.method === "POST") { const p = await auth(env, req); await env.DB.prepare("DELETE FROM players WHERE id = ?").bind(p.id).run(); return json({ ok: true }); }   // игрок удаляет свои данные
       if (path === "/api/top" && req.method === "GET") return top(env, url, await auth(env, req, true));
       if (path === "" || path === "/api") return json({ ok: true, service: "taxi-ufa" });
       return fail(404, "not_found", "Нет такого адреса");

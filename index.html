@@ -721,6 +721,16 @@ html.dark #boot{background:#262930}html.dark #boot .btitle,html.dark #boot .bpct
 html.dark #recenter{color:#fff}
 #toast.in{pointer-events:auto;cursor:pointer}
 #boot .bhint:empty{display:none}
+#privacy{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}#privacy[hidden]{display:none}
+.prcard{max-width:420px;border-radius:28px;padding:16px 18px 18px;max-height:calc(100vh - 32px);display:flex;flex-direction:column}
+.prtext{overflow-y:auto;margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.prtext h4{margin:8px 0 0;font-size:16px;font-weight:700}
+.prtext p{margin:0!important;font-size:15px!important;line-height:1.35!important;color:var(--m);text-align:justify;hyphens:none}
+.prdel{flex:none;margin-top:14px;height:48px;border:none;border-radius:28px;background:#fde8e8;color:#b3261e;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.prdel:disabled{opacity:.5}
+.mfull .mpriv{align-self:center;border:none;background:none;padding:6px 0;color:var(--m);font-family:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
+html.dark .prtext p{color:#A7AEBB}html.dark .prdel{background:#4A2A2D;color:#FF8A8F}
+#ask{z-index:45}   /* подтверждение - поверх любых окон */
 </style></head>
 <body>
 <div id="boot"><div class="bwrap"><svg class="bcar" viewBox="0 0 64 32" aria-hidden="true"><path d="M8 22h48v-6c0-2-1.5-3.5-3.5-3.8L44 11l-6-6H22l-7 7-6 1C7.8 13.3 7 14.5 7 16z" fill="#FFD233" stroke="#1E1F23" stroke-width="2.4" stroke-linejoin="round"/><circle cx="19" cy="23" r="4.5" fill="#1E1F23"/><circle cx="45" cy="23" r="4.5" fill="#1E1F23"/><path d="M24 7.5h12l4.5 4.5H20z" fill="#fff" stroke="#1E1F23" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -767,6 +777,7 @@ html.dark #recenter{color:#fff}
       </div>
       <div class="mtest" id="mtest" hidden><b>Тестовый режим</b><div class="mtgrid"><button data-t="money">+100 000 ₽</button><button data-t="open">Открыть тарифы</button><button data-t="rides">+60 поездок</button><button data-t="next">Следующая смена</button><button data-t="pay">До платёжного дня</button><button data-t="km">+6 000 км</button><button data-t="call">Звонок клиента</button><button data-t="number">Просит номер</button><button data-t="rain">Дождь</button><button data-t="tire">Прокол</button><button data-t="crash">ДТП</button><button data-t="hail">Голосующий</button><button data-t="r475">Рейтинг 4.75</button><button data-t="r44">Рейтинг 4.4</button><button data-t="r39">Рейтинг 3.9</button><button data-t="r34">Рейтинг 3.4</button><button data-t="r5">Рейтинг 5.0</button><button data-t="mood">Настроение 20%</button><button data-t="fuel">Бак 3 л</button><button data-t="off">Выключить тест</button></div></div>
       <button id="tutbtn" class="mtut">Пройти обучение заново</button>
+      <button id="privbtn" class="mpriv">Конфиденциальность</button>
       <button id="reset">Сбросить прогресс</button>
     </div>
   </div>
@@ -783,6 +794,14 @@ html.dark #recenter{color:#fff}
 <div id="home" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Дом</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="homelist"></div></div></div>
 <div id="nick" hidden><div class="askback"></div><div class="askcard nkcard"><div class="nkt" id="nkt">Придумайте ник</div><p class="nkp" id="nkp"></p><input id="nkin" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Например, Ринат_02"><div class="nkmsg" id="nkmsg"></div><button class="nkgo" id="nkgo" disabled>Продолжить</button><button class="nkoff" id="nkoff" hidden>Играть без рейтинга</button></div></div>
 <div id="leaders" hidden><div class="askback" data-close="1"></div><div class="askcard lbcard"><div class="mhead"><b>Рейтинг игроков</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><p class="lbsub">Лучшая смена каждого водителя: выручка за вычетом комиссии. Аренда и топливо в списке не учитываются.</p><div id="lblist"></div><div class="lbfoot" id="lbfoot" hidden></div></div></div>
+<div id="privacy" hidden><div class="askback" data-close="1"></div><div class="askcard prcard"><div class="mhead"><b>Конфиденциальность</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
+<div class="prtext">
+<h4>Что мы храним</h4><p>Ник, который вы придумали сами, и игровые цифры: лучшую смену, число поездок, рейтинг водителя и ступень карьеры. Их видят другие игроки в рейтинге.</p>
+<p>Сохранение игры хранится на вашем устройстве, а в Telegram ещё и в облаке Telegram вашего аккаунта, чтобы прогресс не пропал при смене телефона.</p>
+<h4>Чего мы не храним</h4><p>Имя, телефон, почту, местоположение, имя и номер аккаунта Telegram. К нам они не попадают.</p>
+<h4>Где и зачем</h4><p>Рейтинг игроков хранится на сервере Cloudflare в Западной Европе и нужен только для таблицы лидеров. Как любой сайт, сервер видит технические данные запроса, например IP-адрес, в своих журналах.</p>
+<h4>Как удалить</h4><p>«Сбросить прогресс» в меню стирает сохранение. Кнопка ниже удаляет ваш ник и рекорды из рейтинга игроков.</p>
+</div><button class="prdel" id="prdel">Удалить мои данные из рейтинга</button></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard scard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Игры</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button><button class="pact" data-game="trade"><span class="pico green"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 8h-1.5v6H6M12 6v12M12 9h1.5v5H12M18 3v14M18 6h-1.5v7H18"/></svg></span><span class="ptxt"><span class="ptop"><b>Биржа TaxiCoin</b></span><span class="ptags"><i>лонг и шорт</i><i>плечо до ×25</i></span></span></button></div></div>
@@ -796,6 +815,61 @@ html.dark #recenter{color:#fff}
 <script src="dialogues.js"></script>
 <script src="dialogues2.js"></script>
 <script>
+
+// ====== Облако Telegram: сохранение отдельно для каждого аккаунта Telegram ======
+// Наш сервер id Telegram не получает: сохранение и ключ игрока лежат в облаке Telegram этого пользователя.
+// Что синхронизируем: сохранение игры (кусками по 3 500 знаков), ключ игрока (ник), обучение, номер смены, тему, звук.
+window.CLOUD = (function () {
+  const LOCAL = { p: "taxi-player", tut: "taxi-tut", seq: "taxi-shift-seq", pend: "taxi-pending-shift", th: "taxi-theme", snd: "taxi-sound" };
+  const SAVE = "taxi-game-save-v1", AT = "taxi-saved-at", OWNER = "taxi-tg-owner", CH = 3500;
+  let cs = null, last = {}, timer = 0, busy = false, wiping = false;
+  const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
+  const get = keys => new Promise(r => { try { cs.getItems(keys, (e, v) => r(e ? null : v)); } catch (e) { r(null); } });
+  const put = (k, v) => new Promise(r => { try { cs.setItem(k, v, () => r()); } catch (e) { r(); } });
+  const del = keys => new Promise(r => { try { keys.length ? cs.removeItems(keys, () => r()) : r(); } catch (e) { r(); } });
+  function snapshot() {   // что сейчас на устройстве - в виде ключей облака
+    const o = {}, s = ls.get(SAVE) || "";
+    for (const k in LOCAL) o[k] = ls.get(LOCAL[k]) || "";
+    const n = Math.ceil(s.length / CH); o.s_n = String(n); o.s_t = ls.get(AT) || "0";
+    for (let i = 0; i < n; i++) o["s_" + i] = s.slice(i * CH, (i + 1) * CH);
+    return o;
+  }
+  async function pull(t) {   // при запуске: взять сохранение этого аккаунта из облака
+    if (!t || !t.CloudStorage || !t.isVersionAtLeast || !t.isVersionAtLeast("6.9")) return;
+    const u = t.initDataUnsafe && t.initDataUnsafe.user; if (!u) return;
+    cs = t.CloudStorage; const uid = String(u.id), owner = ls.get(OWNER);
+    const head = await get(["s_n", "s_t"].concat(Object.keys(LOCAL))); if (!head) { cs = null; return; }
+    const n = +head.s_n || 0, cloudAt = +head.s_t || 0, localAt = +(ls.get(AT) || 0);
+    if (n > 0 && (owner !== uid || cloudAt > localAt)) {   // в облаке есть игра этого аккаунта, и она новее или телефоном пользовался другой аккаунт
+      const parts = await get(Array.from({ length: n }, (_, i) => "s_" + i)); if (!parts) return;
+      ls.set(SAVE, Array.from({ length: n }, (_, i) => parts["s_" + i] || "").join(""));
+      for (const k in LOCAL) ls.set(LOCAL[k], head[k] || null);
+      ls.set(AT, String(cloudAt));
+    } else if (n === 0 && owner && owner !== uid) {   // новый аккаунт на этом телефоне - своя новая игра
+      ls.set(SAVE, null); ls.set(AT, null); for (const k in LOCAL) if (k !== "th" && k !== "snd") ls.set(LOCAL[k], null);
+    }
+    ls.set(OWNER, uid); last = n > 0 ? Object.assign({}, head) : {};
+  }
+  async function push() {   // отправить изменения в облако
+    if (!cs || busy || wiping) return; busy = true;
+    try {
+      const o = snapshot(), prevN = +(last.s_n || 0);
+      for (const k in o) if (last[k] !== o[k]) { await put(k, o[k]); last[k] = o[k]; }
+      const extra = []; for (let i = +o.s_n; i < prevN; i++) { extra.push("s_" + i); delete last["s_" + i]; }
+      await del(extra);
+    } finally { busy = false; }
+  }
+  return {
+    pull, get on() { return !!cs; },
+    push: soon => { if (!cs) return; clearTimeout(timer); timer = setTimeout(push, soon ? 300 : 30000); },
+    now: () => push(),
+    async wipe() {   // сброс прогресса: стереть игру и в облаке
+      if (!cs) return; wiping = true;
+      const keys = ["s_n", "s_t", "tut", "seq", "pend"]; for (let i = 0; i < 40; i++) keys.push("s_" + i);
+      await del(keys); last = {};
+    }
+  };
+})();
 // Экран загрузки: карта (mapdata.js + osmmap.js, около 6 МБ) грузится с полоской, потом запускается игра.
 // Через fetch видно, сколько уже скачано; если fetch не работает (файл открыт с диска) - обычная загрузка без процентов
 (function () {
@@ -809,7 +883,13 @@ html.dark #recenter{color:#fff}
     document.getElementById("boothint").textContent = "Проверьте интернет и попробуйте ещё раз.";
     document.getElementById("bootretry").hidden = false; pct.textContent = "";
   }
-  function start() { pct.textContent = "100%"; bar.style.width = "100%"; document.getElementById("bootsub").textContent = "Готовим город"; setTimeout(() => run(document.getElementById("maincode").textContent), 30); }
+  const inTG = /tgWebApp/.test(location.hash + location.search) || !!window.TelegramWebviewProxy;
+  const tgReady = !inTG ? Promise.resolve() : new Promise(res => {   // Telegram и облачное сохранение - пока грузится карта
+    const s = document.createElement("script"); s.src = "https://telegram.org/js/telegram-web-app.js";
+    s.onload = () => { const t = window.Telegram && Telegram.WebApp; CLOUD.pull(t).then(res, res); };
+    s.onerror = res; document.head.appendChild(s); setTimeout(res, 6000);
+  });
+  function start() { pct.textContent = "100%"; bar.style.width = "100%"; document.getElementById("bootsub").textContent = "Готовим город"; tgReady.then(() => setTimeout(() => run(document.getElementById("maincode").textContent), 30)); }
   function viaTags() {
     let i = 0;
     const next = () => { if (i >= FILES.length) return start(); const f = FILES[i++], s = document.createElement("script"); s.src = f[0]; s.onload = () => { got += f[1]; show(); next(); }; s.onerror = fail; document.body.appendChild(s); };
@@ -1176,7 +1256,7 @@ let carNode = nearest(xs[xs.length >> 1], ys[ys.length >> 1]);
 const car = { x: N[carNode][0], y: N[carNode][1], angle: 0 };
 let route = [];
 
-function saveGame() { if (resetting) return; try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority, rain, goalRides, blockUntil, clsAutoOff, carNode, meta: M })); } catch (e) {} }
+function saveGame() { if (resetting) return; try { localStorage.setItem("taxi-saved-at", String(Date.now())); if (window.CLOUD) CLOUD.push(); } catch (e) {} try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority, rain, goalRides, blockUntil, clsAutoOff, carNode, meta: M })); } catch (e) {} }
 // Детализация смены: всё, что пришло и ушло
 const newLedger = () => ({ fares: 0, tips: 0, fee: 0, rent: 0, fuel: 0, fuelL: 0, fines: 0, km: 0, bonus: 0 });
 // ====== Дождь: примерно раз в 2-3 смены, на 1-3 часа; спрос по всему городу x1.4, машина едет как обычно ======
@@ -1387,7 +1467,7 @@ function loadGame() {
   } catch (e) {}
 }
 let resetting = false;   // после сброса больше не сохраняем, иначе при перезагрузке страница запишет старую игру обратно
-function resetGame() { resetting = true; try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); }
+function resetGame() { resetting = true; try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem("taxi-saved-at"); localStorage.removeItem("taxi-tut"); } catch (e) {} const go = () => location.reload(); if (window.CLOUD && CLOUD.on) CLOUD.wipe().then(go, go); else go(); }
 const getRating = () => rates.reduce((a, b) => a + b, 0) / rates.length, getAff = n => affection[n] || 0;
 function changeAff(n, d) { affection[n] = Math.max(AFF_MIN, Math.min(AFF_MAX, getAff(n) + d)); }
 function ratingFactor() { const r = getRating(); return r >= 4.8 ? 0.7 : r < 4.3 ? 1.6 : 1; }
@@ -3708,7 +3788,7 @@ window.TG = null;
 (() => {
   if (!/tgWebApp/.test(location.hash + location.search) && !window.TelegramWebviewProxy) return;
   const sc = document.createElement("script"); sc.src = "https://telegram.org/js/telegram-web-app.js";
-  sc.onload = () => {
+  const init = () => {
     const t = window.Telegram && Telegram.WebApp; if (!t) return; window.TG = t;
     try {
       t.ready(); t.expand();
@@ -3728,10 +3808,10 @@ window.TG = null;
       }
     } catch (e) {}
   };
-  document.head.appendChild(sc);
+  if (window.Telegram && Telegram.WebApp) init(); else { sc.onload = init; document.head.appendChild(sc); }   // обычно SDK уже загрузил экран загрузки
 })();
 // Кнопка «Назад» в шапке Telegram закрывает верхнее окно; во время заказа закрытие игры просит подтверждение
-const TG_LAYERS = ["leaders", "kef", "trade", "games", "casino", "salon", "bank", "skills", "phone", "home", "shop", "garage", "ledger", "modes", "pause", "menu"];
+const TG_LAYERS = ["privacy", "leaders", "kef", "trade", "games", "casino", "salon", "bank", "skills", "phone", "home", "shop", "garage", "ledger", "modes", "pause", "menu"];
 function tgTop() { return TG_LAYERS.map(id => $(id)).find(el => el && !el.hidden) || null; }
 function tgBack() {
   const el = tgTop(); if (!el) return;
@@ -3795,13 +3875,13 @@ nkGo.addEventListener("click", async () => {
   if (r.status === 0) { nkSay("Нет связи с сервером", "bad"); $("nkoff").hidden = false; nkGo.disabled = false; return; }
   if (nickRename) {
     if (!r.name) { nkSay(r.text || "Не получилось", "bad"); return; }
-    PLAYER.name = r.name; try { localStorage.setItem(PLAYER_KEY, JSON.stringify(PLAYER)); } catch (e) {}
+    PLAYER.name = r.name; try { localStorage.setItem(PLAYER_KEY, JSON.stringify(PLAYER)); } catch (e) {} if (window.CLOUD) CLOUD.push(true);
     $("nick").hidden = true; SND.accept(); toast("Ник изменён", "Теперь вы " + r.name + (r.left ? ". Ещё можно сменить: " + r.left : ""), "star");
     const f = afterNick; afterNick = null; if (f) f(); return;
   }
   if (!r.token) { nkSay(r.text || "Не получилось", "bad"); return; }
   PLAYER = { id: r.id, token: r.token, name: r.name };
-  try { localStorage.setItem(PLAYER_KEY, JSON.stringify(PLAYER)); } catch (e) {}
+  try { localStorage.setItem(PLAYER_KEY, JSON.stringify(PLAYER)); } catch (e) {} if (window.CLOUD) CLOUD.push(true);
   $("nick").hidden = true; SND.accept(); toast("Ник сохранён", r.name + ", удачной смены", "star"); flushShift();
   const f = afterNick; afterNick = null; if (f) f();
 });
@@ -3811,7 +3891,7 @@ function queueShift() {
   if (testOn()) return;   // в тестовом режиме в рейтинг ничего не уходит
   // номер смены для сервера - сквозной, при сбросе прогресса не обнуляется (иначе сервер посчитает новые смены уже учтёнными)
   let seq = 0; try { seq = +localStorage.getItem("taxi-shift-seq") || 0; } catch (e) {}
-  const n = Math.max(seq + 1, M.careerShifts); try { localStorage.setItem("taxi-shift-seq", n); } catch (e) {}
+  const n = Math.max(seq + 1, M.careerShifts); try { localStorage.setItem("taxi-shift-seq", n); } catch (e) {} if (window.CLOUD) CLOUD.push(true);
   const L = ledger, s = { n, gross: Math.round(L.fares + L.tips + (L.bonus || 0) - L.fee), money: Math.round(shiftNet()), rides: shiftRides, rating: +getRating().toFixed(2), stage: stageNow().id };
   try { localStorage.setItem(PEND_KEY, JSON.stringify(s)); } catch (e) {}
   flushShift();
@@ -3859,6 +3939,15 @@ $("leaders").addEventListener("click", e => {
   if (e.target.closest('[data-lb="rename"]')) { api("/me").then(r => showNick(renderLeaders, true, r.renameLeft)); }
 });
 $("leadbtn").addEventListener("click", showLeaders);
+// Конфиденциальность: что храним и удаление своих данных из рейтинга
+$("privbtn").addEventListener("click", () => { menuEl.hidden = true; $("prdel").hidden = !PLAYER; $("prdel").disabled = false; $("privacy").hidden = false; });
+$("privacy").addEventListener("click", e => { if (e.target.closest("[data-close]")) $("privacy").hidden = true; });
+$("prdel").addEventListener("click", () => askConfirm("Удалить данные из рейтинга?", "Ваш ник и рекорды пропадут из таблицы лидеров. Сохранение игры останется. Ник можно будет придумать заново.", "Удалить", async () => {
+  $("prdel").disabled = true; const r = await api("/delete", {});
+  if (r.status === 0) { $("prdel").disabled = false; return toast("Нет связи с сервером", "Попробуйте позже", "alert"); }
+  PLAYER = null; try { localStorage.removeItem(PLAYER_KEY); } catch (e) {} if (window.CLOUD) CLOUD.push(true);
+  $("privacy").hidden = true; toast("Данные удалены", "Ника и рекордов больше нет в рейтинге", "star");
+}, "alert", "Не удалять"));
 statusPill.addEventListener("click", async () => {   // в меню - мой ник и место за неделю
   if (!PLAYER) { $("leadsub").textContent = "Соревнуйтесь с другими водителями"; return; }
   $("leadsub").textContent = PLAYER.name;
@@ -3962,7 +4051,7 @@ loadGame(); camX = car.x; camY = car.y; updateTop(); renderPanel(); resize(); re
 if (needNick()) showNick(TUT_FRESH ? () => tutStart(true) : null); else if (TUT_FRESH) tutStart(true);
 flushShift();
 // при сворачивании и закрытии сохраняем, чтобы машина осталась на месте
-document.addEventListener("visibilitychange", () => { if (document.hidden) saveGame(); }); window.addEventListener("pagehide", saveGame);
+document.addEventListener("visibilitychange", () => { if (document.hidden) { saveGame(); if (window.CLOUD) CLOUD.now(); } }); window.addEventListener("pagehide", saveGame);
 setInterval(() => { if (state !== "idle" || online) saveGame(); }, 5000);
 </script>
 </body></html>
