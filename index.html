@@ -1581,9 +1581,11 @@ const gameHour = () => Math.floor((Math.floor(clock / 60) + DAY_START) / 60) % 2
 function sceneCtx(o) {
   const h = gameHour(), dest = o.place ? o.place.k : null, from = o.fromPlace ? o.fromPlace.k : null;
   return { airport: !!o.airport, toAirport: dest === "airport", fromAirport: from === "airport", home: !o.place || dest === "home", dest, from,
-    hour: h, night: h >= 23 || h < 5, rain: rainLevel() > 0.3, child: !!o.child, cash: !!o.cash };
+    hour: h, night: h >= 19 || h < 5, rain: rainLevel() > 0.3, child: !!o.child, cash: !!o.cash, askedStop: !!o.askedStop };
 }
-const sceneFits = (id, c) => !SCENE_WHEN[id] || SCENE_WHEN[id](c);
+const sceneFits = (id, c) => (!c.askedStop || !SCENE_STOP.has(id)) && (!SCENE_WHEN[id] || SCENE_WHEN[id](c));
+// Сцены, где пассажир просит остановиться или заехать куда-то: за одну поездку - не больше одной такой
+const SCENE_STOP = new Set(Object.keys(SCENES).filter(id => Object.values(SCENES[id].nodes).some(n => n.choices.some(ch => ch.stop || /остановлюсь|останавливаюсь|разворачиваемся/i.test(ch.text) && !ch.end))));
 function fresh(pool) {   // диалог, который ещё не встречался; когда все пройдены, круг начинается заново
   let left = pool.filter(id => !seen[id]);
   if (!left.length) {   // новый круг; редкая сцена (rare) попадает в него только с вероятностью rare
@@ -1598,7 +1600,8 @@ const ARRIVAL_RE = /(приехали|доехали|довез|довёз|мн�
 for (const id in SCENES) for (const k in SCENES[id].nodes) if (ARRIVAL_RE.test(SCENES[id].nodes[k].text)) SCENES[id].nodes[k].atEnd = true;
 const arrivedYet = () => !(state === "toDropoff" || state === "toStop" || state === "stopped" || state === "boarding");
 function startDialogue(o, later) {
-  const id = o.tut ? "f_hockey" : pickScene(o, later), sc = id && SCENES[id]; if (!sc) return; if (o.passenger.scenes) met[o.name] = true;
+  const id = o.tut ? "f_hockey" : pickScene(o, later), sc = id && SCENES[id]; if (!sc) return;
+  if (SCENE_STOP.has(id)) o.askedStop = true;   // вторая просьба остановиться в этой поездке не выпадет if (o.passenger.scenes) met[o.name] = true;
   if ((sc.atEnd || sc.nodes[sc.start].atEnd) && !arrivedYet()) { current.epilogue = { scene: sc, nodeId: sc.start }; return; }   // сцена целиком - по прибытии
   dialogue = { scene: sc, nodeId: sc.start };
 }
@@ -2321,7 +2324,8 @@ function updateInner(dt) {
       // Разговор бывает не всегда: чаще пассажир едет молча. Постоянные пассажиры со своей историей говорят всегда
       const r = +current.rating, g = route.reduce((a, s) => a + s.t, 0) / 60;   // длительность поездки в игровых минутах
       const story = current.passenger.scenes && (storyStep[current.name] || 0) < current.passenger.scenes.length;
-      current.talkAt = []; current.talkIdx = 0; current.sickAt = current.child && Math.random() < 0.12 ? 0.25 + Math.random() * 0.45 : null;   // ребёнка может укачать
+      current.talkAt = []; current.talkIdx = 0; current.sickAt = false && current.child && Math.random() < 0.12 ?   // укачивание теперь сцена ch_sick
+         0.25 + Math.random() * 0.45 : null;   // ребёнка может укачать
       if (current.tut) { current.talkAt = [0.15]; current.sickAt = null; } else if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
       if (!current.tut && g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
       renderPanel();
