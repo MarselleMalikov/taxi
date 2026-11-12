@@ -144,8 +144,8 @@ async function auth(env, req, optional) {
 // ---------- итог смены ----------
 // { n: сквозной номер смены, money: чистыми за смену, gross: выручка минус комиссия (без топлива и аренды) - по ней рекорд,
 //   rides: поездок за смену, rating, stage }
-async function shift(env, p, b) {
-  const gross = b.gross === undefined ? null : int(b.gross), n = int(b.n), money = int(b.money), rides = int(b.rides), rating = Number(b.rating), stage = STAGES.includes(b.stage) ? b.stage : p.stage, now = Date.now();
+async function shift(env, p, b) {   // старая версия игры не шлёт gross - тогда рекорд считается по «чистыми»
+  const n = int(b.n), money = int(b.money), gross = b.gross === undefined ? Math.max(0, int(b.money) || 0) : int(b.gross), rides = int(b.rides), rating = Number(b.rating), stage = STAGES.includes(b.stage) ? b.stage : p.stage, now = Date.now();
   if (n === null || money === null || rides === null || !(rating >= 1 && rating <= 5)) return fail(400, "bad_shift", "Неверные данные смены");
   if (n <= p.shifts) return json({ ok: true, skipped: true, shifts: p.shifts });   // эта смена уже учтена (повторная отправка)
   const problems = [];
