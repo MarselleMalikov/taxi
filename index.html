@@ -5,6 +5,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500&display=swap" rel="stylesheet">
 <style>
+/* верхний отступ: вырез телефона; в Telegram на весь экран - ещё и кнопки Telegram сверху */
+:root{--sat:env(safe-area-inset-top,0px)}
+html.tg-full{--sat:calc(var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px))}
+
 :root{--g:#22b455;--o:#f08a1c;--b:#2f6fed;--r:#e5484d;--ink:#1b1d22;--m:#6b7280;--c:#f3f4f6}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
@@ -12,7 +16,7 @@ body{background:#0f1218;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;c
 button{font-family:inherit}
 #app{position:relative;width:100%;max-width:440px;height:100vh;height:100dvh;margin:0 auto;overflow:hidden;background:#f0f1f4}
 #map{position:absolute;top:0;left:0;width:100%;height:100%;display:block}
-#topbar{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 10px) 10px 0;pointer-events:none}
+#topbar{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;gap:8px;padding:calc(var(--sat) + 10px) 10px 0;pointer-events:none}
 .pill{background:rgba(255,255,255,.96);border-radius:14px;padding:7px 11px;box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:13px}
 #menubtn{position:relative;pointer-events:auto;width:46px;flex:none;padding:0;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .burger{display:flex;flex-direction:column;gap:4px}.burger i{display:block;width:18px;height:2px;border-radius:1px;background:#2b313b}
@@ -35,7 +39,7 @@ button{font-family:inherit}
 .prio{font-weight:600}.prio.low{color:#c9363b}.prio.high{color:#2456c9}
 #ratingpill{text-align:center;white-space:nowrap;pointer-events:auto;border:none;cursor:pointer;font-family:inherit}
 #rating{font-size:16px;font-weight:700;color:#d98f00}
-#osm{position:absolute;z-index:2;left:10px;top:calc(env(safe-area-inset-top,0px) + 68px);font-size:10px;color:#555;background:rgba(255,255,255,.7);padding:1px 5px;border-radius:6px}
+#osm{position:absolute;z-index:2;left:10px;top:calc(var(--sat) + 68px);font-size:10px;color:#555;background:rgba(255,255,255,.7);padding:1px 5px;border-radius:6px}
 #sheet{position:absolute;left:0;right:0;bottom:0;z-index:3;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.25);padding:18px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:60%;overflow-y:auto}
 .grab{display:block;width:40px;height:4px;border-radius:2px;background:#d5d8df;margin:-8px auto 12px}
 #ledger{position:fixed;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;padding:16px}#ledger[hidden]{display:none}
@@ -81,7 +85,7 @@ button{font-family:inherit}
 .askcard b{font-size:18px}.askcard p{margin:8px 0 16px;color:var(--m);font-size:15px;line-height:1.35}
 .askbtns{display:flex;gap:8px}.askbtns button{flex:1;padding:12px;border:none;border-radius:12px;font-size:16px;cursor:pointer}
 #askno{background:#eceef1;color:var(--ink)}#askok{background:var(--r);color:#fff;font-weight:700}
-#pickbar{position:absolute;z-index:4;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 66px);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#5b3fd0;color:#fff;border-radius:14px;padding:10px 12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.25)}#pickbar[hidden]{display:none}
+#pickbar{position:absolute;z-index:4;left:10px;right:10px;top:calc(var(--sat) + 66px);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#5b3fd0;color:#fff;border-radius:14px;padding:10px 12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.25)}#pickbar[hidden]{display:none}
 #pickbar button{border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:7px 12px;font-size:14px;cursor:pointer}
 .msect{display:flex;flex-direction:column;gap:6px}.msect b{font-size:16px}.msect small{color:var(--m);font-size:14px;line-height:1.3}
 .mbtn{padding:11px;border:none;border-radius:12px;background:#ece8fb;color:#4a32b8;font-size:15px;font-weight:600;cursor:pointer}.mbtn:disabled{opacity:.5;cursor:default}
@@ -90,7 +94,7 @@ button{font-family:inherit}
 .bizchip button{width:100%;border:none;background:#fff;color:#4a32b8;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:600;cursor:pointer}
 #menu{position:absolute;inset:0;z-index:5}#menu[hidden]{display:none}
 .mback{position:absolute;inset:0;background:rgba(15,18,24,.35)}
-.mpanel{position:absolute;top:0;left:0;bottom:0;width:min(300px,82%);background:#fff;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 16px;display:flex;flex-direction:column;gap:14px;box-shadow:4px 0 24px rgba(0,0,0,.2)}
+.mpanel{position:absolute;top:0;left:0;bottom:0;width:min(300px,82%);background:#fff;padding:calc(var(--sat) + 14px) 16px 16px;display:flex;flex-direction:column;gap:14px;box-shadow:4px 0 24px rgba(0,0,0,.2)}
 .mhead{display:flex;align-items:center;justify-content:space-between}.mhead b{font-size:20px}
 .mhead .x{width:36px;height:36px;border:none;border-radius:50%;background:#f1f2f4;font-size:22px;line-height:1;color:#4b5563;cursor:pointer}
 .mstatus{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
@@ -154,14 +158,14 @@ button{font-family:inherit}
 .endbtn{display:block;width:100%;margin-top:8px;padding:13px;font-size:16px;border:none;border-radius:12px;color:var(--ink);background:#eceef1;cursor:pointer;font-family:inherit}
 .endbtn.main{background:var(--g);color:#fff;font-weight:700}
 
-#zoom{position:absolute;z-index:2;right:10px;top:calc(env(safe-area-inset-top,0px) + 116px);display:flex;flex-direction:column;background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.22);overflow:hidden}
+#zoom{position:absolute;z-index:2;right:10px;top:calc(var(--sat) + 116px);display:flex;flex-direction:column;background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.22);overflow:hidden}
 #zoom button{width:44px;height:42px;border:none;background:#fff;font-size:24px;line-height:1;color:#3a4250;cursor:pointer}#zoom button+button{border-top:1px solid #e5e7eb}
-#recenter{position:absolute;z-index:2;right:10px;top:calc(env(safe-area-inset-top,0px) + 212px);width:44px;height:44px;border:none;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:#3a4250;cursor:pointer}
+#recenter{position:absolute;z-index:2;right:10px;top:calc(var(--sat) + 212px);width:44px;height:44px;border:none;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:#3a4250;cursor:pointer}
 #recenter[hidden]{display:none}
 #map{touch-action:none;cursor:grab}#map.drag{cursor:grabbing}
 .paychip{display:inline-block;margin-top:8px;font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:#f1f2f4;color:#374151}
 .ohint{font-size:13px;color:var(--m)}
-#ff{position:absolute;z-index:2;right:10px;top:calc(env(safe-area-inset-top,0px) + 68px);padding:6px 12px;border:none;border-radius:14px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:14px;font-weight:700;cursor:pointer}
+#ff{position:absolute;z-index:2;right:10px;top:calc(var(--sat) + 68px);padding:6px 12px;border:none;border-radius:14px;background:rgba(255,255,255,.96);box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:14px;font-weight:700;cursor:pointer}
 #ff[hidden]{display:none}
 .dotS{flex:none;width:12px;height:12px;border-radius:50%;margin-top:5px;background:var(--o)}
 .stopinfo{margin-top:12px;font-size:16px;font-weight:600;color:#b36b00;background:#fff4e0;border-radius:12px;padding:10px}
@@ -172,7 +176,7 @@ button{font-family:inherit}
 body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 .ico{width:22px;height:22px;flex:none}
 .pill{border-radius:16px;box-shadow:var(--sh);background:#fff;padding:8px 12px}
-#topbar{gap:8px;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px 0}
+#topbar{gap:8px;padding:calc(var(--sat) + 12px) 12px 0}
 #menubtn{width:48px;height:48px;border-radius:16px}
 .burger{gap:4.5px}.burger i{width:19px;height:2.2px;border-radius:2px;background:var(--dark)}
 .money{font-weight:800;letter-spacing:-.2px}
@@ -182,12 +186,12 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .prow{display:flex;align-items:center;gap:6px;margin-top:5px}.pbar{flex:1;height:5px;border-radius:3px;background:#E7E9EE;overflow:hidden;min-width:34px}
 .pbar i{display:block;height:100%;width:50%;background:#2F6FED;border-radius:3px;transition:width .4s}
 #prion{font-size:11px;font-weight:700;color:var(--m)}.prow.low .pbar i{background:#E5484D}.prow.high .pbar i{background:#1FAF55}
-#osm{top:calc(env(safe-area-inset-top,0px) + 70px);left:12px;border-radius:8px;background:rgba(255,255,255,.75)}
-#mapctl{position:absolute;z-index:2;right:12px;top:calc(env(safe-area-inset-top,0px) + 132px);display:flex;flex-direction:column;gap:10px}
+#osm{top:calc(var(--sat) + 70px);left:12px;border-radius:8px;background:rgba(255,255,255,.75)}
+#mapctl{position:absolute;z-index:2;right:12px;top:calc(var(--sat) + 132px);display:flex;flex-direction:column;gap:10px}
 .mc{width:48px;height:48px;border:none;border-radius:16px;background:#fff;box-shadow:var(--sh);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dark)}
 .mc svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}.mc:active{transform:scale(.96)}
 #recenter[hidden]{display:flex}
-#ff{top:calc(env(safe-area-inset-top,0px) + 74px);right:12px;border-radius:14px;box-shadow:var(--sh);padding:7px 12px;font-weight:800}
+#ff{top:calc(var(--sat) + 74px);right:12px;border-radius:14px;box-shadow:var(--sh);padding:7px 12px;font-weight:800}
 #sheet{border-radius:26px 26px 0 0;box-shadow:0 -8px 30px rgba(17,24,39,.14);padding:20px 16px calc(16px + env(safe-area-inset-bottom,0px))}
 .grab{width:44px;height:5px;border-radius:3px;background:#DDE0E5;margin:-10px auto 14px}
 /* главная кнопка: не на линии - чёрная, на линии - жёлтая */
@@ -248,8 +252,8 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 .lrow b{font-weight:700}
 
 /* правки раскладки */
-#ff{top:calc(env(safe-area-inset-top,0px) + 92px)}
-#osm{top:calc(env(safe-area-inset-top,0px) + 84px)}
+#ff{top:calc(var(--sat) + 92px)}
+#osm{top:calc(var(--sat) + 84px)}
 .tile{padding:16px 4px 14px;gap:9px;font-size:13px}.tile .ico{width:26px;height:26px}
 #shift{font-size:21px;font-weight:800}#shift.off{padding:18px}
 .gtar{margin:10px 2px 0}.gcar{margin-top:6px;padding:5px 10px 5px 6px;gap:10px}.ginfo b{font-size:14.5px}.ginfo small{margin-top:0;line-height:1.3}
@@ -259,7 +263,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 #pauseinfo,#pausenote{text-align:left!important;margin:0 44px 4px 2px;line-height:1.35}#pausenote:empty{display:none}
 #pause .pbtn{margin-top:8px;padding:11px 14px}
 
-#mapctl{top:calc(env(safe-area-inset-top,0px) + 150px)}
+#mapctl{top:calc(var(--sat) + 150px)}
 .addr{align-items:flex-start;gap:12px}.addr .dotA,.addr .dotB,.addr .dotS{margin-top:6px}
 .addr b{line-height:1.25}.addr small{display:block;line-height:1.3;margin-top:2px;text-align:left}
 .sitem b{font-size:15px!important;font-weight:700!important;line-height:1.2}.sitem small{font-size:12.5px}
@@ -417,7 +421,7 @@ body{font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-s
 
 /* полноэкранное меню */
 #menu{position:absolute;inset:0;z-index:6}
-.mfull{position:absolute;inset:0;background:#fff;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 18px);display:flex;flex-direction:column;gap:12px}
+.mfull{position:absolute;inset:0;background:#fff;overflow-y:auto;padding:calc(var(--sat) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 18px);display:flex;flex-direction:column;gap:12px}
 .mtop{display:flex;align-items:center;justify-content:space-between}.mtop b{font-size:24px;font-weight:800}
 .mtop .x{width:40px;height:40px;border:none;border-radius:50%;background:var(--c);font-size:22px;line-height:1;color:#4b5563;cursor:pointer}
 .mprof{background:var(--dark);color:#fff;border-radius:22px;padding:14px 16px}
@@ -696,6 +700,9 @@ html.dark #fuelpill:not(.low):not(.gbo) #fuelfill{background:#D7DBE2}
 #evt #evttext.just{text-align:justify!important;text-align-last:left;hyphens:none}
 .lbsub{flex:none;margin:6px 2px 8px;font-size:14.5px;line-height:1.3;color:var(--m);text-align:justify;hyphens:none}
 html.dark .endbtn:not(.main){background:#383C47;color:#F2F3F5}
+.mhome{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:none;border-radius:18px;background:var(--c);font-family:inherit;text-align:left;color:var(--ink);cursor:pointer}
+.mhome .ico{flex:none;width:24px;height:24px}.mhome span{display:flex;flex-direction:column;gap:1px}.mhome b{font-size:16px}.mhome small{font-size:14px;color:var(--m)}
+html.dark .mhome{background:#383C47;color:#F2F3F5}html.dark .mhome small{color:#A7AEBB}
 </style></head>
 <body>
 <div id="app">
@@ -726,6 +733,7 @@ html.dark .endbtn:not(.main){background:#383C47;color:#F2F3F5}
       <div class="mfin" id="mfin" hidden></div>
       <span id="mstatus" hidden></span><span id="statustext" hidden></span><button id="offbtn" hidden></button>
       <div class="mtheme"><b>Тема</b><div class="seg" id="themeseg"><button data-th="light">Светлая</button><button data-th="dark">Тёмная</button></div></div>
+      <button class="mhome" id="homescreen" hidden><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 8.5v6M9 11.5h6"/></svg><span><b>На главный экран</b><small>Иконка игры на экране телефона</small></span></button>
       <div class="msound"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><b>Звук</b><span class="sndctl"><button id="sndminus" aria-label="Тише">−</button><b id="sndval">70%</b><button id="sndplus" aria-label="Громче">+</button><button id="sndon" class="sndmute" aria-label="Без звука"></button></span></div>
       <div class="mtiles"><button class="mtile" id="garagebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="car"></svg></span>Таксопарк</button><button class="mtile" id="salonbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="key"></svg></span>Автосалон</button><button class="mtile" id="bankbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bank"></svg></span>Банк</button><button class="mtile" id="phonebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="phone"></svg><em class="mbadge" id="phonebadge" hidden>1</em></span>Телефон</button><button class="mtile" id="skillsbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="star"></svg><em class="mbadge" id="skillbadge" hidden></em></span>Навыки</button><button class="mtile" id="shopbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="bag"></svg></span>Магазин</button><button class="mtile" id="casinobtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="dice"></svg></span>Игры</button><button class="mtile" id="homebtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="home"></svg></span>Дом</button></div>
       <div class="mstats">
@@ -3616,6 +3624,15 @@ window.TG = null;
       document.documentElement.classList.add("in-tg");
       t.BackButton.onClick(tgBack);
       setInterval(tgSync, 300);
+      // на телефоне - на весь экран; сверху остаются только кнопки Telegram, плашки игры уходят под них
+      const full = () => { document.documentElement.classList.toggle("tg-full", !!t.isFullscreen); setTimeout(() => { resize(); placeControls(); }, 50); };
+      if (t.requestFullscreen && /android|ios/.test(t.platform || "")) { t.onEvent("fullscreenChanged", full); t.onEvent("safeAreaChanged", full); t.onEvent("contentSafeAreaChanged", full); t.requestFullscreen(); }
+      // кнопка «На главный экран» - если Telegram это умеет и иконки ещё нет
+      if (t.addToHomeScreen && t.checkHomeScreenStatus) {
+        t.checkHomeScreenStatus(s => { $("homescreen").hidden = !(s === "missed" || s === "unknown"); });
+        t.onEvent("homeScreenAdded", () => { $("homescreen").hidden = true; toast("Игра на главном экране", "Теперь её можно открыть одним нажатием", "star"); });
+        $("homescreen").addEventListener("click", () => t.addToHomeScreen());
+      }
     } catch (e) {}
   };
   document.head.appendChild(sc);
