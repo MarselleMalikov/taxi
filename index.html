@@ -703,8 +703,26 @@ html.dark .endbtn:not(.main){background:#383C47;color:#F2F3F5}
 .mhome[hidden]{display:none!important}.mhome{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:none;border-radius:18px;background:var(--c);font-family:inherit;text-align:left;color:var(--ink);cursor:pointer}
 .mhome .ico{flex:none;width:24px;height:24px}.mhome span{display:flex;flex-direction:column;gap:1px}.mhome b{font-size:16px}.mhome small{font-size:14px;color:var(--m)}
 html.dark .mhome{background:#383C47;color:#F2F3F5}html.dark .mhome small{color:#A7AEBB}
+#boot{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;background:#fff;transition:opacity .4s}
+#boot.gone{opacity:0;pointer-events:none}
+#boot .bwrap{width:100%;max-width:300px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+#boot .bcar{width:96px;height:48px;animation:bootcar 1.2s ease-in-out infinite}
+@keyframes bootcar{50%{transform:translateY(-3px)}}
+#boot .btitle{font-size:28px;font-weight:800;color:#16181D;margin-top:6px}
+#boot .bsub{font-size:16px;color:#7A8190}
+#boot .bbar{width:100%;height:8px;border-radius:4px;background:#E2E5EA;overflow:hidden;margin-top:8px}
+#boot .bbar i{display:block;width:0;height:100%;border-radius:4px;background:#FFD233;transition:width .2s}
+#boot .bpct{font-size:15px;font-weight:700;color:#16181D;font-variant-numeric:tabular-nums;min-height:20px}
+#boot .bhint{font-size:14px;color:#7A8190;line-height:1.3;margin-top:6px}
+#boot .bretry{margin-top:10px;height:48px;padding:0 24px;border:none;border-radius:28px;background:#FFD233;color:#1E1F23;font-family:inherit;font-size:16px;font-weight:700}
+html.dark #boot{background:#262930}html.dark #boot .btitle,html.dark #boot .bpct{color:#F2F3F5}html.dark #boot .bsub,html.dark #boot .bhint{color:#A7AEBB}html.dark #boot .bbar{background:#3E4350}
+@media (prefers-reduced-motion:reduce){#boot .bcar{animation:none}}
 </style></head>
 <body>
+<div id="boot"><div class="bwrap"><svg class="bcar" viewBox="0 0 64 32" aria-hidden="true"><path d="M8 22h48v-6c0-2-1.5-3.5-3.5-3.8L44 11l-6-6H22l-7 7-6 1C7.8 13.3 7 14.5 7 16z" fill="#FFD233" stroke="#1E1F23" stroke-width="2.4" stroke-linejoin="round"/><circle cx="19" cy="23" r="4.5" fill="#1E1F23"/><circle cx="45" cy="23" r="4.5" fill="#1E1F23"/><path d="M24 7.5h12l4.5 4.5H20z" fill="#fff" stroke="#1E1F23" stroke-width="2" stroke-linejoin="round"/></svg>
+<b class="btitle">Такси по Уфе</b><span class="bsub" id="bootsub">Загружаем карту Уфы</span><span class="bbar"><i id="bootbar"></i></span><span class="bpct" id="bootpct">0%</span>
+<span class="bhint" id="boothint">Только при первом входе. Дальше игра открывается быстро.</span><button class="bretry" id="bootretry" hidden onclick="location.reload()">Попробовать ещё раз</button></div></div>
+<script>try { if (localStorage.getItem("taxi-theme") === "dark") document.documentElement.classList.add("dark"); } catch (e) {}</script>
 <div id="app">
   <canvas id="map"></canvas>
   <div id="topbar">
@@ -773,9 +791,42 @@ html.dark .mhome{background:#383C47;color:#F2F3F5}html.dark .mhome small{color:#
 
 <script src="dialogues.js"></script>
 <script src="dialogues2.js"></script>
-<script src="mapdata.js"></script>
-<script src="osmmap.js"></script>
 <script>
+// Экран загрузки: карта (mapdata.js + osmmap.js, около 6 МБ) грузится с полоской, потом запускается игра.
+// Через fetch видно, сколько уже скачано; если fetch не работает (файл открыт с диска) - обычная загрузка без процентов
+(function () {
+  const FILES = [["mapdata.js", 2114105], ["osmmap.js", 3987473]], TOTAL = FILES.reduce((a, f) => a + f[1], 0);   // размеры файлов в байтах (если файл изменится, проценты просто упрутся в 99)
+  const bar = document.getElementById("bootbar"), pct = document.getElementById("bootpct");
+  let got = 0;
+  const show = () => { const p = Math.min(99, Math.floor(got / TOTAL * 100)); bar.style.width = p + "%"; pct.textContent = p + "%"; };
+  const run = code => { const s = document.createElement("script"); s.textContent = code; document.body.appendChild(s); };
+  function fail() {
+    document.getElementById("bootsub").textContent = "Не удалось загрузить карту";
+    document.getElementById("boothint").textContent = "Проверьте интернет и попробуйте ещё раз.";
+    document.getElementById("bootretry").hidden = false; pct.textContent = "";
+  }
+  function start() { pct.textContent = "100%"; bar.style.width = "100%"; document.getElementById("bootsub").textContent = "Готовим город"; setTimeout(() => run(document.getElementById("maincode").textContent), 30); }
+  function viaTags() {
+    let i = 0;
+    const next = () => { if (i >= FILES.length) return start(); const f = FILES[i++], s = document.createElement("script"); s.src = f[0]; s.onload = () => { got += f[1]; show(); next(); }; s.onerror = fail; document.body.appendChild(s); };
+    next();
+  }
+  async function viaFetch() {
+    const texts = await Promise.all(FILES.map(async ([url]) => {
+      const r = await fetch(url); if (!r.ok || !r.body) throw new Error("load");
+      const rd = r.body.getReader(), parts = []; let n = 0;
+      for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); n += value.length; got += value.length; show(); }
+      const all = new Uint8Array(n); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
+      return new TextDecoder().decode(all);
+    }));
+    for (const t of texts) run(t);
+    start();
+  }
+  if (location.protocol === "file:" || !window.fetch || !window.ReadableStream || !window.TextDecoder) viaTags();
+  else viaFetch().catch(() => { got = 0; show(); viaTags(); });
+})();
+</script>
+<script type="text/plain" id="maincode">
 // ====== Карта: дороги Уфы из mapdata.js (координаты в метрах) ======
 const D = MAPDATA, N = D.nodes, W = D.w, H = D.h, $ = id => document.getElementById(id);
 const appEl = $("app"), canvas = $("map"), ctx = canvas.getContext("2d"), panel = $("panel");
@@ -1204,13 +1255,14 @@ const shiftNet = () => ledger.fares + ledger.tips + (ledger.bonus || 0) - ledger
 const SND = (() => {
   const KEY = "taxi-sound";
   let pref = { on: true, vol: 0.7 }; try { Object.assign(pref, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
-  let ac = null, master = null, ringT = 0;
+  let ac = null, master = null, ringT = 0, idleT = 0;
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(pref)); } catch (e) {} };
   function ctx() {
     if (!pref.on || pref.vol <= 0) return null;
     try {
       if (!ac) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; ac = new A(); master = ac.createGain(); master.connect(ac.destination); }
       if (ac.state === "suspended") ac.resume().catch(() => {});
+      clearTimeout(idleT); idleT = setTimeout(() => { if (ac && !ringT && ac.state === "running") ac.suspend().catch(() => {}); }, 4000);   // тишина 4 с - звук на паузу, iPhone убирает игру из плеера
       master.gain.value = pref.vol; return ac;
     } catch (e) { return null; }
   }
@@ -1258,6 +1310,7 @@ const SND = (() => {
     set(o) { Object.assign(pref, o); save(); if (!pref.on) this.ringStop(); },
     unlock() {   // iPhone: звук разрешается только внутри касания, и нужно сразу сыграть хоть что-то (тишину)
       try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}   // играть и при беззвучном режиме
+      try { if ("mediaSession" in navigator && !this._ms) { this._ms = true; navigator.mediaSession.metadata = new MediaMetadata({ title: "Такси по Уфе", artist: "Игра", artwork: [{ src: "img/tg_cover.png", sizes: "640x360", type: "image/png" }] }); } } catch (e) {}   // в плеере iPhone - название игры, а не адрес сайта
       const a = ctx(); if (!a || this._ok) return;
       try { const b = a.createBuffer(1, 1, 22050), src = a.createBufferSource(); src.buffer = b; src.connect(a.destination); src.start(0); } catch (e) {}
       if (a.state === "running") this._ok = true;
@@ -1281,10 +1334,12 @@ const SND = (() => {
       this.ringStop(); const one = () => { [0, 0.16, 0.32].forEach(d => { tone(1047, d, 0.13, { vol: 0.16 }); tone(1319, d + 0.06, 0.1, { vol: 0.1 }); }); buzz([200, 120, 200]); };
       one(); ringT = setInterval(one, 1600);
     },
-    ringStop() { clearInterval(ringT); ringT = 0; }
+    ringStop() { clearInterval(ringT); ringT = 0; },
+    pause() { clearTimeout(idleT); try { if (ac && ac.state === "running") ac.suspend(); } catch (e) {} }
   };
 })();
 for (const ev of ["pointerdown", "touchend", "click"]) document.addEventListener(ev, () => SND.unlock(), { passive: true, capture: true });
+document.addEventListener("visibilitychange", () => { if (document.hidden) SND.pause(); });   // игру свернули - звук на паузу
 // Страница не масштабируется: iPhone не слушается user-scalable=no, поэтому щипок и двойное касание гасим вручную.
 // Карта приближается своими жестами (на холсте карты), а кнопки и панели - нет
 for (const ev of ["gesturestart", "gesturechange", "gestureend"]) document.addEventListener(ev, e => e.preventDefault(), { passive: false });
@@ -3290,7 +3345,9 @@ function makeContactOrder(ct) {
   const trip = findPath(ct.node, B.node), pick = findPath(carNode, ct.node); if (!trip || !pick || B.node === ct.node) return null;
   const st = sumPath(trip), sp = sumPath(pick), cls = myCar().t;
   ct.day = day;   // в эту смену он больше не позвонит
-  const price = Math.round((BASE_FARE + st.km * PER_KM) * TARIFFS[cls].mult * (vip ? 1.75 + Math.random() * 0.25 : 1.5 + Math.random() * 0.3) / 100) * 100;   // постоянный клиент платит круглую сумму в 1,5-1,8 раза выше рынка, VIP - в 1,75-2 раза
+  const mk = (BASE_FARE + st.km * PER_KM) * TARIFFS[cls].mult, k0 = vip ? 1.75 : 1.5, k1 = 2;   // постоянный клиент платит в 1,5-2 раза больше рынка, VIP - в 1,75-2
+  const lo = Math.ceil(mk * k0 / 100) * 100, hi = Math.floor(mk * k1 / 100) * 100, want = mk * (k0 + Math.random() * (k1 - k0));
+  const price = lo <= hi ? Math.min(hi, Math.max(lo, Math.round(want / 100) * 100)) : lo;   // круглая сумма, кратная 100 ₽
   return { id: nextOrderId++, passenger: { name: ct.name }, name: ct.name, fromPlace: { n: "Постоянный клиент", k: "home" }, fromAddr: ct.addr, toAddr: B.addr, rating: "5.00", cash: true, runner: false, late: 0,
     from: ct.node, to: B.node, place: B.place, tripKm: st.km, pickupKm: sp.km, pickupMin: Math.max(1, Math.round(sp.sec / 60)), price, tip: 0, mood: 1, ttl: 99, feeRate: 0, local: false,
     cls, surge: 1, surgeAdd: 0, offApp: true, noFee: true, stars: 0, contactId: ct.id };
@@ -3806,11 +3863,11 @@ const TUT_STEPS = [
 const TUT = { i: -1, hold: false, box: null, ride: false, talked: false, ffShow: false };
 // Учебный заказ. В первый раз - всегда один и тот же (одинаковый случайный ряд от стартовой точки), при повторе - рядом с машиной
 function seeded(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
-function tutOrder() {
+function tutOrder() {   // учебный заказ - короткий, по городу, не в аэропорт
   if (orders.length || current) return;
   const rnd = Math.random, wasOn = { ...clsOn }; let o = null;
   for (const c in clsOn) clsOn[c] = c === "econ";
-  try { for (let k = 1; k <= 30 && !o; k++) { if (TUT.fixed) Math.random = seeded(k * 7919); o = buildOrder(car.x, car.y, carNode, 300, 900); } } finally { Math.random = rnd; Object.assign(clsOn, wasOn); }
+  try { for (let k = 1; k <= 60 && !o; k++) { if (TUT.fixed) Math.random = seeded(k * 7919); o = buildOrder(car.x, car.y, carNode, 300, 900); if (o && (o.airport || o.tripKm > 6)) o = null; } } finally { Math.random = rnd; Object.assign(clsOn, wasOn); }
   if (!o) return;
   o.tut = true; o.runner = false; o.late = 0; o.child = false; if (TUT.fixed) { o.name = "Артур"; o.passenger = { name: "Артур" }; o.rating = "4.92"; o.cash = false; o.price = 540; o.surgeAdd = 60; }
   orders.push(o); SND.order(); renderPanel();
@@ -3865,6 +3922,7 @@ setInterval(tutCheck, 150);
 $("tutbtn").addEventListener("click", () => { menuEl.hidden = true; tutStart(); });
 for (const sv of document.querySelectorAll("svg[data-ic]")) sv.innerHTML = ICON[sv.dataset.ic];
 loadGame(); camX = car.x; camY = car.y; updateTop(); renderPanel(); resize(); requestAnimationFrame(frame);
+{ const bt = document.getElementById("boot"); if (bt) { bt.classList.add("gone"); setTimeout(() => bt.remove(), 450); } }
 if (needNick()) showNick(TUT_FRESH ? () => tutStart(true) : null); else if (TUT_FRESH) tutStart(true);
 flushShift();
 // при сворачивании и закрытии сохраняем, чтобы машина осталась на месте
