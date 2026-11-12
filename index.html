@@ -718,6 +718,7 @@ html.dark .mhome{background:#383C47;color:#F2F3F5}html.dark .mhome small{color:#
 html.dark #boot{background:#262930}html.dark #boot .btitle,html.dark #boot .bpct{color:#F2F3F5}html.dark #boot .bsub,html.dark #boot .bhint{color:#A7AEBB}html.dark #boot .bbar{background:#3E4350}
 @media (prefers-reduced-motion:reduce){#boot .bcar{animation:none}}
 #mapctl #recenter{position:static;top:auto;right:auto;width:48px;height:48px;border-radius:16px;box-shadow:var(--sh)}
+html.dark #recenter{color:#fff}
 </style></head>
 <body>
 <div id="boot"><div class="bwrap"><svg class="bcar" viewBox="0 0 64 32" aria-hidden="true"><path d="M8 22h48v-6c0-2-1.5-3.5-3.5-3.8L44 11l-6-6H22l-7 7-6 1C7.8 13.3 7 14.5 7 16z" fill="#FFD233" stroke="#1E1F23" stroke-width="2.4" stroke-linejoin="round"/><circle cx="19" cy="23" r="4.5" fill="#1E1F23"/><circle cx="45" cy="23" r="4.5" fill="#1E1F23"/><path d="M24 7.5h12l4.5 4.5H20z" fill="#fff" stroke="#1E1F23" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -1079,7 +1080,9 @@ function drawSurge(vx, vy) {   // рисуем шестиугольники сп
 const TRIP_WEIGHT = { airport: 5, station: 5, bus_station: 4, mall: 6, hospital: 3, university: 3, culture: 2, museum: 1.5, stadium: 2, sport: 1.5, park: 1.5,
   hotel: 2, food: 2, cafe: 1.5, shop: 1.5, school: 0.8, bank: 0.5, pharmacy: 0.5, fuel: 0.2 };
 const TRIP_PLACES = [], TRIP_CUM = [];
+const hidePlace = n => /Ямбург/.test(n || "");   // места, которые не показываем на карте и не возим туда
 for (const p of D.places.map(p => ({ n: p.n, k: p.k, x: p.x, y: p.y })).concat(typeof OSM !== "undefined" ? OSM.pois.map(p => ({ x: p[0], y: p[1], k: p[2], n: p[3] })) : [])) {
+  if (hidePlace(p.n)) continue;
   const w = TRIP_WEIGHT[p.k]; if (!w) continue;
   TRIP_PLACES.push(p); TRIP_CUM.push((TRIP_CUM.length ? TRIP_CUM[TRIP_CUM.length - 1] : 0) + w);
 }
@@ -2837,7 +2840,7 @@ const PLACE_STYLE = {
 const PLACE_RANK = { airport: 0, station: 0, bus_station: 0, mall: 1, hospital: 1, university: 1, museum: 1, stadium: 1, park: 2, culture: 2, hotel: 2,
   sport: 3, school: 4, shop: 4, fuel: 4, bank: 5, pharmacy: 5, cafe: 5, food: 5 };
 const POIS = D.places.map(p => ({ x: p.x, y: p.y, k: p.k, n: p.n, major: true }))
-  .concat(HAS_OSM ? OSM.pois.map(p => ({ x: p[0], y: p[1], k: p[2], n: p[3], major: false })) : [])
+  .concat(HAS_OSM ? OSM.pois.map(p => ({ x: p[0], y: p[1], k: p[2], n: p[3], major: false })) : []).filter(p => !hidePlace(p.n))
   .sort((a, b) => (b.major - a.major) || ((PLACE_RANK[a.k] ?? 6) - (PLACE_RANK[b.k] ?? 6)) || (a.n < b.n ? -1 : 1));
 function glyph(name, x, y) {   // белый значок размером около 10 px в центре кружка
   const c = ctx; c.save(); c.translate(x, y); c.fillStyle = c.strokeStyle = "#fff"; c.lineWidth = 1.4; c.lineCap = "round"; c.lineJoin = "round";
