@@ -796,7 +796,7 @@ html.dark #boot{background:#262930}html.dark #boot .btitle,html.dark #boot .bpct
 // Экран загрузки: карта (mapdata.js + osmmap.js, около 6 МБ) грузится с полоской, потом запускается игра.
 // Через fetch видно, сколько уже скачано; если fetch не работает (файл открыт с диска) - обычная загрузка без процентов
 (function () {
-  const FILES = [["mapdata.js", 2114105], ["osmmap.js", 3987473]], TOTAL = FILES.reduce((a, f) => a + f[1], 0);   // размеры файлов в байтах (если файл изменится, проценты просто упрутся в 99)
+  const FILES = [["mapdata.js", 2413650], ["osmmap.js", 3987473]], TOTAL = FILES.reduce((a, f) => a + f[1], 0);   // размеры файлов в байтах (если файл изменится, проценты просто упрутся в 99)
   const bar = document.getElementById("bootbar"), pct = document.getElementById("bootpct");
   let got = 0;
   const show = () => { const p = Math.min(99, Math.floor(got / TOTAL * 100)); bar.style.width = p + "%"; pct.textContent = p + "%"; };
