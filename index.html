@@ -731,6 +731,7 @@ html.dark #recenter{color:#fff}
 .mfull .mpriv{align-self:center;border:none;background:none;padding:6px 0;color:var(--m);font-family:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
 html.dark .prtext p{color:#A7AEBB}html.dark .prdel{background:#4A2A2D;color:#FF8A8F}
 #ask{z-index:45}   /* подтверждение - поверх любых окон */
+.prtext .prdate{color:var(--m);font-size:14px!important}
 </style></head>
 <body>
 <div id="boot"><div class="bwrap"><svg class="bcar" viewBox="0 0 64 32" aria-hidden="true"><path d="M8 22h48v-6c0-2-1.5-3.5-3.5-3.8L44 11l-6-6H22l-7 7-6 1C7.8 13.3 7 14.5 7 16z" fill="#FFD233" stroke="#1E1F23" stroke-width="2.4" stroke-linejoin="round"/><circle cx="19" cy="23" r="4.5" fill="#1E1F23"/><circle cx="45" cy="23" r="4.5" fill="#1E1F23"/><path d="M24 7.5h12l4.5 4.5H20z" fill="#fff" stroke="#1E1F23" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -777,7 +778,7 @@ html.dark .prtext p{color:#A7AEBB}html.dark .prdel{background:#4A2A2D;color:#FF8
       </div>
       <div class="mtest" id="mtest" hidden><b>Тестовый режим</b><div class="mtgrid"><button data-t="money">+100 000 ₽</button><button data-t="open">Открыть тарифы</button><button data-t="rides">+60 поездок</button><button data-t="next">Следующая смена</button><button data-t="pay">До платёжного дня</button><button data-t="km">+6 000 км</button><button data-t="call">Звонок клиента</button><button data-t="number">Просит номер</button><button data-t="rain">Дождь</button><button data-t="tire">Прокол</button><button data-t="crash">ДТП</button><button data-t="hail">Голосующий</button><button data-t="r475">Рейтинг 4.75</button><button data-t="r44">Рейтинг 4.4</button><button data-t="r39">Рейтинг 3.9</button><button data-t="r34">Рейтинг 3.4</button><button data-t="r5">Рейтинг 5.0</button><button data-t="mood">Настроение 20%</button><button data-t="fuel">Бак 3 л</button><button data-t="off">Выключить тест</button></div></div>
       <button id="tutbtn" class="mtut">Пройти обучение заново</button>
-      <button id="privbtn" class="mpriv">Конфиденциальность</button>
+      <button id="privbtn" class="mpriv">Политика конфиденциальности</button>
       <button id="reset">Сбросить прогресс</button>
     </div>
   </div>
@@ -794,13 +795,17 @@ html.dark .prtext p{color:#A7AEBB}html.dark .prdel{background:#4A2A2D;color:#FF8
 <div id="home" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Дом</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="homelist"></div></div></div>
 <div id="nick" hidden><div class="askback"></div><div class="askcard nkcard"><div class="nkt" id="nkt">Придумайте ник</div><p class="nkp" id="nkp"></p><input id="nkin" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Например, Ринат_02"><div class="nkmsg" id="nkmsg"></div><button class="nkgo" id="nkgo" disabled>Продолжить</button><button class="nkoff" id="nkoff" hidden>Играть без рейтинга</button></div></div>
 <div id="leaders" hidden><div class="askback" data-close="1"></div><div class="askcard lbcard"><div class="mhead"><b>Рейтинг игроков</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><p class="lbsub">Лучшая смена каждого водителя: выручка за вычетом комиссии. Аренда и топливо в списке не учитываются.</p><div id="lblist"></div><div class="lbfoot" id="lbfoot" hidden></div></div></div>
-<div id="privacy" hidden><div class="askback" data-close="1"></div><div class="askcard prcard"><div class="mhead"><b>Конфиденциальность</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
+<div id="privacy" hidden><div class="askback" data-close="1"></div><div class="askcard prcard"><div class="mhead"><b>Политика конфиденциальности</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
 <div class="prtext">
-<h4>Что мы храним</h4><p>Ник, который вы придумали сами, и игровые цифры: лучшую смену, число поездок, рейтинг водителя и ступень карьеры. Их видят другие игроки в рейтинге.</p>
-<p>Сохранение игры хранится на вашем устройстве, а в Telegram ещё и в облаке Telegram вашего аккаунта, чтобы прогресс не пропал при смене телефона.</p>
-<h4>Чего мы не храним</h4><p>Имя, телефон, почту, местоположение, имя и номер аккаунта Telegram. К нам они не попадают.</p>
-<h4>Где и зачем</h4><p>Рейтинг игроков хранится на сервере Cloudflare в Западной Европе и нужен только для таблицы лидеров. Как любой сайт, сервер видит технические данные запроса, например IP-адрес, в своих журналах.</p>
-<h4>Как удалить</h4><p>«Сбросить прогресс» в меню стирает сохранение. Кнопка ниже удаляет ваш ник и рекорды из рейтинга игроков.</p>
+<p class="prdate">Редакция от 12 ноября 2026 года</p>
+<h4>1. Общие положения</h4><p>Настоящая политика описывает, какие данные обрабатываются в игре «Такси по Уфе», с какой целью и как они могут быть удалены.</p>
+<h4>2. Обрабатываемые данные</h4><p>Ник, указанный игроком, и игровые показатели: результат лучшей смены, количество поездок, рейтинг водителя, ступень карьеры.</p>
+<p>Игра не собирает имя, номер телефона, адрес электронной почты, сведения о местоположении, а также данные аккаунта Telegram.</p>
+<h4>3. Цели обработки</h4><p>Ник и игровые показатели используются исключительно для ведения рейтинга игроков и отображаются другим участникам.</p>
+<h4>4. Хранение</h4><p>Сохранение игры хранится на устройстве игрока, а при запуске через Telegram также в облачном хранилище Telegram, привязанном к аккаунту игрока. Данные рейтинга хранятся на сервере хостинг&#8209;провайдера.</p>
+<p>При обращении к серверу автоматически обрабатываются технические сведения о запросе: IP-адрес и время запроса. Они не используются для установления личности игрока.</p>
+<h4>5. Передача третьим лицам</h4><p>Данные не передаются третьим лицам и не используются в рекламных целях.</p>
+<h4>6. Удаление данных</h4><p>Сохранение игры удаляется кнопкой «Сбросить прогресс» в меню. Ник и игровые показатели удаляются из рейтинга кнопкой ниже.</p>
 </div><button class="prdel" id="prdel">Удалить мои данные из рейтинга</button></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard scard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
