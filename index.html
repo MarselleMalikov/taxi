@@ -717,6 +717,7 @@ html.dark .mhome{background:#383C47;color:#F2F3F5}html.dark .mhome small{color:#
 #boot .bretry{margin-top:10px;height:48px;padding:0 24px;border:none;border-radius:28px;background:#FFD233;color:#1E1F23;font-family:inherit;font-size:16px;font-weight:700}
 html.dark #boot{background:#262930}html.dark #boot .btitle,html.dark #boot .bpct{color:#F2F3F5}html.dark #boot .bsub,html.dark #boot .bhint{color:#A7AEBB}html.dark #boot .bbar{background:#3E4350}
 @media (prefers-reduced-motion:reduce){#boot .bcar{animation:none}}
+#mapctl #recenter{position:static;top:auto;right:auto;width:48px;height:48px;border-radius:16px;box-shadow:var(--sh)}
 </style></head>
 <body>
 <div id="boot"><div class="bwrap"><svg class="bcar" viewBox="0 0 64 32" aria-hidden="true"><path d="M8 22h48v-6c0-2-1.5-3.5-3.5-3.8L44 11l-6-6H22l-7 7-6 1C7.8 13.3 7 14.5 7 16z" fill="#FFD233" stroke="#1E1F23" stroke-width="2.4" stroke-linejoin="round"/><circle cx="19" cy="23" r="4.5" fill="#1E1F23"/><circle cx="45" cy="23" r="4.5" fill="#1E1F23"/><path d="M24 7.5h12l4.5 4.5H20z" fill="#fff" stroke="#1E1F23" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -1648,7 +1649,7 @@ function sceneCtx(o) {
 }
 const sceneFits = (id, c) => (!c.askedStop || !SCENE_STOP.has(id)) && (!SCENE_WHEN[id] || SCENE_WHEN[id](c));
 // Сцены, где пассажир просит остановиться или заехать куда-то: за одну поездку - не больше одной такой
-const SCENE_STOP = new Set(Object.keys(SCENES).filter(id => Object.values(SCENES[id].nodes).some(n => n.choices.some(ch => ch.stop || /остановлюсь|останавливаюсь|разворачиваемся/i.test(ch.text) && !ch.end))));
+const SCENE_STOP = new Set(Object.keys(SCENES).filter(id => Object.values(SCENES[id].nodes).some(n => n.choices.some(ch => ch.stop || ch.wait || /остановлюсь|останавливаюсь|разворачиваемся/i.test(ch.text) && !ch.end))));
 function fresh(pool) {   // диалог, который ещё не встречался; когда все пройдены, круг начинается заново
   let left = pool.filter(id => !seen[id]);
   if (!left.length) {   // новый круг; редкая сцена (rare) попадает в него только с вероятностью rare
@@ -1679,7 +1680,8 @@ function chooseAnswer(i) {
   if (ch.pay !== undefined && (current.cash || ch.offApp || ch.pay > 1)) current.payMult = ch.pay;
   if (ch.stars !== undefined) current.stars = ch.stars;    // оценка пассажира (0 = не оценит)
   if (ch.stop) { const q = [].concat(ch.stop); current.stopNow = q.shift(); current.stopQueue = q; }   // stop: заезд или несколько заездов по очереди
-  if (ch.fuelAt) current.fuelAt = ch.fuelAt;   // пассажир зальёт бензин на заправке
+  if (ch.fuelAt) current.fuelAt = ch.fuelAt;
+  if (ch.wait) current.waitNow = [ch.wait, ch.waitWhy || "остановка"];   // wait: остановиться прямо здесь на столько секунд   // пассажир зальёт бензин на заправке
   if (ch.gift) current.gift = (current.gift || 0) + ch.gift;   // gift: точная доплата или благодарность сверх цены
   if (ch.giftP && Math.random() < ch.giftP[0]) current.gift = (current.gift || 0) + Math.round((ch.giftP[1] + Math.random() * (ch.giftP[2] - ch.giftP[1])) / 50) * 50;   // доплатит с шансом
   if (ch.giftR) current.gift = (current.gift || 0) + Math.round((ch.giftR[0] + Math.random() * (ch.giftR[1] - ch.giftR[0])) / 50) * 50;   // случайная благодарность
@@ -1707,7 +1709,7 @@ function chooseAnswer(i) {
   if (next && dialogue.scene.nodes[next] && dialogue.scene.nodes[next].atEnd && !current.arrived && !arrivedYet()) {   // продолжение - уже у подъезда
     current.epilogue = { scene: dialogue.scene, nodeId: next }; next = null;
   }
-  if (!next || !dialogue.scene.nodes[next]) { dialogue = null; if (current.arrived) return finishRide(); if (current.stopNow) return startDetour(current.stopNow); }
+  if (!next || !dialogue.scene.nodes[next]) { dialogue = null; if (current.arrived) return finishRide(); if (current.stopNow) return startDetour(current.stopNow); if (current.waitNow) return startWait(); }
   else dialogue.nodeId = next;
   renderPanel();
 }
@@ -1728,6 +1730,12 @@ function arrive() {
   }
 }
 function startDetour(label) {   // пассажир попросил заехать: едем в ближайшее место, ждём, потом дальше
+  if (label === "обратно") {   // вернуться за забытой вещью - туда, где пассажира забрали
+    const sn = current.from, there = findPath(carNode, sn), back = findPath(sn, current.to); current.stopNow = false;
+    if (!there || !back || sn === carNode) return renderPanel();
+    current.extraFare = (current.extraFare || 0) + Math.round(Math.max(0, sumPath(there).km + sumPath(back).km - remainingLen() / 1000) * PER_KM / 10) * 10;
+    current.stopAddr = current.fromAddr || addrOf(sn); current.stopNode = sn; current.stopLabel = "вернулись за вещами"; current.stopKind = label; return startLeg(sn, "toStop");
+  }
   const spot = stopSpot(label), a = Math.random() * 6.3;   // ищем настоящую аптеку, магазин, банк рядом; если нет - просто остановка неподалёку
   const sn = spot ? nodeNear(spot.x, spot.y) : nodeNear(car.x + Math.cos(a) * 900, car.y + Math.sin(a) * 900), there = findPath(carNode, sn), back = findPath(sn, current.to);
   current.stopNow = false;
@@ -1735,6 +1743,12 @@ function startDetour(label) {   // пассажир попросил заеха�
   const extra = Math.max(0, sumPath(there).km + sumPath(back).km - remainingLen() / 1000);   // крюк оплачивается по километражу
   current.extraFare = (current.extraFare || 0) + Math.round(extra * PER_KM / 10) * 10;
   current.stopAddr = spot ? addrNear(spot.x, spot.y) : addrNear(N[sn][0], N[sn][1]); current.stopNode = sn; current.stopLabel = spot ? spot.n : typeof label === "string" ? label : "остановка"; current.stopKind = label; startLeg(sn, "toStop");
+}
+function startWait() {   // остановка на месте: пристегнуть ребёнка, подышать
+  const [sec, why] = current.waitNow; current.waitNow = null;
+  if (state !== "toDropoff") return renderPanel();
+  current.stopNode = carNode; current.stopAddr = addrNear(car.x, car.y) || addrOf(carNode); current.stopLabel = why;
+  state = "stopped"; stopT = 0; stopDur = sec; route = []; renderPanel();
 }
 function remainingLen() {
   let r = route.length ? Math.hypot(N[route[0].n][0] - car.x, N[route[0].n][1] - car.y) : 0;
@@ -2389,8 +2403,8 @@ function updateInner(dt) {
       const story = current.passenger.scenes && (storyStep[current.name] || 0) < current.passenger.scenes.length;
       current.talkAt = []; current.talkIdx = 0; current.sickAt = false && current.child && Math.random() < 0.12 ?   // укачивание теперь сцена ch_sick
          0.25 + Math.random() * 0.45 : null;   // ребёнка может укачать
-      if (current.tut) { current.talkAt = [0.15]; current.sickAt = null; } else if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
-      if (!current.tut && g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
+      if (current.tut) { current.talkAt = [0.15]; current.sickAt = null; } else if (current.contactId) { /* постоянный клиент по телефону - едет молча */ } else if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
+      if (!current.tut && !current.contactId && g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
       renderPanel();
     }
   } else if (state === "stopped") {   // остановка по просьбе пассажира
