@@ -694,6 +694,8 @@ html.dark .dback{background:#383C47;color:#F2F3F5}
 html.dark #fuelpill:not(.low):not(.gbo) #fuelfill{background:#D7DBE2}
 .lrow.lleft span{color:var(--ink);font-weight:600}.lrow.lleft b{font-variant-numeric:tabular-nums}html.dark .lrow.lleft span{color:#F2F3F5}
 #evt #evttext.just{text-align:justify!important;text-align-last:left;hyphens:none}
+.lbsub{flex:none;margin:6px 2px 8px;font-size:14.5px;line-height:1.3;color:var(--m);text-align:justify;hyphens:none}
+html.dark .endbtn:not(.main){background:#383C47;color:#F2F3F5}
 </style></head>
 <body>
 <div id="app">
@@ -750,7 +752,7 @@ html.dark #fuelpill:not(.low):not(.gbo) #fuelfill{background:#D7DBE2}
 <div id="call" hidden><div class="askback"></div><div class="smart"><div class="sscreen dark"><div class="sbar"><b class="sclock"></b><span class="island"></span><span class="sicons"><svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg viewBox="0 0 27 12" width="27" height="12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2"/><rect x="25" y="4" width="2" height="4" rx="1" opacity=".4"/></svg></span></div><div class="callbox" id="callbox"></div><span class="shome"></span></div></div></div>
 <div id="home" hidden><div class="askback" data-close="1"></div><div class="askcard gcard mwin"><div class="mhead"><b>Дом</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="homelist"></div></div></div>
 <div id="nick" hidden><div class="askback"></div><div class="askcard nkcard"><div class="nkt" id="nkt">Придумайте ник</div><p class="nkp" id="nkp"></p><input id="nkin" maxlength="20" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Например, Ринат_02"><div class="nkmsg" id="nkmsg"></div><button class="nkgo" id="nkgo" disabled>Продолжить</button><button class="nkoff" id="nkoff" hidden>Играть без рейтинга</button></div></div>
-<div id="leaders" hidden><div class="askback" data-close="1"></div><div class="askcard lbcard"><div class="mhead"><b>Рейтинг игроков</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="seg lbseg" id="lbseg"><button data-p="week" class="on">Неделя</button><button data-p="all">Всё время</button></div><div id="lblist"></div><div class="lbfoot" id="lbfoot" hidden></div></div></div>
+<div id="leaders" hidden><div class="askback" data-close="1"></div><div class="askcard lbcard"><div class="mhead"><b>Рейтинг игроков</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><p class="lbsub">Лучшая смена каждого водителя: выручка минус комиссия, без топлива и аренды.</p><div id="lblist"></div><div class="lbfoot" id="lbfoot" hidden></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard scard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Игры</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button><button class="pact" data-game="trade"><span class="pico green"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 8h-1.5v6H6M12 6v12M12 9h1.5v5H12M18 3v14M18 6h-1.5v7H18"/></svg></span><span class="ptxt"><span class="ptop"><b>Биржа TaxiCoin</b></span><span class="ptags"><i>лонг и шорт</i><i>плечо до ×25</i></span></span></button></div></div>
@@ -994,7 +996,7 @@ function orderSurge(x, y, tripKm) {
   return Math.round(m * 10) / 10;
 }
 const SURGE_COLORS = [[1.1, "rgba(94,180,240,.26)"], [1.3, "rgba(47,111,237,.26)"], [1.6, "rgba(103,64,226,.30)"]];   // голубой, синий, сине-фиолетовый
-const SURGE_COLORS_DARK = [[1.1, "rgba(94,180,240,.30)"], [1.3, "rgba(80,140,255,.42)"], [1.6, "rgba(160,120,255,.50)"]];   // на тёмной карте - ярче
+const SURGE_COLORS_DARK = [[1.1, "rgba(110,125,255,.30)"], [1.3, "rgba(120,100,255,.42)"], [1.6, "rgba(150,90,255,.52)"]];   // на тёмной карте - ярче, сине-фиолетовые
 const surgeColor = m => { let c = null; for (const [t, col] of MAPC.dark ? SURGE_COLORS_DARK : SURGE_COLORS) if (m >= t) c = col; return c; };
 function drawSurge(vx, vy) {   // рисуем шестиугольники спроса в метрах карты, под дорогами
   const r0 = Math.floor((vy - HEX_R) / HEX_H), r1 = Math.ceil((vy + viewH + HEX_R) / HEX_H);
@@ -1043,7 +1045,7 @@ function stopSpot(label) {
   const kinds = STOP_KIND[label] || ["shop", "pharmacy", "cafe", "food"];
   let best = null, bd = 1e18;
   for (const p of TRIP_PLACES) {
-    if (!kinds.includes(p.k)) continue;
+    if (!kinds.includes(p.k) || p.k === "fuel" && isGasStation(p)) continue;
     const d = Math.hypot(p.x - car.x, p.y - car.y);
     if (d > 400 && d < 2500 && d < bd * (0.6 + Math.random() * 0.8)) { bd = d; best = p; }   // ближайшее, но не всегда одно и то же
   }
@@ -1567,9 +1569,18 @@ function pickScene(o, later) {
   const r = +o.rating, conflict = r < 4.5 ? Math.random() < 0.85 : r < 4.6 && Math.random() < 0.5;   // у пассажира с рейтингом ниже 4.6 часто бывают проблемы
   if (conflict) { o.conflict = true; moodAdd(-8); return fresh(CONFLICTS); }
   const x = Math.random();
-  if (x >= 0.65) moodAdd(4);   // забавный пассажир поднимает настроение
-  return fresh(x < 0.22 ? STOPS : x < 0.65 ? DILEMMAS : FUN);
+  const pool = x < 0.22 && !o.airport ? STOPS : x < 0.65 ? DILEMMAS : FUN;   // из аэропорта и в аэропорт не заезжают по делам
+  const fit = pool.filter(id => !SCENE_FIT[id] || SCENE_FIT[id](o));
+  return fit.length ? fresh(fit) : null;
 }
+// Разговор зависит от поездки: что неуместно в аэропорту или по дороге не домой - не выпадает
+const toHome = o => !o.place || o.place.k === "home";
+const SCENE_FIT = {
+  d_drive: o => !o.airport && toHome(o),     // «прокатиться по двору» - только у дома
+  f_jam: o => !o.airport && toHome(o),       // сумки с вареньем до подъезда
+  d_birth: o => !o.airport, f_goose: o => !o.airport, f_speech: o => !o.airport, f_follow: o => !o.airport,
+  f_exam: o => !o.airport, d_fuel: o => !o.airport, c4: o => !o.airport
+};
 function fresh(pool) {   // диалог, который ещё не встречался; когда все пройдены, круг начинается заново
   let left = pool.filter(id => !seen[id]);
   if (!left.length) {   // новый круг; редкая сцена (rare) попадает в него только с вероятностью rare
@@ -2305,7 +2316,7 @@ function updateInner(dt) {
       // Разговор бывает не всегда: чаще пассажир едет молча. Постоянные пассажиры со своей историей говорят всегда
       const r = +current.rating, g = route.reduce((a, s) => a + s.t, 0) / 60;   // длительность поездки в игровых минутах
       const story = current.passenger.scenes && (storyStep[current.name] || 0) < current.passenger.scenes.length;
-      current.talkAt = []; current.talkIdx = 0; current.sickAt = current.child && Math.random() < 0.35 ? 0.25 + Math.random() * 0.45 : null;   // ребёнка может укачать
+      current.talkAt = []; current.talkIdx = 0; current.sickAt = current.child && Math.random() < 0.12 ? 0.25 + Math.random() * 0.45 : null;   // ребёнка может укачать
       if (current.tut) { current.talkAt = [0.15]; current.sickAt = null; } else if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
       if (!current.tut && g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
       renderPanel();
@@ -2462,9 +2473,10 @@ function updateFuel() {
   $("fuelL").textContent = (Math.floor(fuel * 10) / 10).toLocaleString("ru-RU", { maximumFractionDigits: 1 }) + " л"; $("fuelfill").style.width = (fuel / TANK * 100) + "%";
   $("fuelpill").classList.toggle("low", fuel < LOW_FUEL * 2); $("fuelpill").classList.toggle("gbo", typeof gboOn === "function" && gboOn());
 }
+const isGasStation = p => /газ|gaz|gas|агзс|агнкс|пропан|метан|lpg|cng/i.test(p.n || "");   // АГЗС, Газпром, MGas и т.п. - бензина там нет
 function nearestFuel() {   // ближайшая заправка по прямой
   let best = null, bd = 1e18;
-  for (const p of TRIP_PLACES.length ? POIS : []) if (p.k === "fuel") { const d = Math.hypot(p.x - car.x, p.y - car.y); if (d < bd) { bd = d; best = p; } }
+  for (const p of TRIP_PLACES.length ? POIS : []) if (p.k === "fuel" && !isGasStation(p)) { const d = Math.hypot(p.x - car.x, p.y - car.y); if (d < bd) { bd = d; best = p; } }
   return best;
 }
 let cafeStop = null;
@@ -3215,7 +3227,7 @@ function onShiftEnd() { M.careerShifts++; const o = checkUnlock(true); queueShif
 const CALL_WAIT = 15 * 60, MAX_CONTACTS = 12;   // 15 игровых минут, чтобы поехать за клиентом
 const isVip = c => (c.rides || 0) >= 5;
 function scheduleCalls() {   // VIP-клиенты (5+ поездок) звонят чаще
-  M.calls = []; M.pending = null;
+  M.calls = []; M.pending = null; M.calledDay = day; M.called = [];
   const list = M.contacts.filter(c => c.like > -2); if (!list.length || Math.random() > Math.min(0.9, 0.6 + 0.1 * list.filter(isVip).length)) return;
   const n = Math.random() < 0.35 ? 2 : 1;
   for (let i = 0; i < n; i++) M.calls.push(Math.round((1 + Math.random() * 9) * 3600));
@@ -3227,7 +3239,7 @@ function askNumber(c) {   // после хорошей поездки пасса
   setTimeout(() => {
     if (evt || dialogue) return;
     showEvt({ icon: "phone", color: "green", title: "Пассажир просит номер", text: ct.name + ": вы хорошо возите. Можно ваш номер? Буду звонить, когда нужно ехать.", choices: [
-      { t: "Дать номер", sub: "будет звонить и платить больше", go: () => { M.contacts.push(ct); toast("Новый контакт", ct.name + ", " + ct.addr, "goal"); } },
+      { t: "Дать номер", sub: "будет звонить и платить больше", go: () => { ct.day = day; M.contacts.push(ct); toast("Новый контакт", ct.name + ", " + ct.addr, "goal"); } },
       { t: "Не давать", sub: "", go: () => {} }] });
   }, 700);
 }
@@ -3244,9 +3256,10 @@ function tickPhone() {
   }
   if (!M.calls.length || clock < M.calls[0] || evt || dialogue || endingShown || !online || M.pending) return;
   M.calls.shift();
-  const list = M.contacts.filter(c => c.like > -2); if (!list.length) return;
+  if (M.calledDay !== day) { M.calledDay = day; M.called = []; }
+  const list = M.contacts.filter(c => c.like > -2 && c.day !== day && !M.called.includes(c.id)); if (!list.length) return;   // один клиент - не больше одного звонка за смену, и не в ту смену, когда его возили
   const pool = list.flatMap(c => isVip(c) ? [c, c, c] : [c]), ct = pool[Math.floor(Math.random() * pool.length)], busy = state !== "idle";
-  showCall(ct, busy);
+  M.called.push(ct.id); showCall(ct, busy);
 }
 function dropContact(ct) { if (ct.like <= -2) { M.contacts = M.contacts.filter(x => x !== ct); toast(ct.name + " удалил ваш номер", "Больше не будет звонить", "alert"); } }
 function phoneChipHtml() {
@@ -3259,7 +3272,8 @@ function makeContactOrder(ct) {
   const vip = isVip(ct), B = randSpot(N[ct.node][0], N[ct.node][1], vip ? 6000 : TRIP_MIN, TRIP_MAX, 0.4);   // VIP ездит дальше
   const trip = findPath(ct.node, B.node), pick = findPath(carNode, ct.node); if (!trip || !pick || B.node === ct.node) return null;
   const st = sumPath(trip), sp = sumPath(pick), cls = myCar().t;
-  const price = Math.round((BASE_FARE + st.km * PER_KM) * TARIFFS[cls].mult * (vip ? 1.35 : 1.2) / 10) * 10;   // постоянный клиент +20%, VIP +35%
+  ct.day = day;   // в эту смену он больше не позвонит
+  const price = Math.round((BASE_FARE + st.km * PER_KM) * TARIFFS[cls].mult * (vip ? 1.75 + Math.random() * 0.25 : 1.5 + Math.random() * 0.3) / 100) * 100;   // постоянный клиент платит круглую сумму в 1,5-1,8 раза выше рынка, VIP - в 1,75-2 раза
   return { id: nextOrderId++, passenger: { name: ct.name }, name: ct.name, fromPlace: { n: "Постоянный клиент", k: "home" }, fromAddr: ct.addr, toAddr: B.addr, rating: "5.00", cash: true, runner: false, late: 0,
     from: ct.node, to: B.node, place: B.place, tripKm: st.km, pickupKm: sp.km, pickupMin: Math.max(1, Math.round(sp.sec / 60)), price, tip: 0, mood: 1, ttl: 99, feeRate: 0, local: false,
     cls, surge: 1, surgeAdd: 0, offApp: true, noFee: true, stars: 0, contactId: ct.id };
@@ -3679,7 +3693,7 @@ function queueShift() {
   // номер смены для сервера - сквозной, при сбросе прогресса не обнуляется (иначе сервер посчитает новые смены уже учтёнными)
   let seq = 0; try { seq = +localStorage.getItem("taxi-shift-seq") || 0; } catch (e) {}
   const n = Math.max(seq + 1, M.careerShifts); try { localStorage.setItem("taxi-shift-seq", n); } catch (e) {}
-  const s = { n, money: Math.round(shiftNet()), rides: shiftRides, rating: +getRating().toFixed(2), stage: stageNow().id };
+  const L = ledger, s = { n, gross: Math.round(L.fares + L.tips + (L.bonus || 0) - L.fee), money: Math.round(shiftNet()), rides: shiftRides, rating: +getRating().toFixed(2), stage: stageNow().id };
   try { localStorage.setItem(PEND_KEY, JSON.stringify(s)); } catch (e) {}
   flushShift();
 }
@@ -3693,38 +3707,35 @@ async function flushShift() {
   try { localStorage.removeItem(PEND_KEY); } catch (e) {}
 }
 // ---------- таблица лидеров ----------
-let lbPeriod = "week";
 const rub = v => (v < 0 ? "−" : "") + Math.abs(v).toLocaleString("ru-RU") + " ₽";
 const ridesWord = n => n % 10 === 1 && n % 100 !== 11 ? "поездка" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? "поездки" : "поездок";
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 function lbRow(p, place, isMe) {
-  const money = lbPeriod === "week" ? p.weekEarned : p.earned, rides = lbPeriod === "week" ? p.weekRides : p.rides;
   return '<div class="lbrow' + (isMe ? " me" : "") + '"><span class="lbn' + (place <= 3 ? " p" + place : place > 99 ? " far" : "") + '">' + place + '</span><span class="lbw"><b>' + esc(p.name) + (isMe ? " (вы)" : "") +
-    "</b><small>" + (STAGE_RU[p.stage] || "Новичок") + " · " + rides + " " + ridesWord(rides) + '</small></span><span class="lbm">' + rub(money) + "</span></div>";
+    "</b><small>" + (STAGE_RU[p.stage] || "Новичок") + " · " + p.bestRides + " " + ridesWord(p.bestRides) + '</small></span><span class="lbm">' + rub(p.best) + "</span></div>";
 }
 async function showLeaders() {
   menuEl.hidden = true; $("leaders").hidden = false; renderLeaders();
 }
 async function renderLeaders() {
-  const box = $("lblist"); [...$("lbseg").children].forEach(b => b.classList.toggle("on", b.dataset.p === lbPeriod));
+  const box = $("lblist");
   box.innerHTML = '<div class="lbnote">Загружаем…</div>';
-  const period = lbPeriod, r = await api("/top?period=" + period + "&limit=50"); if (period !== lbPeriod) return;
+  const r = await api("/top?limit=50");
   if (r.status === 0 || !r.list) { box.innerHTML = '<div class="lbnote">Нет связи с сервером. Попробуйте позже.</div>'; return; }
   let html = "", meIn = false;
   r.list.forEach((p, i) => { const me = PLAYER && p.id === PLAYER.id; if (me) meIn = true; html += lbRow(p, i + 1, me); });
-  const myPlace = r.place ? r.place[period] : null;
+  const myPlace = r.place ? r.place.best : null;
   if (PLAYER && r.me && !meIn && myPlace) html += '<div class="lbgap">···</div>' + lbRow(r.me, myPlace, true);
-  if (!r.list.length) html = '<div class="lbnote">' + (period === "week" ? "На этой неделе ещё никто не закончил смену." : "Пока никого нет.") + " Закончите смену, и вы попадёте в рейтинг.</div>";
+  if (!r.list.length) html = '<div class="lbnote">Пока никого нет. Закончите смену, и вы попадёте в рейтинг.</div>';
   if (!PLAYER) html += '<div class="lbnote">Придумайте ник, чтобы попасть в рейтинг.<button data-lb="nick">Придумать ник</button></div>';
-  else if (!myPlace && r.list.length) html += '<div class="lbnote">Вас здесь пока нет: в рейтинг попадает каждая законченная смена.</div>';
+  else if (!myPlace && r.list.length) html += '<div class="lbnote">Вас здесь пока нет: в рейтинг попадает лучшая законченная смена.</div>';
   box.innerHTML = html;
   const foot = $("lbfoot"); foot.hidden = !PLAYER;
   if (PLAYER) foot.innerHTML = '<span>Ваш ник: <b>' + esc(PLAYER.name) + '</b></span><button data-lb="rename">Сменить ник</button>';
-  $("leadsub").textContent = PLAYER ? PLAYER.name + (myPlace ? " · " + myPlace + "-е место " + (period === "week" ? "за неделю" : "за всё время") : "") : "Соревнуйтесь с другими водителями";
+  $("leadsub").textContent = PLAYER ? PLAYER.name + (myPlace ? " · " + myPlace + "-е место" : "") : "Соревнуйтесь с другими водителями";
 }
 $("leaders").addEventListener("click", e => {
   if (e.target.closest("[data-close]")) { $("leaders").hidden = true; return; }
-  const b = e.target.closest("[data-p]"); if (b) { lbPeriod = b.dataset.p; renderLeaders(); return; }
   if (e.target.closest('[data-lb="nick"]')) { nickSkip = false; showNick(renderLeaders); }
   if (e.target.closest('[data-lb="rename"]')) { api("/me").then(r => showNick(renderLeaders, true, r.renameLeft)); }
 });
@@ -3732,7 +3743,7 @@ $("leadbtn").addEventListener("click", showLeaders);
 statusPill.addEventListener("click", async () => {   // в меню - мой ник и место за неделю
   if (!PLAYER) { $("leadsub").textContent = "Соревнуйтесь с другими водителями"; return; }
   $("leadsub").textContent = PLAYER.name;
-  const r = await api("/me"); if (r.place && r.place.week) $("leadsub").textContent = PLAYER.name + " · " + r.place.week + "-е место за неделю";
+  const r = await api("/me"); if (r.place && r.place.best) $("leadsub").textContent = PLAYER.name + " · " + r.place.best + "-е место";
 });
 // ====== Обучение: первая смена с подсказками. Карточка над подсвеченной кнопкой, игра на паузе, пока карточка открыта ======
 const TUT_KEY = "taxi-tut", TUT_FRESH = !localStorage.getItem(SAVE_KEY);

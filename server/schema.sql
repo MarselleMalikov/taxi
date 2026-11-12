@@ -20,8 +20,12 @@ CREATE TABLE IF NOT EXISTS players (
   strikes     INTEGER NOT NULL DEFAULT 0,    -- сколько раз присылал невозможные цифры
   last_at     INTEGER NOT NULL DEFAULT 0,    -- когда пришла последняя засчитанная смена (0 - ни одной)
   name_changed INTEGER NOT NULL DEFAULT 0,   -- начало суток, в которые меняли ник (0 - не меняли)
-  name_count  INTEGER NOT NULL DEFAULT 0     -- сколько раз меняли ник в эти сутки
+  name_count  INTEGER NOT NULL DEFAULT 0,    -- сколько раз меняли ник в эти сутки
+  best_gross  INTEGER NOT NULL DEFAULT 0,    -- рекорд: лучшая смена, выручка минус комиссия (без топлива и аренды)
+  best_rides  INTEGER NOT NULL DEFAULT 0,    -- поездок в этой смене
+  best_at     INTEGER NOT NULL DEFAULT 0     -- когда поставлен рекорд
 );
 CREATE UNIQUE INDEX IF NOT EXISTS players_ext ON players(platform, ext_id) WHERE ext_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS players_earned ON players(earned DESC);
 CREATE INDEX IF NOT EXISTS players_week ON players(week, week_earned DESC);
+CREATE INDEX IF NOT EXISTS players_best ON players(best_gross DESC);

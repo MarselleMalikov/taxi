@@ -6,7 +6,7 @@
 //   POST /api/rename              { name } -> { name, left } - сменить ник (3 раза в сутки)
 //   GET  /api/me                  мои цифры и места (нужен ключ)
 //   POST /api/shift               итог смены (нужен ключ)
-//   GET  /api/top?period=all|week&limit=50   таблица лидеров (+ моё место, если передан ключ)
+//   GET  /api/top?limit=50        таблица лидеров по лучшей смене (+ моё место, если передан ключ)
 //
 // Ключ игрока передаётся заголовком Authorization: Bearer <token>.
 
@@ -14,6 +14,7 @@ const LIMITS = {
   shiftMoney: 60000,     // больше этого «чистыми» за одну смену заработать нельзя
   shiftMoneyMin: -30000, // и потерять больше - тоже
   shiftRides: 70,        // поездок за смену
+  shiftGross: 80000,     // выручка минус комиссия за смену (рекорд)
   minGapSec: 90,         // смены не могут приходить чаще, чем раз в полторы минуты реального времени
   maxStrikes: 5          // после стольких невозможных смен игрок пропадает из рейтинга
 };
@@ -141,21 +142,24 @@ async function auth(env, req, optional) {
 }
 
 // ---------- итог смены ----------
-// { n: номер смены (сколько смен отработано всего), money: чистыми за смену, rides: поездок за смену,
-//   rating, stage, totalRides: поездок всего }
+// { n: сквозной номер смены, money: чистыми за смену, gross: выручка минус комиссия (без топлива и аренды) - по ней рекорд,
+//   rides: поездок за смену, rating, stage }
 async function shift(env, p, b) {
-  const n = int(b.n), money = int(b.money), rides = int(b.rides), rating = Number(b.rating), stage = STAGES.includes(b.stage) ? b.stage : p.stage, now = Date.now();
+  const gross = b.gross === undefined ? null : int(b.gross), n = int(b.n), money = int(b.money), rides = int(b.rides), rating = Number(b.rating), stage = STAGES.includes(b.stage) ? b.stage : p.stage, now = Date.now();
   if (n === null || money === null || rides === null || !(rating >= 1 && rating <= 5)) return fail(400, "bad_shift", "Неверные данные смены");
   if (n <= p.shifts) return json({ ok: true, skipped: true, shifts: p.shifts });   // эта смена уже учтена (повторная отправка)
   const problems = [];
   if (money > LIMITS.shiftMoney || money < LIMITS.shiftMoneyMin) problems.push("money");
   if (rides < 0 || rides > LIMITS.shiftRides) problems.push("rides");
+  if (gross !== null && (gross < 0 || gross > LIMITS.shiftGross)) problems.push("gross");
   if (p.last_at && now - p.last_at < LIMITS.minGapSec * 1000) problems.push("fast");
-  if (problems.includes("money") || problems.includes("rides") || problems.includes("fast")) {
+  if (problems.length) {
     await env.DB.prepare("UPDATE players SET strikes = strikes + 1, shifts = ? WHERE id = ?").bind(n, p.id).run();
     return json({ ok: false, error: "rejected", text: "Смена не засчитана", why: problems }, 422);
   }
   const wk = weekKey(now), sameWeek = p.week === wk;
+  if (gross !== null && gross > (p.best_gross || 0))   // новый рекорд смены
+    await env.DB.prepare("UPDATE players SET best_gross = ?, best_rides = ?, best_at = ? WHERE id = ?").bind(gross, rides, now, p.id).run();
   await env.DB.prepare(`UPDATE players SET shifts = ?, earned = earned + ?, rides = rides + ?, best_shift = MAX(best_shift, ?), rating = ?, stage = ?,
       week = ?, week_earned = ?, week_rides = ?, updated = ?, last_at = ? WHERE id = ?`)
     .bind(n, money, rides, money, Math.round(rating * 100) / 100, stage, wk, (sameWeek ? p.week_earned : 0) + money, (sameWeek ? p.week_rides : 0) + rides, now, now, p.id).run();
@@ -163,30 +167,24 @@ async function shift(env, p, b) {
 }
 
 // ---------- рейтинг ----------
-const PUBLIC = "id, name, platform, earned, rides, best_shift AS best, rating, stage, week_earned AS weekEarned, week_rides AS weekRides";
+// Рейтинг игроков - по лучшей смене: выручка минус комиссия, без топлива и аренды
+const PUBLIC = "id, name, platform, best_gross AS best, best_rides AS bestRides, rating, stage";
 async function me(env, p) {
   return json({ me: pub(p), place: await places(env, p), renameLeft: !p.name_changed || Date.now() - p.name_changed >= RENAME_GAP ? RENAME_MAX : RENAME_MAX - (p.name_count || 0) });
 }
 async function top(env, url, p) {
-  const week = url.searchParams.get("period") === "week", limit = Math.min(100, Math.max(1, int(url.searchParams.get("limit")) || 50));
-  const wk = weekKey(Date.now());
-  const q = week
-    ? env.DB.prepare(`SELECT ${PUBLIC} FROM players WHERE week = ? AND strikes < ? AND last_at > 0 ORDER BY week_earned DESC, updated ASC LIMIT ?`).bind(wk, LIMITS.maxStrikes, limit)
-    : env.DB.prepare(`SELECT ${PUBLIC} FROM players WHERE strikes < ? AND last_at > 0 ORDER BY earned DESC, updated ASC LIMIT ?`).bind(LIMITS.maxStrikes, limit);
-  const { results } = await q.all();
-  const out = { period: week ? "week" : "all", week: wk, list: results };
+  const limit = Math.min(100, Math.max(1, int(url.searchParams.get("limit")) || 50));
+  const { results } = await env.DB.prepare(`SELECT ${PUBLIC} FROM players WHERE strikes < ? AND best_gross > 0 ORDER BY best_gross DESC, best_at ASC LIMIT ?`).bind(LIMITS.maxStrikes, limit).all();
+  const out = { list: results };
   if (p) { out.me = pub(p); out.place = await places(env, p); }
   return json(out);
 }
-async function places(env, p) {   // место игрока: сколько игроков впереди + 1
-  if (!p.last_at || p.strikes >= LIMITS.maxStrikes) return { all: null, week: null };
-  const wk = weekKey(Date.now());
-  const all = await env.DB.prepare("SELECT COUNT(*) AS c FROM players WHERE strikes < ? AND last_at > 0 AND earned > ?").bind(LIMITS.maxStrikes, p.earned).first();
-  const week = p.week === wk ? await env.DB.prepare("SELECT COUNT(*) AS c FROM players WHERE strikes < ? AND week = ? AND week_earned > ?").bind(LIMITS.maxStrikes, wk, p.week_earned).first() : null;
-  return { all: all.c + 1, week: week ? week.c + 1 : null };
+async function places(env, p) {   // место игрока по лучшей смене: сколько игроков впереди + 1
+  if (!p.best_gross || p.strikes >= LIMITS.maxStrikes) return { best: null };
+  const r = await env.DB.prepare("SELECT COUNT(*) AS c FROM players WHERE strikes < ? AND best_gross > ?").bind(LIMITS.maxStrikes, p.best_gross).first();
+  return { best: r.c + 1 };
 }
-const pub = p => ({ id: p.id, name: p.name, platform: p.platform, earned: p.earned, rides: p.rides, best: p.best_shift, rating: p.rating, stage: p.stage,
-  weekEarned: p.week === weekKey(Date.now()) ? p.week_earned : 0, weekRides: p.week === weekKey(Date.now()) ? p.week_rides : 0 });
+const pub = p => ({ id: p.id, name: p.name, platform: p.platform, best: p.best_gross || 0, bestRides: p.best_rides || 0, rating: p.rating, stage: p.stage });
 
 // ---------- Telegram: проверка подписи initData ----------
 async function tgUser(env, initData) {
