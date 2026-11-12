@@ -3459,7 +3459,7 @@ $("bank").addEventListener("click", e => {
 });
 function showSkills() {
   const p = pointsInfo();
-  let h = '<div class="ponline"><div class="potop"><span>' + (p.free > 0 ? "Свободных очков: " + p.free : "До следующего навыка") + "</span><b>" + (p.need ? p.have + " из " + p.need : "всё изучено") + '</b></div><span class="pbar"><i style="width:' + (p.need ? Math.min(100, p.have / p.need * 100) : 100) + '%"></i></span></div>';
+  let h = '<div class="ponline"><div class="potop"><span>' + (p.free > 0 ? "Свободных очков: " + p.free : "Поездок до следующего навыка") + "</span><b>" + (p.need ? p.have + " из " + p.need : "всё изучено") + '</b></div><span class="pbar"><i style="width:' + (p.need ? Math.min(100, p.have / p.need * 100) : 100) + '%"></i></span></div>';
   for (const s of SKILLS) {
     const l = M.skills[s.id] || 0;
     const now = l ? s.u(s.v[l - 1]) : null, nxt = l < 3 ? s.u(s.v[l]) : null;
