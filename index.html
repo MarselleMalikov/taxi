@@ -1567,20 +1567,23 @@ function pickScene(o, later) {
     if (aff < 0) return Math.random() < 0.3 ? COLD[0] : null;   // обиженный пассажир чаще просто молчит
   }
   const r = +o.rating, conflict = r < 4.5 ? Math.random() < 0.85 : r < 4.6 && Math.random() < 0.5;   // у пассажира с рейтингом ниже 4.6 часто бывают проблемы
-  if (conflict) { o.conflict = true; moodAdd(-8); return fresh(CONFLICTS); }
-  const x = Math.random();
-  const pool = x < 0.22 && !o.airport ? STOPS : x < 0.65 ? DILEMMAS : FUN;   // из аэропорта и в аэропорт не заезжают по делам
-  const fit = pool.filter(id => !SCENE_FIT[id] || SCENE_FIT[id](o));
+  if (conflict) { o.conflict = true; moodAdd(-8); return fresh(CONFLICTS.filter(id => sceneFits(id, sceneCtx(o)))); }
+  const c = sceneCtx(o), x = Math.random();
+  let pool = x < 0.22 && !o.airport ? STOPS : x < 0.62 ? DILEMMAS : FUN;   // из аэропорта и в аэропорт не заезжают по делам
+  if (o.child && Math.random() < 0.5) pool = CHILD_S;                      // с ребёнком - чаще детские случаи
+  else if (o.airport && Math.random() < 0.5) pool = AIRPORT_S;             // в аэропорт и из него - чаще «аэропортовые»
+  let fit = pool.filter(id => sceneFits(id, c));
+  if (!fit.length) fit = DILEMMAS.concat(FUN).filter(id => sceneFits(id, c));
   return fit.length ? fresh(fit) : null;
 }
-// Разговор зависит от поездки: что неуместно в аэропорту или по дороге не домой - не выпадает
-const toHome = o => !o.place || o.place.k === "home";
-const SCENE_FIT = {
-  d_drive: o => !o.airport && toHome(o),     // «прокатиться по двору» - только у дома
-  f_jam: o => !o.airport && toHome(o),       // сумки с вареньем до подъезда
-  d_birth: o => !o.airport, f_goose: o => !o.airport, f_speech: o => !o.airport, f_follow: o => !o.airport,
-  f_exam: o => !o.airport, d_fuel: o => !o.airport, c4: o => !o.airport
-};
+// Обстановка поездки для выбора сцены: аэропорт, дом, время суток, дождь, ребёнок (правила - SCENE_WHEN в dialogues2.js)
+const gameHour = () => Math.floor((Math.floor(clock / 60) + DAY_START) / 60) % 24;
+function sceneCtx(o) {
+  const h = gameHour(), dest = o.place ? o.place.k : null, from = o.fromPlace ? o.fromPlace.k : null;
+  return { airport: !!o.airport, toAirport: dest === "airport", fromAirport: from === "airport", home: !o.place || dest === "home", dest, from,
+    hour: h, night: h >= 23 || h < 5, rain: rainLevel() > 0.3, child: !!o.child, cash: !!o.cash };
+}
+const sceneFits = (id, c) => !SCENE_WHEN[id] || SCENE_WHEN[id](c);
 function fresh(pool) {   // диалог, который ещё не встречался; когда все пройдены, круг начинается заново
   let left = pool.filter(id => !seen[id]);
   if (!left.length) {   // новый круг; редкая сцена (rare) попадает в него только с вероятностью rare
@@ -1612,6 +1615,7 @@ function chooseAnswer(i) {
   if (ch.stop) { const q = [].concat(ch.stop); current.stopNow = q.shift(); current.stopQueue = q; }   // stop: заезд или несколько заездов по очереди
   if (ch.fuelAt) current.fuelAt = ch.fuelAt;   // пассажир зальёт бензин на заправке
   if (ch.gift) current.gift = (current.gift || 0) + ch.gift;   // gift: точная доплата или благодарность сверх цены
+  if (ch.giftP && Math.random() < ch.giftP[0]) current.gift = (current.gift || 0) + Math.round((ch.giftP[1] + Math.random() * (ch.giftP[2] - ch.giftP[1])) / 50) * 50;   // доплатит с шансом
   if (ch.giftR) current.gift = (current.gift || 0) + Math.round((ch.giftR[0] + Math.random() * (ch.giftR[1] - ch.giftR[0])) / 50) * 50;   // случайная благодарность
   if (ch.rateHit) { const w = getRating(); rates.push(ch.rateHit); if (rates.length > 150) rates.shift(); updateTop(); toast("Жалоба на водителя", "В рейтинг ушла оценка " + ch.rateHit, "alert"); checkRating(w); }
   if (ch.prio) { if (owns("cam")) floaters.push({ text: "запись регистратора помогла", x: car.x, y: car.y, age: 0, color: "#1f8a3a", dy: -30 }); else { prioAdd(ch.prio); toast("Жалоба в сервис", "Приоритет " + ch.prio, "alert"); } }
@@ -1631,6 +1635,7 @@ function chooseAnswer(i) {
   if (ch.offApp) { current.offApp = current.noFee = current.cash = true; current.stars = 0; }   // мимо приложения: без комиссии и без оценки
   if (ch.fuel) { fuel = Math.min(TANK, fuel + ch.fuel); updateFuel(); }
   let next = ch.next;
+  if (ch.pick) { let r = Math.random(); for (const [w, id] of ch.pick) { next = id; if ((r -= w) < 0) break; } }   // pick: один из нескольких исходов
   if (ch.roll) { const p0 = ch.fast ? 1 - (1 - ch.roll[0]) * (1 - SK("ace")) : ch.roll[0]; next = Math.random() < p0 ? ch.roll[1] : ch.roll[2]; }   // «Ас дорог» снижает шанс штрафа за быструю езду   // roll: [шанс, если повезло, если нет]
   if (ch.end) { dialogue = null; return endRide(ch.end, /высадили/.test(ch.end)); }                    // end: высадить пассажира
   if (next && dialogue.scene.nodes[next] && dialogue.scene.nodes[next].atEnd && !current.arrived && !arrivedYet()) {   // продолжение - уже у подъезда
