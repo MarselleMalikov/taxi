@@ -732,6 +732,28 @@ html.dark #recenter{color:#fff}
 html.dark .prtext p{color:#A7AEBB}html.dark .prdel{background:#4A2A2D;color:#FF8A8F}
 #ask{z-index:45}   /* подтверждение - поверх любых окон */
 .prtext .prdate{color:var(--m);font-size:14px!important}
+/* «Мои смены» */
+#myshifts{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}#myshifts[hidden]{display:none}
+.shcard{max-width:420px;border-radius:28px;padding:16px 16px 18px;max-height:calc(100vh - 32px);overflow-y:auto}
+.shtop{display:flex;flex-direction:column;align-items:center;gap:2px;margin:10px 0 4px;text-align:center}
+.shtop span{font-size:15px;color:var(--m)}.shtop b{font-size:34px!important;font-weight:800!important;line-height:1.15;font-variant-numeric:tabular-nums}.shtop b.neg{color:#C9363B}
+.shtop small{font-size:14px;color:var(--m)}
+.shbars{display:flex;align-items:flex-end;gap:8px;overflow-x:auto;padding:14px 2px 6px;scrollbar-width:none}.shbars::-webkit-scrollbar{display:none}
+.shb{flex:none;width:46px;display:flex;flex-direction:column;align-items:center;gap:4px;border:none;background:none;padding:0;font-family:inherit;cursor:pointer;color:var(--ink)}
+.shb i{display:block;width:100%;border-radius:10px;background:#E2E5EA}.shb.on i{background:#FFD233}
+.shv{font-size:12.5px;font-weight:600;color:var(--m);font-variant-numeric:tabular-nums;white-space:nowrap}.shv.neg{color:#C9363B}.shb.on .shv{color:var(--ink);font-weight:800}
+.shb b{font-size:15px!important;font-weight:700!important;line-height:1}.shb small{font-size:13px;color:var(--m);line-height:1}
+.shb.on b{color:var(--ink)}
+.shchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.shc{padding:8px 12px;border:1.5px solid var(--line);border-radius:999px;font-size:14.5px;color:var(--m)}.shc b{font-size:14.5px!important;font-weight:800!important;color:var(--ink)}.shc b.m{color:var(--ink)}
+.shempty{margin:12px 2px 4px!important;font-size:15px;color:var(--m);text-align:justify;hyphens:none}
+.mlead .mti.mtiB{background:#E4EDFF;color:#2F6FED}
+html.dark .shb i{background:#3E4350}html.dark .shb.on i{background:#FFD233}html.dark .shc{border-color:#3E4350;color:#A7AEBB}html.dark .shc b,html.dark .shb b,html.dark .shb.on .shv{color:#F2F3F5}
+html.dark .mlead .mti.mtiB{background:#2B3A5C;color:#8FB0FF}html.dark .shtop b.neg{color:#FF8A8F}
+/* карточка ступени - компактнее */
+.mprof{padding:12px 14px!important}.mpbig{margin-top:4px!important}.mpbig b{font-size:26px!important}
+.mnext{margin-top:8px!important;padding-top:8px!important;gap:4px!important}.mnext>span{margin-bottom:0!important}
+.mreqs{display:flex;flex-wrap:wrap;gap:4px 10px}.mreqs .mreq{font-size:14px;gap:6px}.mreqs .mreq i{width:11px;height:11px}
 </style></head>
 <body>
 <div id="boot"><div class="bwrap"><svg class="bcar" viewBox="0 0 64 32" aria-hidden="true"><path d="M8 22h48v-6c0-2-1.5-3.5-3.5-3.8L44 11l-6-6H22l-7 7-6 1C7.8 13.3 7 14.5 7 16z" fill="#FFD233" stroke="#1E1F23" stroke-width="2.4" stroke-linejoin="round"/><circle cx="19" cy="23" r="4.5" fill="#1E1F23"/><circle cx="45" cy="23" r="4.5" fill="#1E1F23"/><path d="M24 7.5h12l4.5 4.5H20z" fill="#fff" stroke="#1E1F23" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -763,6 +785,7 @@ html.dark .prtext p{color:#A7AEBB}html.dark .prdel{background:#4A2A2D;color:#FF8
       <div class="mtop"><b>Меню</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div>
       <div class="mprof"><div class="mprow"><span class="mstage" id="mstage">Новичок</span><span class="mdate" id="mdate"></span></div><div class="mpbig"><b id="mmoney">0 ₽</b><span>на счету</span></div><div id="mnextbox"></div></div>
       <button class="mlead" id="leadbtn"><span class="mti"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-ic="cup"></svg></span><span class="mltx"><b>Рейтинг игроков</b><small id="leadsub">Соревнуйтесь с другими водителями</small></span><svg class="mlarr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+      <button class="mlead" id="shiftsbtn"><span class="mti mtiB"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M7 16v-5M12 16V7M17 16v-8"/></svg></span><span class="mltx"><b>Мои смены</b><small id="shiftssub">Заработок за последние 30 смен</small></span><svg class="mlarr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
       <div class="mfin" id="mfin" hidden></div>
       <span id="mstatus" hidden></span><span id="statustext" hidden></span><button id="offbtn" hidden></button>
       <div class="mtheme"><b>Тема</b><div class="seg" id="themeseg"><button data-th="light">Светлая</button><button data-th="dark">Тёмная</button></div></div>
@@ -807,6 +830,7 @@ html.dark .prtext p{color:#A7AEBB}html.dark .prdel{background:#4A2A2D;color:#FF8
 <h4>5. Передача третьим лицам</h4><p>Данные не передаются третьим лицам и не используются в рекламных целях.</p>
 <h4>6. Удаление данных</h4><p>Сохранение игры удаляется кнопкой «Сбросить прогресс» в меню. Ник и игровые показатели удаляются из рейтинга кнопкой ниже.</p>
 </div><button class="prdel" id="prdel">Удалить мои данные из рейтинга</button></div></div>
+<div id="myshifts" hidden><div class="askback" data-close="1"></div><div class="askcard shcard"><div class="mhead"><b>Мои смены</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shbody"></div></div></div>
 <div id="shop" hidden><div class="askback" data-close="1"></div><div class="askcard gcard scard"><div class="mhead"><b>Магазин</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div id="shoplist"></div></div></div>
 <div id="casino" hidden><div class="askback" data-close="1"></div><div class="askcard gcard ccard"><div class="chead"><svg class="crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z" fill="#FFD233" stroke="#E3B000" stroke-width="1.2" stroke-linejoin="round"/></svg><b>Казино</b><span class="cbal" id="cbal"></span><button class="x" data-close="1" aria-label="Закрыть">×</button></div><div class="rwheel"><div class="rglow"></div><img id="rimg" src="img/roulette.webp" alt=""><svg id="rsvg" viewBox="0 0 200 200"></svg></div><p class="cres" id="cres"></p><div class="gtar"><b>Ставка</b></div><div class="cstep"><button data-step="-1" aria-label="Меньше">−</button><b id="cbet"></b><button data-step="1" aria-label="Больше">+</button></div><div class="chips" id="chips"></div><div class="bets"><button class="bet red" data-bet="red"><b>Красное</b><small>×2</small></button><button class="bet black" data-bet="black"><b>Чёрное</b><small>×2</small></button><button class="bet" data-bet="even"><b>Чёт</b><small>×2</small></button><button class="bet" data-bet="odd"><b>Нечёт</b><small>×2</small></button><button class="bet zero" data-bet="zero"><i class="z0">0</i><b>Зеро</b><small>×36</small></button></div><button class="cspin" id="cspin"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg><span id="cspinlbl">Крутить рулетку</span></button></div></div>
 <div id="games" hidden><div class="askback" data-close="1"></div><div class="askcard gcard pcard"><div class="mhead"><b>Игры</b><button class="x" data-close="1" aria-label="Закрыть">×</button></div><button class="pact" data-game="roulette"><span class="pico gthumb"><img src="img/roulette.webp" alt=""></span><span class="ptxt"><span class="ptop"><b>Рулетка</b></span><span class="ptags"><i>цвет</i><i>чёт и нечёт</i><i>зеро ×36</i></span></span></button><button class="pact" data-game="kef"><span class="pico purple"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/></svg></span><span class="ptxt"><span class="ptop"><b>Угадай где кэф?</b></span><span class="ptags"><i>12 зон</i><i>до ×66</i></span></span></button><button class="pact" data-game="trade"><span class="pico green"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4v16M6 8h-1.5v6H6M12 6v12M12 9h1.5v5H12M18 3v14M18 6h-1.5v7H18"/></svg></span><span class="ptxt"><span class="ptop"><b>Биржа TaxiCoin</b></span><span class="ptags"><i>лонг и шорт</i><i>плечо до ×25</i></span></span></button></div></div>
@@ -3414,7 +3438,10 @@ function askTO() {
 }
 const toLeftTxt = c => { c = c || curOwn(); return !c ? "" : c.km >= c.toKm ? "ТО просрочено" : "до ТО " + Math.round(c.toKm - c.km).toLocaleString("ru-RU") + " км"; };
 const fmtR = v => Math.round(v).toLocaleString("ru-RU") + " ₽";
-function onShiftEnd() { M.careerShifts++; const o = checkUnlock(true); queueShift(); return o; }
+function recordShift() {   // «Мои смены»: итог смены в историю (последние 30)
+  const L = ledger; M.history = (M.history || []).concat([{ d: day, net: Math.round(shiftNet()), fares: L.fares, tips: L.tips, bonus: L.bonus || 0, fee: L.fee, rent: L.rent, fuel: L.fuel, other: L.fines, rides: shiftRides, t: Math.round(onlineT), km: Math.round(L.km) }]).slice(-30);
+}
+function onShiftEnd() { recordShift(); M.careerShifts++; const o = checkUnlock(true); queueShift(); return o; }
 
 // ---------- Телефон: постоянные пассажиры ----------
 const CALL_WAIT = 15 * 60, MAX_CONTACTS = 12;   // 15 игровых минут, чтобы поехать за клиентом
@@ -3694,9 +3721,9 @@ function renderMenu() {   // профиль: ступень, дата, фина�
   if (nx) {
     const ok = (a, b) => '<i class="' + (a >= b ? "ok" : "") + '"></i>';
     h = '<div class="mnext"><span>До ступени «' + nx.name + '» (' + TARIFFS[nx.cls].name + ")</span>" +
-      '<div class="mreq">' + ok(M.careerShifts, nx.shifts) + "Смен " + Math.min(M.careerShifts, nx.shifts) + " из " + nx.shifts + "</div>" +
-      '<div class="mreq">' + ok(ridesDone, nx.rides) + "Поездок " + Math.min(ridesDone, nx.rides) + " из " + nx.rides + "</div>" +
-      (nx.rating ? '<div class="mreq">' + ok(getRating(), nx.rating) + "Рейтинг " + getRating().toFixed(2) + " из " + nx.rating.toFixed(2) + "</div>" : "") + "</div>";
+      '<div class="mreqs"><span class="mreq">' + ok(M.careerShifts, nx.shifts) + "Смен " + Math.min(M.careerShifts, nx.shifts) + "/" + nx.shifts + "</span>" +
+      '<span class="mreq">' + ok(ridesDone, nx.rides) + "Поездок " + Math.min(ridesDone, nx.rides) + "/" + nx.rides + "</span>" +
+      (nx.rating ? '<span class="mreq">' + ok(getRating(), nx.rating) + "★ " + getRating().toFixed(2) + "/" + nx.rating.toFixed(2) + "</span>" : "") + "</div></div>";
   } else h = '<div class="mnext"><span>Все тарифы открыты</span></div>';
   $("mnextbox").innerHTML = h;
   const fin = [];
@@ -3816,7 +3843,7 @@ window.TG = null;
   if (window.Telegram && Telegram.WebApp) init(); else { sc.onload = init; document.head.appendChild(sc); }   // обычно SDK уже загрузил экран загрузки
 })();
 // Кнопка «Назад» в шапке Telegram закрывает верхнее окно; во время заказа закрытие игры просит подтверждение
-const TG_LAYERS = ["privacy", "leaders", "kef", "trade", "games", "casino", "salon", "bank", "skills", "phone", "home", "shop", "garage", "ledger", "modes", "pause", "menu"];
+const TG_LAYERS = ["myshifts", "privacy", "leaders", "kef", "trade", "games", "casino", "salon", "bank", "skills", "phone", "home", "shop", "garage", "ledger", "modes", "pause", "menu"];
 function tgTop() { return TG_LAYERS.map(id => $(id)).find(el => el && !el.hidden) || null; }
 function tgBack() {
   const el = tgTop(); if (!el) return;
@@ -3957,6 +3984,37 @@ statusPill.addEventListener("click", async () => {   // в меню - мой н�
   if (!PLAYER) { $("leadsub").textContent = "Соревнуйтесь с другими водителями"; return; }
   $("leadsub").textContent = PLAYER.name;
   const r = await api("/me"); if (r.place && r.place.best) $("leadsub").textContent = PLAYER.name + " · " + r.place.best + "-е место";
+});
+// ====== «Мои смены»: заработок за последние 30 смен, столбиками; ниже - из чего сложилась выбранная смена ======
+let shSel = -1;
+const shMoney = v => (v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString("ru-RU") + " ₽";
+function shEntries() {
+  const list = (M.history || []).slice(-30).map(h => Object.assign({ cur: false }, h));
+  const L = ledger, live = online || shiftRides > 0 || L.rent > 0;
+  if (live && !endingShown) list.push({ cur: true, d: day, net: Math.round(shiftNet()), fares: L.fares, tips: L.tips, bonus: L.bonus || 0, fee: L.fee, rent: L.rent, fuel: L.fuel, other: L.fines, rides: shiftRides, t: Math.round(onlineT), km: Math.round(L.km) });
+  return list;
+}
+function renderShifts() {
+  const E = shEntries(), box = $("shbody");
+  if (!E.length) { box.innerHTML = '<p class="shempty">Пока нет ни одной смены. Итоги каждой смены будут появляться здесь.</p>'; return; }
+  if (shSel < 0 || shSel >= E.length) shSel = E.length - 1;
+  const s = E[shSel], max = Math.max(1, ...E.map(e => e.net)), MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+  const bars = E.map((e, i) => {
+    const dt = dateOf(e.d), h = Math.max(4, Math.round(Math.max(0, e.net) / max * 120));
+    return '<button class="shb' + (i === shSel ? " on" : "") + '" data-sh="' + i + '"><span class="shv' + (e.net < 0 ? " neg" : "") + '">' + (e.net < 0 ? "−" : "") + Math.abs(e.net).toLocaleString("ru-RU") + '</span><i style="height:' + h + 'px"></i><b>' + (e.cur ? "сейчас" : dt.getDate()) + "</b><small>" + (e.cur ? "&nbsp;" : MON[dt.getMonth()]) + "</small></button>";
+  }).join("");
+  const chip = (t, v, minus) => v ? '<span class="shc">' + t + ' · <b class="' + (minus ? "m" : "") + '">' + (minus ? "−" : "") + Math.abs(Math.round(v)).toLocaleString("ru-RU") + " ₽</b></span>" : "";
+  const word = s.rides % 10 === 1 && s.rides % 100 !== 11 ? "поездка" : s.rides % 10 >= 2 && s.rides % 10 <= 4 && (s.rides % 100 < 10 || s.rides % 100 >= 20) ? "поездки" : "поездок";
+  box.innerHTML = '<div class="shtop"><span>' + (s.cur ? "Текущая смена" : "Смена " + s.d) + " · " + dateTxt(s.d) + '</span><b class="' + (s.net < 0 ? "neg" : "") + '">' + shMoney(s.net) + "</b><small>чистыми · " + s.rides + " " + word + " · " + fmtHM(s.t) + " на линии</small></div>" +
+    '<div class="shbars" id="shbars">' + bars + "</div>" +
+    '<div class="shchips">' + chip("Заказы", s.fares) + chip("Чаевые", s.tips) + chip("Бонусы за цели", s.bonus) + chip("Комиссия", s.fee, true) + chip("Аренда", s.rent, true) + chip("Топливо", s.fuel, true) + chip("Прочие затраты", s.other, true) + "</div>";
+}
+function showShifts() { menuEl.hidden = true; shSel = -1; $("myshifts").hidden = false; renderShifts(); const b = $("shbars"); if (b) b.scrollLeft = b.scrollWidth; }
+$("shiftsbtn").addEventListener("click", showShifts);
+$("myshifts").addEventListener("click", e => {
+  if (e.target.closest("[data-close]")) { $("myshifts").hidden = true; return; }
+  const b = e.target.closest("[data-sh]"); if (!b) return;
+  const sl = $("shbars").scrollLeft; shSel = +b.dataset.sh; renderShifts(); $("shbars").scrollLeft = sl;
 });
 // ====== Обучение: первая смена с подсказками. Карточка над подсвеченной кнопкой, игра на паузе, пока карточка открыта ======
 const TUT_KEY = "taxi-tut", TUT_FRESH = !localStorage.getItem(SAVE_KEY);
