@@ -1,0 +1,139 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#EEEBFF;font-family:Inter,sans-serif;color:#16181D}
+#stage{position:absolute;inset:0;overflow:hidden}
+.abs{position:absolute;inset:0}
+#bgmap{position:absolute;left:50%;top:50%;width:3414px;height:1920px;margin:-960px 0 0 -1707px;background:url(../../promo/ufa_bg.png) center/cover}
+#hue{background:#8E7BF2;mix-blend-mode:color;opacity:.75}
+#tint{background:linear-gradient(180deg,rgba(240,236,255,.80) 0%,rgba(236,231,255,.45) 35%,rgba(226,218,255,.50) 100%)}
+#night{background:radial-gradient(120% 80% at 50% 40%,#2B2759 0%,#17152B 70%);opacity:0}
+#glow{position:absolute;left:50%;top:1080px;width:1500px;height:1500px;margin:-750px 0 0 -750px;filter:blur(90px);opacity:.62}
+#glow i{position:absolute;border-radius:50%}
+#glow i:nth-child(1){left:120px;top:160px;width:720px;height:720px;background:#7B5CFF}
+#glow i:nth-child(2){left:660px;top:420px;width:680px;height:680px;background:#FF4FA3}
+#glow i:nth-child(3){left:330px;top:760px;width:640px;height:640px;background:#FFB03A}
+#hook{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:50% 37%}
+#hookshade{background:linear-gradient(180deg,rgba(34,24,84,.74) 0%,rgba(34,24,84,.40) 45%,rgba(34,24,84,.64) 100%)}
+#hooktxt{position:absolute;left:70px;right:70px;top:300px}
+#hooktxt div{font-weight:900;font-size:142px;line-height:1.03;letter-spacing:-5px;color:#fff;text-shadow:0 8px 40px rgba(20,10,60,.55);transform-origin:0 60%;white-space:nowrap}
+#hooktxt div.y{display:inline-block;background:#FFD233;color:#16181D;text-shadow:none;padding:8px 34px 16px;border-radius:36px;margin-top:30px;margin-left:-8px;font-variant-numeric:tabular-nums}
+.osm{position:absolute;left:40px;bottom:36px;font-size:22px;font-weight:500;color:rgba(255,255,255,.8)}
+#bar{position:absolute;left:40px;right:40px;top:150px;display:flex;gap:8px}
+#bar b{flex:1;height:8px;border-radius:8px;background:rgba(75,63,160,.22);overflow:hidden;display:block}
+#bar b i{display:block;height:100%;width:0;background:#4B3FA0;border-radius:8px}
+#bar.w b{background:rgba(255,255,255,.28)}#bar.w b i{background:#fff}
+#phone{position:absolute;left:221px;top:406px;width:638px;height:1348px;border-radius:92px;background:#1E1F23;padding:14px;box-shadow:0 50px 100px rgba(60,40,140,.38),0 8px 24px rgba(0,0,0,.22);transform-origin:50% 50%;will-change:transform}
+#screen{position:relative;width:610px;height:1320px;border-radius:78px;overflow:hidden;background:#f0f1f4}
+#shot{position:absolute;left:0;top:0;width:610px;height:1320px;display:block}
+#tap{position:absolute;width:0;height:0}
+#tap i{position:absolute;left:-60px;top:-60px;width:120px;height:120px;border-radius:50%}
+#tapdot{background:rgba(22,24,29,.30);border:5px solid rgba(255,255,255,.95);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+#tapring{border:6px solid rgba(255,255,255,.9);box-shadow:0 0 0 3px rgba(22,24,29,.18)}
+#caps{position:absolute;left:0;right:0;top:206px;text-align:center}
+.cap{position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+.cap span{display:block;font-weight:800;font-size:88px;line-height:1;letter-spacing:-3px;padding:18px 38px 24px;border-radius:36px;background:#fff;color:#16181D;box-shadow:0 18px 44px rgba(60,40,140,.28);white-space:nowrap;transform-origin:50% 50%}
+.cap span.y{background:#FFD233}
+.cap.dk span{background:#1E1F23;color:#fff;box-shadow:0 18px 44px rgba(0,0,0,.45)}
+.cap.dk span.y{background:#FFD233;color:#16181D}
+.cap span.s{font-size:40px;font-weight:700;letter-spacing:-1px;padding:12px 28px 15px;border-radius:999px;background:#4B3FA0;color:#fff;margin-top:6px}
+#big{position:absolute;left:0;right:0;top:600px;text-align:center;font-weight:900;font-size:230px;letter-spacing:-9px;color:#1FAF55;-webkit-text-stroke:14px #fff;paint-order:stroke fill;text-shadow:0 22px 50px rgba(20,90,45,.35);transform-origin:50% 50%;white-space:nowrap}
+#end{position:absolute;inset:0}
+#end h1{position:absolute;left:0;right:0;top:238px;text-align:center;font-weight:900;font-size:150px;letter-spacing:-6px;line-height:1}
+#end .sub{position:absolute;left:0;right:0;top:420px;text-align:center;font-size:46px;font-weight:700;color:#4B3FA0;letter-spacing:-1px;line-height:1.18}
+#end .cta{position:absolute;left:150px;right:150px;top:1436px;height:138px;border-radius:999px;background:#FFD233;display:flex;align-items:center;justify-content:center;gap:22px;font-size:60px;font-weight:800;letter-spacing:-2px;box-shadow:0 22px 50px rgba(120,90,0,.30),0 4px 0 #E3B000}
+#end .cta svg{width:62px;height:62px}
+#end .bot{position:absolute;left:0;right:0;top:1606px;text-align:center;font-size:44px;font-weight:700;color:#16181D;letter-spacing:-.5px}
+#end .osm{color:rgba(75,63,160,.75);left:0;right:0;text-align:center;bottom:150px;font-size:24px}
+.car{position:absolute;width:500px;filter:drop-shadow(0 22px 26px rgba(60,40,140,.30))}
+#flash{background:#fff;opacity:0}
+</style></head><body><div id="stage">
+<div id="bgmap"></div><div id="hue" class="abs"></div><div id="tint" class="abs"></div><div id="night" class="abs"></div>
+<div id="glow"><i></i><i></i><i></i></div>
+<div id="hookwrap" class="abs"><img id="hook"><div id="hookshade" class="abs"></div><div class="osm">© участники OpenStreetMap</div>
+<div id="hooktxt"><div>Сколько</div><div>заработаешь</div><div>за смену?</div><div class="y" id="cnt">+0 ₽</div></div></div>
+<div id="end"><h1>Такси по Уфе</h1><div class="sub">Симулятор таксиста<br>на настоящей карте города</div>
+<img class="car" id="car1" src="../../cars/dark/camry.webp"><img class="car" id="car2" src="../../cars/dark/rio.webp">
+<div class="cta"><svg viewBox="0 0 24 24"><path d="M21.6 3.3 2.9 10.5c-1.2.5-1.2 1.2-.2 1.5l4.8 1.5 1.8 5.6c.2.6.4.8.8.8s.6-.2.9-.4l2.6-2.5 4.9 3.6c.9.5 1.5.2 1.8-.8L23.4 4.7c.3-1.3-.5-1.9-1.8-1.4zM8.600 13.1l9.600-6.100c.5-.3.9-.1.5.2l-7.800 7-.3 3.500z" fill="#16181D"/></svg>Играть в Telegram</div>
+<div class="bot">@taxiufasimulation_bot</div><div class="osm">Карта: © участники OpenStreetMap</div></div>
+<div id="phone"><div id="screen"><img id="shot"><div id="tap"><i id="tapring"></i><i id="tapdot"></i></div></div></div>
+<div id="caps"></div><div id="big">+420 ₽</div>
+<div id="bar"></div>
+<div id="flash" class="abs"></div>
+</div>
+<script>
+const D='';
+const $=id=>document.getElementById(id), S0=610/390, END=840, BT=12;
+const cl=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)), lerp=(a,b,t)=>a+(b-a)*t;
+const eio=t=>{t=cl(t);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}, eo=t=>1-Math.pow(1-cl(t),3);
+const back=t=>{t=cl(t);const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2)};
+const pad=n=>String(n).padStart(5,'0');
+// сцены: [начало, конец, клип, первый кадр клипа]
+const SC=[[60,102,'A',16],[102,168,'A',80],[168,228,'B',0],[228,312,'C1',2],[312,360,'C2',21],[360,432,'G',6],[432,504,'T',2],[504,564,'S',4],[564,636,'D',14],
+ [636,660,'E1',24],[660,674,'E2',6],[674,684,'E2',64],[684,708,'E3',56],[708,732,'E4',0],[732,841,'B',0]];
+const LAST={A:161,B:109,C1:106,C2:101,G:81,T:73,S:70,D:116,E1:71,E2:150,E3:81,E4:54};
+const CUTS=[168,228,312,360,432,504,564,636,660,684,708];
+// разделы для полоски сверху
+const SEG=[0,60,168,228,312,360,432,504,564,636,732,END];
+// камера телефона: [кадр, масштаб, сдвиг по Y]
+const CAM=[[60,1,0],[92,1,0],[104,1.2,-380],[128,1.2,-380],[142,1.04,-40],[167,1.04,-40],[168,1.14,250],[227,1.22,290],[228,1.16,60],[238,1.2,-400],[311,1.2,-400],[312,1.14,-290],[359,1.14,-290],
+ [360,1.1,-10],[431,1.14,-10],[432,1.1,-10],[503,1.14,-10],[504,1.1,-10],[563,1.14,-10],[564,1.02,0],[570,1.02,0],[582,1.2,-380],[618,1.2,-380],[630,1.05,-50],[635,1.05,-50],[636,1.06,-10],[731,1.06,-10],[732,1.06,-10],[758,0.60,-30],[END,0.60,-30]];
+const TAPS=[[68,195,798],[121,264,638],[296,195,675],[370,195,640],[397,195,471],[442,195,267],[456,300,267],[512,316,318],[528,316,382],[614,264,637],[662,195,723]];
+const CAPS=[[62,93,['Выходи','на линию*']],[95,166,['Лови','заказы*']],[168,226,['Настоящая','карта Уфы*','52 000 домов~']],[228,310,['Болтай','с пассажирами*']],[312,358,['Получай','чаевые*']],
+ [360,430,['Арендуй','машину*','от 1 850 ₽ за смену~']],[432,502,['Открывай','тарифы*','Эконом · Комфорт · Комфорт+~']],[504,562,['Прокачивай','навыки*','6 навыков · 3 уровня~']],
+ [564,634,['Ночь. Дождь.','Спрос растёт*'],1],[636,659,['Купи свою','машину*']],[660,683,['Рискни','в казино*']],[684,707,['Торгуй','на бирже*']],[708,731,['Войди','в топ*']]];
+CAPS.forEach(c=>{const d=document.createElement('div');d.className='cap'+(c[3]?' dk':'');d.innerHTML=c[2].map(l=>{const y=l.endsWith('*'),s=l.endsWith('~');return '<span class="'+(y?'y':s?'s':'')+'">'+l.replace(/[*~]$/,'')+'</span>'}).join('');$('caps').appendChild(d);c.el=d;});
+$('bar').innerHTML=SEG.slice(1).map(()=>'<b><i></i></b>').join('');
+function cam(f){let i=0;while(i<CAM.length-2&&f>=CAM[i+1][0])i++;const a=CAM[i],b=CAM[i+1],t=eio((f-a[0])/Math.max(1,b[0]-a[0]));return [lerp(a[1],b[1],t),lerp(a[2],b[2],t)];}
+const rub=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+let lastSrc='',lastHook='';
+window.setFrame=async function(f){
+  const bz=1.06+0.10*f/END;$('bgmap').style.transform=`scale(${bz}) translate(${-30+60*f/END}px,${20-50*f/END}px)`;
+  const nt=cl((f-562)/6)*(1-cl((f-634)/6));$('night').style.opacity=nt;
+  // цветное свечение за телефоном: медленно вращается и «дышит» в долю
+  const beat=f>=60?Math.exp(-((f-60)%BT)/3.2):0;
+  $('glow').style.opacity=f<58?0:(0.62-0.25*nt)*cl((f-58)/10);$('glow').style.transform=`rotate(${f*0.9}deg) scale(${1+0.06*beat})`;
+  // полоска разделов
+  const bar=$('bar');bar.className=(f<58||nt>.5)?'w':'';[...bar.children].forEach((b,i)=>{b.firstChild.style.width=cl((f-SEG[i])/(SEG[i+1]-SEG[i]))*100+'%';});
+  // вступление
+  const hw=$('hookwrap');
+  if(f<66){hw.style.display='';const hf=Math.min(83,Math.round(f*1.3));const src=D+'c_H/'+pad(hf)+'.jpg';if(src!==lastHook){lastHook=src;$('hook').src=src;await $('hook').decode();}
+    const o=eo((f-54)/9);hw.style.opacity=1-o;$('hook').style.transform=`scale(${1+0.5*eio((f-50)/14)})`;
+    [...$('hooktxt').children].forEach((d,i)=>{const t=(f-(2+i*12-(i===3?6:0)))/6,out=eio((f-50)/9);d.style.opacity=cl(t*2)*(1-out);d.style.transform=`translateY(${-out*260}px) scale(${1+0.35*(1-eo(t))})`;});
+    $('cnt').textContent='+'+rub(5840*eo((f-30)/20))+' ₽';
+  } else hw.style.display='none';
+  // телефон
+  const ph=$('phone');let sc=SC.find(s=>f>=s[0]&&f<s[1]);
+  if(f<58){ph.style.display='none';}else{ph.style.display='';if(!sc)sc=SC[0];
+    const n=Math.min(sc[3]+Math.max(0,f-sc[0]),LAST[sc[2]]);const src=D+'c_'+sc[2]+'/'+pad(n)+'.jpg';if(src!==lastSrc){lastSrc=src;$('shot').src=src;await $('shot').decode();}
+    let [k,dy]=cam(f),dx=0;
+    CUTS.forEach((c,i)=>{if(f>=c&&f<c+14){const e=Math.exp(-(f-c)/2.6);k*=1+0.05*e;dx+=(i%2?-1:1)*120*e;}});
+    if(f<732)k*=1+0.012*beat;
+    const ent=back((f-58)/18);dy+=(1-ent)*1750;
+    ph.style.transform=`translate(${dx}px,${dy}px) scale(${k})`;
+    $('screen').style.background=nt>.5?'#262930':'#f0f1f4';
+  }
+  // касания
+  const tp=TAPS.find(t=>f>=t[0]-6&&f<t[0]+12);const te=$('tap');
+  if(tp&&f>=58){te.style.display='';te.style.left=tp[1]*S0+'px';te.style.top=tp[2]*S0+'px';const a=f-tp[0];
+    const dk=a<0?eo((a+6)/4):1-cl((a-4)/6);$('tapdot').style.opacity=dk;$('tapdot').style.transform=`scale(${a<0?1.5-0.6*eo((a+6)/5):0.9-0.12*cl(a/3)+0.12*cl((a-3)/3)})`;
+    const r=cl(a/11);$('tapring').style.opacity=a<0?0:1-r;$('tapring').style.transform=`scale(${0.8+1.5*eo(r)})`;
+  } else te.style.display='none';
+  // подписи: «влетают» крупнее и встают ровно
+  for(const c of CAPS){const el=c.el;if(f<c[0]||f>c[1]){el.style.display='none';continue;}el.style.display='';
+    [...el.children].forEach((s,i)=>{const t=(f-c[0]-i*3)/6,out=cl((f-(c[1]-3))/3);s.style.opacity=cl(t*2.2)*(1-out);s.style.transform=`translateY(${-out*20}px) scale(${1+0.45*(1-eo(t))})`;});}
+  // крупная сумма
+  const bg=$('big');if(f>=325&&f<359){bg.style.display='';const t=(f-325)/8,out=cl((f-351)/7);bg.style.opacity=cl(t*2)*(1-out);bg.style.transform=`translateY(${-out*90-40*cl((f-325)/34)}px) scale(${0.5+0.5*back(t)})`;}else bg.style.display='none';
+  // финал
+  const en=$('end');if(f>=729){en.style.display='';
+    const a=(f-736)/10;en.querySelector('h1').style.cssText=`opacity:${cl(a*2)};transform:scale(${1+0.3*(1-eo(a))})`;
+    const b=(f-746)/10;en.querySelector('.sub').style.cssText=`opacity:${cl(b*1.5)};transform:translateY(${(1-eo(b))*50}px)`;
+    const c=(f-764)/12,pulse=1+0.04*Math.exp(-((f-780)%BT+BT)%BT/3.2)*cl((f-776)/6);en.querySelector('.cta').style.cssText=`opacity:${cl(c*2)};transform:translateY(${(1-back(c))*120}px) scale(${(0.8+0.2*back(c))*pulse})`;
+    const d=(f-774)/10;en.querySelector('.bot').style.cssText=`opacity:${cl(d*1.5)};transform:translateY(${(1-eo(d))*40}px)`;
+    en.querySelector('.osm').style.opacity=cl((f-782)/10);
+    const c1=eo((f-752)/20),c2=eo((f-758)/20),drift=(f-754)*0.35;
+    $('car1').style.cssText=`left:${-560+(560-30)*c1+drift}px;top:1170px;opacity:${cl((f-752)/4)}`;
+    $('car2').style.cssText=`left:${1140-(1140-590)*c2-drift}px;top:1190px;transform:scaleX(-1);opacity:${cl((f-758)/4)}`;
+  } else en.style.display='none';
+  let fl=0;if(f>=58&&f<67)fl=0.55*(1-(f-58)/9);if(f>=564&&f<570)fl=0.35*(1-(f-564)/6);if(f>=636&&f<641)fl=0.3*(1-(f-636)/5);if(f>=732&&f<740)fl=0.5*(1-(f-732)/8);$('flash').style.opacity=fl;
+};
+</script></body></html>
