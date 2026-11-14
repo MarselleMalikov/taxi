@@ -754,6 +754,16 @@ html.dark .mlead .mti.mtiB{background:#2B3A5C;color:#8FB0FF}html.dark .shtop b.n
 .mprof{padding:12px 14px!important}.mpbig{margin-top:4px!important}.mpbig b{font-size:26px!important}
 .mnext{margin-top:8px!important;padding-top:8px!important;gap:4px!important}.mnext>span{margin-bottom:0!important}
 .mreqs{display:flex;flex-wrap:wrap;gap:4px 10px}.mreqs .mreq{font-size:14px;gap:6px}.mreqs .mreq i{width:11px;height:11px}
+.shb{width:52px!important}.shb.cur b{font-size:13.5px!important}
+.shbars{padding-left:4px!important;padding-right:4px!important}
+.shlist{margin-top:14px;display:flex;flex-direction:column}
+.shlh{font-size:17px!important;font-weight:800!important;margin-bottom:4px}
+.shr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.shr:last-child{border-bottom:none}
+.shrt{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.shra{font-size:15px;color:var(--m);min-width:0;line-height:1.25}
+.shrm{font-size:15.5px!important;font-weight:800!important;font-variant-numeric:tabular-nums;white-space:nowrap}
+html.dark .shr{border-color:#3E4350}
 </style></head>
 <body>
 <div id="boot"><div class="bwrap"><svg class="bcar" viewBox="0 0 64 32" aria-hidden="true"><path d="M8 22h48v-6c0-2-1.5-3.5-3.5-3.8L44 11l-6-6H22l-7 7-6 1C7.8 13.3 7 14.5 7 16z" fill="#FFD233" stroke="#1E1F23" stroke-width="2.4" stroke-linejoin="round"/><circle cx="19" cy="23" r="4.5" fill="#1E1F23"/><circle cx="45" cy="23" r="4.5" fill="#1E1F23"/><path d="M24 7.5h12l4.5 4.5H20z" fill="#fff" stroke="#1E1F23" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -1273,6 +1283,7 @@ function prioAdd(d) {
   const was = priority; priority = clamp(priority + d, 0, PRIO_MAX); updateTop(); if (priority === was) return;
   floaters.push({ text: "приоритет " + (d > 0 ? "+" : "−") + Math.abs(d), x: car.x, y: car.y, age: 0, color: d > 0 ? "#2456c9" : "#c9363b", dy: 44 });
 }
+let shiftLog = [];   // заказы текущей смены для «Моих смен»
 let noSurgeRow = 0, mood = 100, breaks = 0, onlineT = 0, idleNoOrder = 0, shiftEndWhy = "", breakT = 0, breakKind = "";   // настроение и время на линии
 const onlineLimit = () => ONLINE_LIMIT - breaks * BREAK_COST;
 function moodAdd(d) {   // изменить настроение водителя
@@ -1285,7 +1296,7 @@ let carNode = nearest(xs[xs.length >> 1], ys[ys.length >> 1]);
 const car = { x: N[carNode][0], y: N[carNode][1], angle: 0 };
 let route = [];
 
-function saveGame() { if (resetting) return; try { localStorage.setItem("taxi-saved-at", String(Date.now())); if (window.CLOUD) CLOUD.push(); } catch (e) {} try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority, rain, goalRides, blockUntil, clsAutoOff, carNode, meta: M })); } catch (e) {} }
+function saveGame() { if (resetting) return; try { localStorage.setItem("taxi-saved-at", String(Date.now())); if (window.CLOUD) CLOUD.push(); } catch (e) {} try { localStorage.setItem(SAVE_KEY, JSON.stringify({ money, ridesDone, rates, affection, storyStep, met, seen, goalReached, clock, day, shiftMoney, shiftRides, shiftOver, fuel, ledger, businessUses, workMode, districtSel: districtSel ? [...districtSel] : null, mood, breaks, onlineT, carId, carChosen, clsOn, owned, priority, rain, goalRides, blockUntil, clsAutoOff, carNode, shiftLog, meta: M })); } catch (e) {} }
 // Детализация смены: всё, что пришло и ушло
 const newLedger = () => ({ fares: 0, tips: 0, fee: 0, rent: 0, fuel: 0, fuelL: 0, fines: 0, km: 0, bonus: 0 });
 // ====== Дождь: примерно раз в 2-3 смены, на 1-3 часа; спрос по всему городу x1.4, машина едет как обычно ======
@@ -1492,7 +1503,7 @@ function loadGame() {
     if (M.own) { M.cars = [Object.assign({ uid: M.carSeq++, rented: false, gbo: false }, M.own)]; if (M.drive === "own") M.driveUid = M.cars[0].uid; delete M.own; }   // старое сохранение: одна машина
     if (driveOwn()) carId = curOwn().model; else M.drive = "rent";
     if (!tariffOpen(myCar().t)) { carId = "rio"; M.drive = "rent"; }   // тариф машины ещё не открыт
-    rain = d.rain === undefined ? rollRain() : d.rain; goalRides = d.goalRides || 0; blockUntil = d.blockUntil || 0; clsAutoOff = d.clsAutoOff || {};
+    rain = d.rain === undefined ? rollRain() : d.rain; goalRides = d.goalRides || 0; blockUntil = d.blockUntil || 0; clsAutoOff = d.clsAutoOff || {}; shiftLog = Array.isArray(d.shiftLog) ? d.shiftLog : [];
   } catch (e) {}
 }
 let resetting = false;   // после сброса больше не сохраняем, иначе при перезагрузке страница запишет старую игру обратно
@@ -1919,6 +1930,7 @@ function finishRide(reason) {
   if (tip > 0) floaters.push({ text: "+" + tip + " ₽ чаевые", x: car.x, y: car.y, age: 0, color: "#b8860b", dy: 6 });
   lastRide = { name: c.name, cash: c.cash, offApp: c.offApp, fines: c.fineList || [], price: fare, fee, tip, stars, mood: c.mood, note: reason ? reason + (mult === 0 ? ", оплаты нет" : c.partial !== undefined ? ", оплата за проеханное" : "") : mult === 0 ? "Пассажир не заплатил" : "", wait: mult > 0 ? (c.waitFee || 0) + (c.extraFare || 0) : 0, blocked: getAff(c.name) <= REFUSE_AT };
   afterRide(c); if (c.tut) TUT.ride = false;
+  shiftLog.push({ t: clockTxt(clock), a: c.toAddr || addrOf(c.to), m: Math.round(fare - fee + tip) });   // «Мои смены»: заказ в детализацию
   if (offAfter || blockLeft() > 0) { c.next = null; c.nextOffer = null; }
   const chained = c.next, pendingNext = !c.next && c.nextOffer;   // предложенный, но ещё не принятый следующий заказ
   current = null; dialogue = null; state = "idle"; route = []; spawnTimer = nextOfferWait(); checkBusinessDone(); updateTop(); saveGame();
@@ -1966,7 +1978,7 @@ endCard.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.end === "continue") { endingEl.hidden = true; endingShown = false; updateTop(); } else if (b.dataset.end === "restart") resetGame();
   else if (b.dataset.end === "newshift" || b.dataset.end === "garage") {
-    if (b.dataset.end === "garage") setTimeout(showGarage, 0); ledger = newLedger(); businessUses = 0; business = null; mood = 100; breaks = 0; onlineT = 0; shiftEndWhy = ""; rain = rollRain(); rainShown = 0; goalRides = 0; blockUntil = 0; updateMood(); clock = 0; day++; shiftOver = false; shiftMoney = 0; shiftRides = 0; endingShown = false; endingEl.hidden = true; saveGame(); updateTop(); renderPanel(); onNewDay(); }
+    if (b.dataset.end === "garage") setTimeout(showGarage, 0); ledger = newLedger(); shiftLog = []; businessUses = 0; business = null; mood = 100; breaks = 0; onlineT = 0; shiftEndWhy = ""; rain = rollRain(); rainShown = 0; goalRides = 0; blockUntil = 0; updateMood(); clock = 0; day++; shiftOver = false; shiftMoney = 0; shiftRides = 0; endingShown = false; endingEl.hidden = true; saveGame(); updateTop(); renderPanel(); onNewDay(); }
 });
 function showLedger() {
   const L = ledger, f = v => v.toLocaleString("ru-RU") + " ₽", row = (t, v, minus) => '<div class="lrow' + (minus && v ? " minus" : "") + '"><span>' + t + "</span><b>" + (minus && v ? "−" : "") + f(v) + "</b></div>";
@@ -3439,7 +3451,8 @@ function askTO() {
 const toLeftTxt = c => { c = c || curOwn(); return !c ? "" : c.km >= c.toKm ? "ТО просрочено" : "до ТО " + Math.round(c.toKm - c.km).toLocaleString("ru-RU") + " км"; };
 const fmtR = v => Math.round(v).toLocaleString("ru-RU") + " ₽";
 function recordShift() {   // «Мои смены»: итог смены в историю (последние 30)
-  const L = ledger; M.history = (M.history || []).concat([{ d: day, net: Math.round(shiftNet()), fares: L.fares, tips: L.tips, bonus: L.bonus || 0, fee: L.fee, rent: L.rent, fuel: L.fuel, other: L.fines, rides: shiftRides, t: Math.round(onlineT), km: Math.round(L.km) }]).slice(-30);
+  const L = ledger; M.history = (M.history || []).concat([{ d: day, net: Math.round(shiftNet()), fares: L.fares, tips: L.tips, bonus: L.bonus || 0, fee: L.fee, rent: L.rent, fuel: L.fuel, other: L.fines, rides: shiftRides, t: Math.round(onlineT), km: Math.round(L.km), log: shiftLog.slice() }]).slice(-30);
+  M.history.forEach((h, i) => { if (i < M.history.length - 5) delete h.log; });   // список заказов храним только у последних 5 смен
 }
 function onShiftEnd() { recordShift(); M.careerShifts++; const o = checkUnlock(true); queueShift(); return o; }
 
@@ -3991,23 +4004,25 @@ const shMoney = v => (v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleStri
 function shEntries() {
   const list = (M.history || []).slice(-30).map(h => Object.assign({ cur: false }, h));
   const L = ledger, live = online || shiftRides > 0 || L.rent > 0;
-  if (live && !endingShown) list.push({ cur: true, d: day, net: Math.round(shiftNet()), fares: L.fares, tips: L.tips, bonus: L.bonus || 0, fee: L.fee, rent: L.rent, fuel: L.fuel, other: L.fines, rides: shiftRides, t: Math.round(onlineT), km: Math.round(L.km) });
+  if (live && !endingShown) list.push({ cur: true, d: day, net: Math.round(shiftNet()), fares: L.fares, tips: L.tips, bonus: L.bonus || 0, fee: L.fee, rent: L.rent, fuel: L.fuel, other: L.fines, rides: shiftRides, t: Math.round(onlineT), km: Math.round(L.km), log: shiftLog });
+  for (const e of list) e.rev = Math.round(e.fares + e.tips + (e.bonus || 0) - e.fee);   // выручка за вычетом комиссии - без аренды и топлива
   return list;
 }
 function renderShifts() {
   const E = shEntries(), box = $("shbody");
   if (!E.length) { box.innerHTML = '<p class="shempty">Пока нет ни одной смены. Итоги каждой смены будут появляться здесь.</p>'; return; }
   if (shSel < 0 || shSel >= E.length) shSel = E.length - 1;
-  const s = E[shSel], max = Math.max(1, ...E.map(e => e.net)), MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+  const s = E[shSel], max = Math.max(1, ...E.map(e => e.rev)), MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
   const bars = E.map((e, i) => {
-    const dt = dateOf(e.d), h = Math.max(4, Math.round(Math.max(0, e.net) / max * 120));
-    return '<button class="shb' + (i === shSel ? " on" : "") + '" data-sh="' + i + '"><span class="shv' + (e.net < 0 ? " neg" : "") + '">' + (e.net < 0 ? "−" : "") + Math.abs(e.net).toLocaleString("ru-RU") + '</span><i style="height:' + h + 'px"></i><b>' + (e.cur ? "сейчас" : dt.getDate()) + "</b><small>" + (e.cur ? "&nbsp;" : MON[dt.getMonth()]) + "</small></button>";
+    const dt = dateOf(e.d), h = Math.max(4, Math.round(Math.max(0, e.rev) / max * 120));
+    return '<button class="shb' + (i === shSel ? " on" : "") + (e.cur ? " cur" : "") + '" data-sh="' + i + '"><span class="shv">' + e.rev.toLocaleString("ru-RU") + '</span><i style="height:' + h + 'px"></i><b>' + (e.cur ? "сейчас" : dt.getDate()) + "</b><small>" + (e.cur ? "&nbsp;" : MON[dt.getMonth()]) + "</small></button>";
   }).join("");
   const chip = (t, v, minus) => v ? '<span class="shc">' + t + ' · <b class="' + (minus ? "m" : "") + '">' + (minus ? "−" : "") + Math.abs(Math.round(v)).toLocaleString("ru-RU") + " ₽</b></span>" : "";
   const word = s.rides % 10 === 1 && s.rides % 100 !== 11 ? "поездка" : s.rides % 10 >= 2 && s.rides % 10 <= 4 && (s.rides % 100 < 10 || s.rides % 100 >= 20) ? "поездки" : "поездок";
-  box.innerHTML = '<div class="shtop"><span>' + (s.cur ? "Текущая смена" : "Смена " + s.d) + " · " + dateTxt(s.d) + '</span><b class="' + (s.net < 0 ? "neg" : "") + '">' + shMoney(s.net) + "</b><small>чистыми · " + s.rides + " " + word + " · " + fmtHM(s.t) + " на линии</small></div>" +
+  box.innerHTML = '<div class="shtop"><span>' + (s.cur ? "Текущая смена" : "Смена " + s.d) + " · " + dateTxt(s.d) + '</span><b>' + shMoney(s.rev) + "</b><small>выручка · " + s.rides + " " + word + " · " + fmtHM(s.t) + " на линии</small></div>" +
     '<div class="shbars" id="shbars">' + bars + "</div>" +
-    '<div class="shchips">' + chip("Заказы", s.fares) + chip("Чаевые", s.tips) + chip("Бонусы за цели", s.bonus) + chip("Комиссия", s.fee, true) + chip("Аренда", s.rent, true) + chip("Топливо", s.fuel, true) + chip("Прочие затраты", s.other, true) + "</div>";
+    '<div class="shchips">' + chip("Заказы", s.fares) + chip("Чаевые", s.tips) + chip("Бонусы за цели", s.bonus) + chip("Комиссия", s.fee, true) + "</div>" +
+    (s.log ? (s.log.length ? '<div class="shlist"><b class="shlh">Заказы смены</b>' + s.log.slice().reverse().map(r => '<div class="shr"><span class="shrt">' + r.t + '</span><span class="shra">' + esc(r.a) + '</span><b class="shrm">' + shMoney(r.m) + "</b></div>").join("") + "</div>" : "") : '<p class="shempty">Список заказов хранится для последних 5 смен.</p>');
 }
 function showShifts() { menuEl.hidden = true; shSel = -1; $("myshifts").hidden = false; renderShifts(); const b = $("shbars"); if (b) b.scrollLeft = b.scrollWidth; }
 $("shiftsbtn").addEventListener("click", showShifts);
