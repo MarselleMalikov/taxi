@@ -1,5 +1,5 @@
 import numpy as np, wave
-SR=44100; BPM=150; BEAT=60/BPM; DROP=2.0; DUR=28.0+0.6
+SR=44100; BPM=120; BEAT=60/BPM; DROP=2.5; DUR=30.0+0.6
 N=int(SR*DUR); L=np.zeros(N); R=np.zeros(N)
 rng=np.random.default_rng(7)
 def add(sig,t,gl=1.0,gr=None):
@@ -58,11 +58,11 @@ def ding(f=1320,amp=1.0,dur=0.5):
     n=int(SR*dur); t=np.arange(n)/SR; s=np.sin(2*np.pi*f*t)+0.4*np.sin(2*np.pi*f*2.01*t)+0.15*np.sin(2*np.pi*f*3.0*t); return s*np.exp(-t*9)*np.minimum(1,t/0.002)*amp*0.3
 def click(amp=1.0):
     n=int(SR*0.05); t=np.arange(n)/SR; return (np.sin(2*np.pi*1900*t)*np.exp(-t*120)+0.3*rng.standard_normal(n)*np.exp(-t*300))*amp*0.3
-# ---------- гармония: Am F C G (такт = 1.6 c) ----------
+# ---------- гармония: Am F C G (по такту = 2 c) ----------
 CH=[(57,[69,72,76]),(53,[69,72,77]),(48,[67,72,76]),(55,[67,71,74])]
 ARP=[0,1,2,1,0,2,1,2]
 side=np.ones(N)
-def sc(t,depth=0.55,rel=0.2):
+def sc(t,depth=0.55,rel=0.22):
     i=int(t*SR); n=int(rel*SR)
     if i>=N: return
     k=np.arange(min(n,N-i))/n; side[i:i+len(k)]=np.minimum(side[i:i+len(k)],1-depth*(1-k)**1.5)
@@ -72,68 +72,59 @@ def addm(sig,t,gl=1.0,gr=None):
     i=int(t*SR)
     if i>=N: return
     n=min(len(sig),N-i); mus[i:i+n]+=sig[:n]*gl; musR[i:i+n]+=sig[:n]*gr
-F=lambda f:f/30
-# вступление: удары под слова, счётчик, нарастание
-for k,t in enumerate((F(2),F(14),F(26))):
-    add(kick(0.9),t); add(pluck(69 if k<2 else 76,0.4,0.5,2500),t,0.9,0.7); addm(pad([57,64,69],0.4,0.25),t)
-for i in range(12): add(ding(1400+i*120,0.28,0.12),F(32)+i*0.07)
-add(noise_sweep(1.1,True,0.5),DROP-1.15)
-for i,t in enumerate(np.arange(DROP-0.8,DROP-0.01,0.1)): add(clap(0.22+0.07*i),t)
-bars=14
-for b in range(bars):
-    t0=DROP+b*4*BEAT; root,tri=CH[b%4]
-    light=b<2; brk=b in (10,11) and False
-    night=(b==10) or (b==11)   # ночная сцена: без бочки первую половину, потом разгон
-    hot=b>=12
-    addm(pad([root+12]+tri,4*BEAT,0.42),t0)
-    for q in range(4):
-        tb=t0+q*BEAT
-        quiet=47<=(b*4+q+5)<=50
-        if not quiet:
+# вступление: три удара под слова + нарастание
+for k,t in enumerate((2/30,15/30,28/30)):
+    add(kick(0.9),t); add(pluck(57+12 if k<2 else 64+12,0.5,0.5,2500),t,0.9,0.7); addm(pad([57,64,69],0.5,0.25),t)
+add(noise_sweep(1.35,True,0.5),DROP-1.4)
+for i in range(12): add(ding(1400+i*120,0.25,0.12),37/30+i*0.06)
+for i,t in enumerate(np.arange(DROP-1.0,DROP-0.01,0.125)): add(clap(0.25+0.07*i),t)
+# основная часть: 10 тактов, затем финал 2 такта
+bars=12
+for b in range(bars+2):
+    t0=DROP+b*4*BEAT; root,tri=CH[b%4]; fin=b>=bars; hot=b in (10,11)
+    if not fin:
+        addm(pad([root+12]+tri,4*BEAT,0.42),t0)
+        for q in range(4):
+            tb=t0+q*BEAT
             add(kick(1.0),tb); sc(tb)
-            if q%2==1: add(clap(0.9 if not light else 0.6),tb,0.95,1.0)
+            if q%2==1: add(clap(0.9),tb,0.95,1.0)
+            add(hat(0.55),tb+BEAT/2,0.8,1.0)
+            if hot or b%2==1:
+                add(hat(0.3,0.015),tb+BEAT/4,1.0,0.7); add(hat(0.3,0.015),tb+3*BEAT/4,0.7,1.0)
+            addm(bass(root-12 if root>50 else root,BEAT*0.42,0.75),tb+BEAT/2)
+            if q==3: addm(bass(root-12 if root>50 else root,BEAT*0.2,0.6),tb+BEAT*0.75)
+        for e in range(8):
+            m=tri[ARP[e]]+(12 if e%4==3 else 0)
+            pan=0.5+0.35*np.sin(e*1.7); addm(pluck(m,0.2,0.55,3600 if hot else 2800),t0+e*BEAT/2,1-pan*0.6,0.4+pan*0.6)
+            if b>=2: addm(pluck(m+12,0.12,0.16,5000),t0+e*BEAT/2+BEAT*0.75/2,0.5,0.9)
+        if b==bars-1:
+            for i,t in enumerate(np.arange(t0+2*BEAT,t0+4*BEAT-0.01,0.125)): add(clap(0.3+0.04*i),t)
+            add(noise_sweep(1.0,True,0.45),t0+4*BEAT-1.0)
+    else:
+        if b==bars:
+            add(kick(1.1),t0); sc(t0,0.6,0.35); add(clap(0.8),t0)
+            addm(pad([45,57,64,69,72,76],4.4,0.9),t0); add(noise_sweep(1.6,False,0.4),t0)
+            for e,m in enumerate([69,72,76,81,84,88]): addm(pluck(m,0.5,0.5,4200),t0+e*BEAT/2,0.7+0.05*e,1.0-0.05*e)
+            for q in (2,):  add(kick(0.9),t0+q*BEAT); sc(t0+q*BEAT)
         else:
-            if q%2==1: add(clap(0.45),tb)
-        if not light: add(hat(0.55),tb+BEAT/2,0.8,1.0)
-        if hot or (b%2==1 and not light):
-            add(hat(0.3,0.015),tb+BEAT/4,1.0,0.7); add(hat(0.3,0.015),tb+3*BEAT/4,0.7,1.0)
-        br=root-12 if root>50 else root
-        if not quiet:
-            addm(bass(br,BEAT*0.42,0.8),tb+BEAT/2)
-            if q==3 and not light: addm(bass(br+12,BEAT*0.2,0.55),tb+BEAT*0.75)
-        else: addm(bass(br,BEAT*0.9,0.5),tb)
-    for e in range(8):
-        m=tri[ARP[e]]+(12 if e%4==3 else 0)
-        pan=0.5+0.35*np.sin(e*1.7); addm(pluck(m,0.17,0.55,3800 if hot else 2900),t0+e*BEAT/2,1-pan*0.6,0.4+pan*0.6)
-        if b>=3 and not (47<=(b*4+e//2+5)<=50): addm(pluck(m+12,0.1,0.17,5200),t0+e*BEAT/2+BEAT*0.375,0.5,0.9)
-    if hot:
-        for e in range(4): addm(pluck(tri[2]+12,0.25,0.3,4500),t0+e*BEAT,0.9,0.6)
-    if b==11:
-        for i,t in enumerate(np.arange(t0+2*BEAT,t0+4*BEAT-0.01,0.1)): add(clap(0.3+0.05*i),t)
-        add(noise_sweep(1.0,True,0.45),t0+4*BEAT-1.0)
-    if b==bars-1:
-        for i,t in enumerate(np.arange(t0+2*BEAT,t0+4*BEAT-0.01,0.1)): add(clap(0.3+0.05*i),t)
-        add(noise_sweep(0.8,True,0.45),t0+4*BEAT-0.8)
-# финал
-t0=DROP+bars*4*BEAT
-add(kick(1.1),t0); sc(t0,0.6,0.35); add(clap(0.8),t0)
-addm(pad([45,57,64,69,72,76],3.9,0.9),t0); add(noise_sweep(1.5,False,0.4),t0)
-for e,m in enumerate([69,72,76,81,84,88]): addm(pluck(m,0.5,0.5,4200),t0+e*BEAT/2,0.7+0.05*e,1.0-0.05*e)
-for q in (2,4): add(kick(0.9),t0+q*BEAT); sc(t0+q*BEAT)
-addm(pluck(81,0.8,0.45,4000),t0+4*BEAT); addm(pluck(88,0.8,0.35,4000),t0+4.5*BEAT)
+            add(kick(0.9),t0); sc(t0); addm(pluck(81,0.8,0.45,4000),t0); addm(pluck(88,0.8,0.35,4000),t0+BEAT/2)
 L+=mus*side*0.55; R+=musR*side*0.55
-# ---------- звуки событий ----------
+# ---------- звуки событий (время в кадрах / 30) ----------
+F=lambda f:f/30
 def order_ding(t):
     for i,dt in enumerate((0,0.13,0.32,0.45)): add(ding(1568 if i%2==0 else 2093,0.9),t+dt,0.9,1.0)
-order_ding(F(95)); order_ding(F(572))
-for f in (71,124,299,373,400,445,459,515,531,617,665): add(click(1.0),F(f))
-for f in (445,459,515,531): add(ding(1760,0.5,0.2),F(f)+0.02)   # тариф включён / навык прокачан
-for i,f0 in enumerate((1976,2637,3136)): add(ding(f0,0.8,0.6),F(323)+i*0.07)
-for i in range(6): add(ding(2800+rng.uniform(-300,500),0.35,0.25),F(325)+0.05*i+0.12)
-for f in (102,168,228,312,360,432,504,564,636,660,684,708,732): add(noise_sweep(0.2,False,0.22),F(f)-0.02)
-n=int(SR*2.4); rn=hp_fast(lp_fast(rng.standard_normal(n),5000),1500); t=np.arange(n)/n; rn*=np.minimum(1,t/0.1)*np.minimum(1,(1-t)/0.15)
-add(rn*0.12,F(564),1.0,0.8)
-for i in range(7): add(click(0.5),F(665)+0.04+i*0.06)
+order_ding(F(116)); order_ding(F(715))
+for f in (92,167,358,469,496,555,569,645,661,760): add(click(1.0),F(f))
+for f in (555,569,645,661): add(ding(1760,0.5,0.2),F(f)+0.02)
+for i,f0 in enumerate((1976,2637,3136)): add(ding(f0,0.8,0.6),F(401)+i*0.07)   # монеты
+for i in range(6): add(ding(2800+rng.uniform(-300,500),0.35,0.25),F(403)+0.05*i+0.12)
+for f in (210,285,390,450,540,630,705,795): add(noise_sweep(0.22,False,0.22),F(f)-0.02)
+add(noise_sweep(0.5,True,0.3),F(75)-0.5)
+# дождь в ночной сцене
+n=int(SR*3.0); rn=hp_fast(lp_fast(rng.standard_normal(n),5000),1500); t=np.arange(n)/n; rn*=np.minimum(1,t/0.1)*np.minimum(1,(1-t)/0.15)
+add(rn*0.11,F(705),1.0,0.8); 
+# рулетка: треск шарика
+
 # ---------- сведение ----------
 t=np.arange(N)/SR; fade=np.minimum(1,(DUR-0.05-t)/1.6).clip(0,1); fin=np.minimum(1,t/0.02)
 st=np.stack([L,R],1)*fade[:,None]*fin[:,None]
