@@ -1345,7 +1345,7 @@ function checkRating(prev) {   // вызывается после новой о�
   if (rt < LOSE_RATING) return ratingLost();
   if (prev >= BLOCK_RATING && rt < BLOCK_RATING) {   // рейтинг упал ниже 4.5 - доступ к заказам закрыт на 2 часа, пассажиры чаще отменяют
     blockUntil = clock + BLOCK_LEN; online = false; orders = []; previewId = null; SND.bad();
-    showEvt({ icon: "alert", color: "red", just: true, title: "Доступ закрыт на 2 часа", text: "Рейтинг ниже 4,5. Время блокировки идёт в счёт смены. Пока рейтинг не поднимется, пассажиры будут чаще отменять поездки: каждый десятый отменит заказ, когда вы уже приедете.",
+    showEvt({ icon: "alert", color: "red", just: true, title: "Доступ закрыт на 2 часа", text: "Рейтинг ниже 4,5. Время блокировки идёт в счёт смены. Пока рейтинг не поднимется, пассажиры будут чаще отменять поездки.",
       choices: [{ t: "Понятно", go: () => {} }] });
   } else if (prev >= 4 && rt < 4) {
     SND.bad();
@@ -3399,7 +3399,7 @@ function pointsInfo() {   // заработано очков, сколько п�
   return { earned: n, free: n - spent, have: ridesDone - cum, need: n < SKILLS.length * 3 ? pointNeed(n + 1) : 0 };
 }
 function checkPoints() {
-  const p = pointsInfo(); if (p.earned > M.pointsSeen) { M.pointsSeen = p.earned; toast("Новое очко навыка", "Меню, раздел «Навыки»", "star"); }
+  const p = pointsInfo(); if (p.earned > M.pointsSeen) { M.pointsSeen = p.earned; toast("Открыт новый навык", "Меню, раздел «Навыки»", "star"); }
 }
 
 // ---------- Начало новой смены: платежи 1 и 15 числа, ТО и ремонт своей машины, просрочка, звонки ----------
