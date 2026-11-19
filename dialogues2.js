@@ -503,6 +503,10 @@ const SCENE_WHEN = {
 
 // Эти сцены происходят по прибытии (расплата, помощь с сумками, «прокатиться по двору»)
 for (const id of ["d_bill", "f_jam", "d_drive", "d_phone", "ch_toy"]) SCENES[id].atEnd = true;
+// Сцены посадки: пассажир садится в машину - разговор сразу, как только тронулись
+for (const id of ["d_birth", "d_five", "d_dog", "f_goose", "f_bride", "f_cat", "f_wet", "f_classmate", "d_seedlings", "a_luggage", "ch_seat", "c7", "c8", "d_keys"]) SCENES[id].atStart = true;
+// Невеста: чем закончилась погоня за кортежем - в конце поездки
+for (const k of ["caught", "cam", "intime", "late"]) SCENES.f_bride.nodes[k].atEnd = true;
 
 // ---------- Пост ДПС (машину останавливают, когда она проезжает мимо поста на карте) ----------
 add(DPS, "dps_docs", {

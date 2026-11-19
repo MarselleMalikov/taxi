@@ -1268,7 +1268,7 @@ function placeDps() {
   dpsPosts = out; dpsDay = day; dpsStops = 0;
 }
 function checkDps() {   // машина проезжает пост: иногда остановят (не больше одной остановки за смену)
-  if (current && current.tut) return;
+  if (current && (current.tut || current.epilogue)) return;   // учебная поездка или развязка сцены ждёт конца поездки - без ДПС
   if (dpsDay !== day) placeDps();
   if (!current || dialogue || (state !== "toDropoff" && state !== "toPickup")) return;
   for (const p of dpsPosts) {
@@ -1799,7 +1799,8 @@ const ARRIVAL_RE = /(приехали|доехали|довез|довёз|мн�
 for (const id in SCENES) for (const k in SCENES[id].nodes) if (ARRIVAL_RE.test(SCENES[id].nodes[k].text)) SCENES[id].nodes[k].atEnd = true;
 const arrivedYet = () => !(state === "toDropoff" || state === "toStop" || state === "stopped" || state === "boarding");
 function startDialogue(o, later) {
-  const id = o.tut ? "f_hockey" : pickScene(o, later), sc = id && SCENES[id]; if (!sc) return;
+  const planned = !later && o.plannedId !== undefined; const id = o.tut ? "f_hockey" : planned ? o.plannedId : pickScene(o, later); o.plannedId = undefined;
+  const sc = id && SCENES[id]; if (!sc) return;
   if (SCENE_STOP.has(id)) o.askedStop = true;
   { const h = gameHour(), rush = (h >= 7 && h < 10) || (h >= 17 && h < 20); o.askAmt = rush ? 200 + 50 * Math.floor(Math.random() * 3) : 150 + 50 * Math.floor(Math.random() * 2); }   // вторая просьба остановиться в этой поездке не выпадет if (o.passenger.scenes) met[o.name] = true;
   if ((sc.atEnd || sc.nodes[sc.start].atEnd) && !arrivedYet()) { current.epilogue = { scene: sc, nodeId: sc.start }; return; }   // сцена целиком - по прибытии
@@ -2545,6 +2546,10 @@ function updateInner(dt) {
          0.25 + Math.random() * 0.45 : null;   // ребёнка может укачать
       if (current.tut) { current.talkAt = [0.15]; current.sickAt = null; } else if (current.contactId) { /* постоянный клиент по телефону - едет молча */ } else if (story || Math.random() < (r < 4.5 ? 0.95 : r < 4.6 ? 0.8 : r > 4.85 ? 0.3 : 0.45)) current.talkAt.push(0.08 + Math.random() * 0.35);
       if (!current.tut && !current.contactId && g > 25 && Math.random() < 0.25) current.talkAt.push(0.6 + Math.random() * 0.2);   // на долгой поездке - иногда ещё один случай
+      if (!current.tut && current.talkAt.length) {   // сцену выбираем сразу при посадке: сцены посадки (atStart) начинаются, как только тронулись
+        const id = pickScene(current, false); current.plannedId = id;
+        if (id && SCENES[id] && SCENES[id].atStart) current.talkAt[0] = 0.01;
+      }
       renderPanel();
     }
   } else if (state === "stopped") {   // остановка по просьбе пассажира
@@ -2563,7 +2568,7 @@ function updateInner(dt) {
       current.sickAt = null; current.stopNode = carNode; current.stopAddr = addrNear(car.x, car.y) || addrOf(carNode); current.stopLabel = "ребёнка укачало";
       state = "stopped"; stopT = 0; stopDur = 5 + Math.random() * 2; route = []; toast("Ребёнка укачало", "Остановились подышать", "alert"); renderPanel(); return;
     }
-    if (state === "toDropoff" && current.talkIdx < current.talkAt.length && 1 - remainingLen() / current.rideLen >= current.talkAt[current.talkIdx]) {
+    if (state === "toDropoff" && current.talkIdx < current.talkAt.length && !current.epilogue && 1 - remainingLen() / current.rideLen >= current.talkAt[current.talkIdx]) {
       startDialogue(current, current.talkIdx > 0); current.talkIdx++; renderPanel(); if (dialogue) return;   // разговор по ходу поездки
     }
     if (state === "toDropoff" && current && !current.tut) tickChain(dt);
